@@ -217,7 +217,7 @@ export class PlayerSystem {
     this._rig.position.y += 1.8;
     this._scene.add(this._rig);
 
-    this._camera.position.set(0, 1.0, -7);
+    this._camera.position.set(0, 1.0, 8);
     this._rig.add(this._camera);
 
     this._velocity = new THREE.Vector3();
@@ -226,6 +226,7 @@ export class PlayerSystem {
     this._built = true;
 
     console.info(`[player] shape-shifter spawned at ${group.position.x.toFixed(1)}, ${group.position.y.toFixed(1)}, ${group.position.z.toFixed(1)}`);
+    console.info(`[player] scene children: ${this._scene.children.length}, rig children: ${this._rig.children.length}`);
   }
 
   fixedUpdate(h, ctx) {

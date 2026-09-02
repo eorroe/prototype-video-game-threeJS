@@ -73,6 +73,7 @@ export class WorldSystem {
 
     const ms = performance.now() - t0;
     this.stats.drawCalls = this.root.children.length;
+    console.info(`[world] built ${this.stats.drawCalls} objects, scene total children: ${this._scene.children.length}`);
   }
 
   _buildGround() {
@@ -96,6 +97,12 @@ export class WorldSystem {
     mesh.name = 'ground';
     this.root.add(mesh);
     this.bounds.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), new THREE.Vector3(200, 0.5, 200));
+
+    const debugMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const debugBox = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), debugMat);
+    debugBox.position.set(0, 1, -5);
+    debugBox.name = 'debug-marker';
+    this.root.add(debugBox);
   }
 
   _buildBuildings() {

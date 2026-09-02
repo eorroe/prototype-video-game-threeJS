@@ -61,7 +61,18 @@ try {
 }
 
 const blocker = document.getElementById('blocker');
-if (blocker) blocker.classList.add('hidden');
+if (blocker) {
+  blocker.style.display = 'none';
+  blocker.remove();
+}
+
+if (canvas) {
+  canvas.style.position = 'fixed';
+  canvas.style.inset = '0';
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  canvas.style.zIndex = '1';
+}
 
 const shotApi = installShotApi(engine, { capture, lockstep });
 
