@@ -55,10 +55,13 @@ try {
     'beforeend',
     `<pre style="position:fixed;inset:0;padding:2rem;color:#f66;background:#000;
        font:12px/1.5 ui-monospace,monospace;overflow:auto;z-index:9999;white-space:pre-wrap">
-BOOT FAILURE\n\n${err.stack ?? err.message}</pre>`
+ BOOT FAILURE\n\n${err.stack ?? err.message}</pre>`
   );
   throw err;
 }
+
+const blocker = document.getElementById('blocker');
+if (blocker) blocker.classList.add('hidden');
 
 const shotApi = installShotApi(engine, { capture, lockstep });
 

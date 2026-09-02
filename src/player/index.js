@@ -217,9 +217,8 @@ export class PlayerSystem {
     this._rig.position.y += 1.8;
     this._scene.add(this._rig);
 
-    this._camera.position.set(0, 2.5, -8);
+    this._camera.position.set(0, 1.0, -7);
     this._rig.add(this._camera);
-    this._camera.position.set(0, -0.3, 0);
 
     this._velocity = new THREE.Vector3();
     this._onGround = false;

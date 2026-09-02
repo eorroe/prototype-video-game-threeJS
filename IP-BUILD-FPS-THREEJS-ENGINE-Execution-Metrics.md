@@ -125,3 +125,14 @@ What procedural geometry can deliver:
 - `npm run build` passes in ~2.2s
 - Bundle: ~662KB / ~177KB gzipped
 - 44 modules transformed
+
+## Bug Fix: Empty Scene / Pulsing Circle
+
+### Root Cause
+The `#blocker` div in `index.html` was never hidden. It covered the entire viewport with `background: rgba(0,0,0,0.85)` and `z-index: 10`, obscuring the game world. The "pulsing circle" was the minimap rendered on top of the blocker.
+
+### Fixes Applied
+1. **Blocker hide**: `src/main.js` now adds `hidden` class to `#blocker` after successful `engine.init()`
+2. **Camera position**: Changed from first-person height to third-person offset (`[0, 1.0, -7]` relative to rig)
+3. **Albedo textures**: Fixed `bakeAlbedo` to use full RGB channels instead of only red channel
+4. **Title/controls**: Updated HTML title and controls text to match Prototype theme

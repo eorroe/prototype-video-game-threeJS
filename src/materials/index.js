@@ -45,6 +45,32 @@ function makeNoiseTexture(renderer, size, fn) {
   return tex;
 }
 
+function makeRGBTexture(size, fn) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(size, size);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4;
+      const [r, g, b] = fn(x / size, y / size);
+      img.data[i] = Math.floor(r * 255);
+      img.data[i + 1] = Math.floor(g * 255);
+      img.data[i + 2] = Math.floor(b * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.generateMipmaps = true;
+  tex.needsUpdate = true;
+  return tex;
+}
+
 function hash(x, y) {
   let h = (x * 374761393 + y * 668265263) >>> 0;
   h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
@@ -77,10 +103,14 @@ function fbm(x, y, octaves) {
 
 function bakeAlbedo(surface, size) {
   const base = SURFACES[surface] || SURFACES.concrete;
-  return makeNoiseTexture(null, size, (u, v) => {
+  return makeRGBTexture(size, (u, v) => {
     const n = fbm(u, v, 4);
     const variation = 0.85 + n * 0.3;
-    return Math.min(1, base.albedo[0] * variation);
+    return [
+      Math.min(1, base.albedo[0] * variation),
+      Math.min(1, base.albedo[1] * variation),
+      Math.min(1, base.albedo[2] * variation),
+    ];
   });
 }
 
