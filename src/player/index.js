@@ -34,6 +34,9 @@ export class PlayerSystem {
     this._noise = new Noise(this._rng);
 
     const mat = ctx.get('materials').get('black_ops');
+    const matBright = mat.clone();
+    matBright.color = new THREE.Color(3.0, 3.0, 3.5);
+    matBright.vertexColors = false;
     const group = new THREE.Group();
     group.name = 'player';
 
@@ -42,21 +45,21 @@ export class PlayerSystem {
     const torsoRings = [];
     for (let i = 0; i <= 10; i++) {
       const t = i / 10;
-      const y = t * 1.2;
-      const rx = 0.22 + Math.sin(t * Math.PI) * 0.12;
-      const rz = 0.14 + Math.sin(t * Math.PI) * 0.08;
-      torsoRings.push({ pts: superEllipse(rx, rz, 3, 16), o: [0, y, 0] });
+      const y = t * 1.8;
+      const rx = 0.32 + Math.sin(t * Math.PI) * 0.18;
+      const rz = 0.22 + Math.sin(t * Math.PI) * 0.12;
+      torsoRings.push({ pts: superEllipse(rx, rz, 3, 20), o: [0, y, 0] });
     }
     const torso = loft(torsoRings, { capStart: true, capEnd: true });
     bakeAO(torso, this._noise, 0.6);
     bakeGrime(torso, this._noise, 0.3);
     bakeRim(torso, 0.4, 2.0);
 
-    const headGeo = ellipsoid(0.18, 0.22, 0.2, { seg: 16, rows: 10 });
+    const headGeo = ellipsoid(0.24, 0.28, 0.24, { seg: 20, rows: 12 });
     warp(headGeo, (v) => {
       const t = (v.y - 1.55) / 0.22;
       if (Math.abs(t) < 0.7) {
-        v.z += 0.03 * (1 - (t/0.7)**2);
+        v.z += 0.04 * (1 - (t/0.7)**2);
       }
     });
     bakeAO(headGeo, this._noise, 0.6);
@@ -66,159 +69,166 @@ export class PlayerSystem {
     const neckGeo = emptyMesh();
     for (let i = 0; i <= 6; i++) {
       const t = i / 6;
-      const y = t * 0.15;
-      const r = 0.08 - t * 0.02;
-      const ring = { pts: superEllipse(r, r, 2, 12), o: [0, 1.55 + y, 0] };
+      const y = t * 0.2;
+      const r = 0.12 - t * 0.03;
+      const ring = { pts: superEllipse(r, r, 2, 14), o: [0, 1.55 + y, 0] };
       loft([ring], { into: neckGeo, capStart: i===0, capEnd: i===6 });
     }
     bakeAO(neckGeo, this._noise, 0.6);
     bakeGrime(neckGeo, this._noise, 0.3);
     bakeRim(neckGeo, 0.4, 2.0);
 
-    const shoulderGeo = ellipsoid(0.12, 0.08, 0.1, { seg: 10, rows: 6 });
+    const shoulderGeo = ellipsoid(0.18, 0.12, 0.14, { seg: 14, rows: 8 });
     bakeAO(shoulderGeo, this._noise, 0.6);
     bakeGrime(shoulderGeo, this._noise, 0.3);
     bakeRim(shoulderGeo, 0.4, 2.0);
 
     const armUpperGeo = emptyMesh();
-    for (let i = 0; i <= 8; i++) {
-      const t = i / 8;
-      const y = t * 0.7;
-      const r = 0.07 - t * 0.015;
-      const ring = { pts: superEllipse(r, r, 2, 10), o: [0, y, 0] };
-      loft([ring], { into: armUpperGeo, capStart: i===0, capEnd: i===8 });
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      const y = t * 0.9;
+      const r = 0.10 - t * 0.02;
+      const ring = { pts: superEllipse(r, r, 2, 12), o: [0, y, 0] };
+      loft([ring], { into: armUpperGeo, capStart: i===0, capEnd: i===10 });
     }
     bakeAO(armUpperGeo, this._noise, 0.6);
     bakeGrime(armUpperGeo, this._noise, 0.3);
     bakeRim(armUpperGeo, 0.4, 2.0);
 
     const armLowerGeo = emptyMesh();
-    for (let i = 0; i <= 8; i++) {
-      const t = i / 8;
-      const y = t * 0.7;
-      const r = 0.06 - t * 0.01;
-      const ring = { pts: superEllipse(r, r, 2, 10), o: [0, y, 0] };
-      loft([ring], { into: armLowerGeo, capStart: i===0, capEnd: i===8 });
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      const y = t * 0.85;
+      const r = 0.08 - t * 0.015;
+      const ring = { pts: superEllipse(r, r, 2, 12), o: [0, y, 0] };
+      loft([ring], { into: armLowerGeo, capStart: i===0, capEnd: i===10 });
     }
     bakeAO(armLowerGeo, this._noise, 0.6);
     bakeGrime(armLowerGeo, this._noise, 0.3);
     bakeRim(armLowerGeo, 0.4, 2.0);
 
-    const handGeo = ellipsoid(0.06, 0.08, 0.04, { seg: 8, rows: 6 });
+    const handGeo = ellipsoid(0.08, 0.1, 0.06, { seg: 10, rows: 8 });
     bakeAO(handGeo, this._noise, 0.6);
     bakeGrime(handGeo, this._noise, 0.3);
     bakeRim(handGeo, 0.4, 2.0);
 
     const legUpperGeo = emptyMesh();
-    for (let i = 0; i <= 10; i++) {
-      const t = i / 10;
-      const y = t * 0.9;
-      const r = 0.1 - t * 0.02;
-      const ring = { pts: superEllipse(r, r, 2, 12), o: [0, y, 0] };
-      loft([ring], { into: legUpperGeo, capStart: i===0, capEnd: i===10 });
+    for (let i = 0; i <= 12; i++) {
+      const t = i / 12;
+      const y = t * 1.1;
+      const r = 0.14 - t * 0.03;
+      const ring = { pts: superEllipse(r, r, 2, 14), o: [0, y, 0] };
+      loft([ring], { into: legUpperGeo, capStart: i===0, capEnd: i===12 });
     }
     bakeAO(legUpperGeo, this._noise, 0.6);
     bakeGrime(legUpperGeo, this._noise, 0.3);
     bakeRim(legUpperGeo, 0.4, 2.0);
 
     const legLowerGeo = emptyMesh();
-    for (let i = 0; i <= 10; i++) {
-      const t = i / 10;
-      const y = t * 0.9;
-      const r = 0.08 - t * 0.015;
-      const ring = { pts: superEllipse(r, r, 2, 12), o: [0, y, 0] };
-      loft([ring], { into: legLowerGeo, capStart: i===0, capEnd: i===10 });
+    for (let i = 0; i <= 12; i++) {
+      const t = i / 12;
+      const y = t * 1.0;
+      const r = 0.11 - t * 0.025;
+      const ring = { pts: superEllipse(r, r, 2, 14), o: [0, y, 0] };
+      loft([ring], { into: legLowerGeo, capStart: i===0, capEnd: i===12 });
     }
     bakeAO(legLowerGeo, this._noise, 0.6);
     bakeGrime(legLowerGeo, this._noise, 0.3);
     bakeRim(legLowerGeo, 0.4, 2.0);
 
-    const footGeo = boxRound(0.08, 0.06, 0.2, { n: 3, roundY: 0.3 });
+    const footGeo = boxRound(0.1, 0.08, 0.28, { n: 4, roundY: 0.3 });
     bakeAO(footGeo, this._noise, 0.6);
     bakeGrime(footGeo, this._noise, 0.3);
     bakeRim(footGeo, 0.4, 2.0);
 
     const allGeo = buildBufferGeometry(torso);
-    const headMesh = new THREE.Mesh(buildBufferGeometryWithColors(headGeo), mat);
-    headMesh.position.y = 1.75;
+    const headMesh = new THREE.Mesh(buildBufferGeometryWithColors(headGeo), matBright);
+    headMesh.position.y = 2.1;
     group.add(headMesh);
 
-    const neckMesh = new THREE.Mesh(buildBufferGeometryWithColors(neckGeo), mat);
-    neckMesh.position.y = 1.55;
+    const neckMesh = new THREE.Mesh(buildBufferGeometryWithColors(neckGeo), matBright);
+    neckMesh.position.y = 1.9;
     group.add(neckMesh);
 
-    const torsoMesh = new THREE.Mesh(buildBufferGeometryWithColors(torso), mat);
-    torsoMesh.position.y = 0.5;
+    const torsoMesh = new THREE.Mesh(buildBufferGeometryWithColors(torso), matBright);
+    torsoMesh.position.y = 0.7;
     group.add(torsoMesh);
 
-    const leftShoulder = new THREE.Mesh(buildBufferGeometryWithColors(shoulderGeo), mat);
-    leftShoulder.position.set(-0.32, 1.35, 0);
+    const leftShoulder = new THREE.Mesh(buildBufferGeometryWithColors(shoulderGeo), matBright);
+    leftShoulder.position.set(-0.42, 1.65, 0);
     group.add(leftShoulder);
 
-    const rightShoulder = new THREE.Mesh(buildBufferGeometryWithColors(shoulderGeo), mat);
-    rightShoulder.position.set(0.32, 1.35, 0);
+    const rightShoulder = new THREE.Mesh(buildBufferGeometryWithColors(shoulderGeo), matBright);
+    rightShoulder.position.set(0.42, 1.65, 0);
     group.add(rightShoulder);
 
-    const leftArmUpper = new THREE.Mesh(buildBufferGeometryWithColors(armUpperGeo), mat);
-    leftArmUpper.position.set(-0.32, 0.75, 0);
+    const leftArmUpper = new THREE.Mesh(buildBufferGeometryWithColors(armUpperGeo), matBright);
+    leftArmUpper.position.set(-0.42, 0.9, 0);
     group.add(leftArmUpper);
 
-    const rightArmUpper = new THREE.Mesh(buildBufferGeometryWithColors(armUpperGeo), mat);
-    rightArmUpper.position.set(0.32, 0.75, 0);
+    const rightArmUpper = new THREE.Mesh(buildBufferGeometryWithColors(armUpperGeo), matBright);
+    rightArmUpper.position.set(0.42, 0.9, 0);
     group.add(rightArmUpper);
 
-    const leftArmLower = new THREE.Mesh(buildBufferGeometryWithColors(armLowerGeo), mat);
-    leftArmLower.position.set(-0.32, -0.05, 0);
+    const leftArmLower = new THREE.Mesh(buildBufferGeometryWithColors(armLowerGeo), matBright);
+    leftArmLower.position.set(-0.42, -0.05, 0);
     group.add(leftArmLower);
 
-    const rightArmLower = new THREE.Mesh(buildBufferGeometryWithColors(armLowerGeo), mat);
-    rightArmLower.position.set(0.32, -0.05, 0);
+    const rightArmLower = new THREE.Mesh(buildBufferGeometryWithColors(armLowerGeo), matBright);
+    rightArmLower.position.set(0.42, -0.05, 0);
     group.add(rightArmLower);
 
-    const leftHand = new THREE.Mesh(buildBufferGeometryWithColors(handGeo), mat);
-    leftHand.position.set(-0.32, -0.75, 0);
+    const leftHand = new THREE.Mesh(buildBufferGeometryWithColors(handGeo), matBright);
+    leftHand.position.set(-0.42, -1.0, 0);
     group.add(leftHand);
 
-    const rightHand = new THREE.Mesh(buildBufferGeometryWithColors(handGeo), mat);
-    rightHand.position.set(0.32, -0.75, 0);
+    const rightHand = new THREE.Mesh(buildBufferGeometryWithColors(handGeo), matBright);
+    rightHand.position.set(0.42, -1.0, 0);
     group.add(rightHand);
 
-    const leftLegUpper = new THREE.Mesh(buildBufferGeometryWithColors(legUpperGeo), mat);
-    leftLegUpper.position.set(-0.15, -0.5, 0);
+    const leftLegUpper = new THREE.Mesh(buildBufferGeometryWithColors(legUpperGeo), matBright);
+    leftLegUpper.position.set(-0.2, -0.6, 0);
     group.add(leftLegUpper);
 
-    const rightLegUpper = new THREE.Mesh(buildBufferGeometryWithColors(legUpperGeo), mat);
-    rightLegUpper.position.set(0.15, -0.5, 0);
+    const rightLegUpper = new THREE.Mesh(buildBufferGeometryWithColors(legUpperGeo), matBright);
+    rightLegUpper.position.set(0.2, -0.6, 0);
     group.add(rightLegUpper);
 
-    const leftLegLower = new THREE.Mesh(buildBufferGeometryWithColors(legLowerGeo), mat);
-    leftLegLower.position.set(-0.15, -1.4, 0);
+    const leftLegLower = new THREE.Mesh(buildBufferGeometryWithColors(legLowerGeo), matBright);
+    leftLegLower.position.set(-0.2, -1.75, 0);
     group.add(leftLegLower);
 
-    const rightLegLower = new THREE.Mesh(buildBufferGeometryWithColors(legLowerGeo), mat);
-    rightLegLower.position.set(0.15, -1.4, 0);
+    const rightLegLower = new THREE.Mesh(buildBufferGeometryWithColors(legLowerGeo), matBright);
+    rightLegLower.position.set(0.2, -1.75, 0);
     group.add(rightLegLower);
 
-    const leftFoot = new THREE.Mesh(buildBufferGeometryWithColors(footGeo), mat);
-    leftFoot.position.set(-0.15, -1.9, 0.05);
+    const leftFoot = new THREE.Mesh(buildBufferGeometryWithColors(footGeo), matBright);
+    leftFoot.position.set(-0.2, -2.9, 0.08);
     group.add(leftFoot);
 
-    const rightFoot = new THREE.Mesh(buildBufferGeometryWithColors(footGeo), mat);
-    rightFoot.position.set(0.15, -1.9, 0.05);
+    const rightFoot = new THREE.Mesh(buildBufferGeometryWithColors(footGeo), matBright);
+    rightFoot.position.set(0.2, -2.9, 0.08);
     group.add(rightFoot);
 
-    group.position.set(0, 2, 0);
+    group.position.set(0, 2, 15);
+    group.scale.setScalar(3.0);
     this._scene.add(group);
     this._mesh = group;
+
+    // Character light to ensure visibility
+    const charLight = new THREE.PointLight(0xffffff, 20, 15);
+    charLight.position.set(0, 4, 3);
+    charLight.name = 'character-light';
+    this._scene.add(charLight);
 
     this._rig = new THREE.Group();
     this._rig.name = 'camera-rig';
     this._rig.position.copy(group.position);
-    this._rig.position.y += 1.8;
+    this._rig.position.y += 2.0;
     this._scene.add(this._rig);
 
-    this._camera.position.set(0, 1.0, 8);
-    this._rig.add(this._camera);
+    this._camera.position.set(0, 3, 20);
+    this._camera.lookAt(0, 2, 8);
 
     this._velocity = new THREE.Vector3();
     this._onGround = false;

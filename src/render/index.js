@@ -362,7 +362,7 @@ export class RenderSystem {
       chromatic: 0.0011,
       // Vignette and grain are applied in DISPLAY space (see composite.js), so
       // these are code-value amplitudes, not linear-light ones.
-      vignette: 0.24,
+      vignette: 0.0,
       // Closes in while the sights are up: the frame has to tell you your eye is
       // behind a tube, not just that the gun moved.
       adsVignette: 0.34,
@@ -409,22 +409,22 @@ export class RenderSystem {
       // came down by the same amount to pay for it. Measured on the 16:30
       // frame: a shaded facade went from B-R = 0.0002 (4.5% saturation, "dead
       // neutral regardless of surroundings") to a legible cool cast.
-      skyFill: 0.12,
+      skyFill: 1.0,
       // Warm bounce off the street, onto soffits, undersides and low faces.
-      groundFill: 0.005,
+      groundFill: 0.5,
       // ...and the wrap term: the shaded side of the street lit by the sunlit
       // side of it. Both up hard, because this is the "warm kick where a shadow
       // faces a sunlit surface" that was missing entirely.
-      bounceFill: 0.003,
+      bounceFill: 0.3,
       // The PMREM sky cubemap is the single biggest indirect term in the frame
       // (materials ship envMapIntensity 1.6). Scaling its *diffuse* here is the
       // only place the total indirect budget can actually be controlled from.
       // Specular radiance is left alone — that is reflection, not fill.
-      iblDiffuse: 0.012,
+      iblDiffuse: 1.0,
       // Indirect floor inside a coarse interior volume. Skylight does not reach
       // the middle of a closed room; without this the doorway reads as a hole
       // cut in a card because the room is brighter than the street outside it.
-      interiorIndirect: 0.035,
+      interiorIndirect: 0.5,
       // Global trim on room and street practicals (see PRACTICAL_RANGE).
       //
       // Twenty interior bulbs and twenty-two sodium lamps are the ONLY light in
@@ -436,7 +436,7 @@ export class RenderSystem {
       // surface in the night frame took its hue from a lamp. Half a stop off
       // them buys most of both, and it is applied here rather than at the
       // source because the balance is a lighting decision, not an art one.
-      practicalGain: 0.55,
+      practicalGain: 2.0,
       // Sky the viewmodel can actually see, past the shooter's own body.
       viewFillOcclusion: 0.45,
       // Viewmodel 3-point rig. The key is scaled off the scene's own light
