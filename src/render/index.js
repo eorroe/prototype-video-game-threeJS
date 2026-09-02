@@ -409,18 +409,18 @@ export class RenderSystem {
       // came down by the same amount to pay for it. Measured on the 16:30
       // frame: a shaded facade went from B-R = 0.0002 (4.5% saturation, "dead
       // neutral regardless of surroundings") to a legible cool cast.
-      skyFill: 0.32,
+      skyFill: 0.12,
       // Warm bounce off the street, onto soffits, undersides and low faces.
-      groundFill: 0.013,
+      groundFill: 0.005,
       // ...and the wrap term: the shaded side of the street lit by the sunlit
       // side of it. Both up hard, because this is the "warm kick where a shadow
       // faces a sunlit surface" that was missing entirely.
-      bounceFill: 0.008,
+      bounceFill: 0.003,
       // The PMREM sky cubemap is the single biggest indirect term in the frame
       // (materials ship envMapIntensity 1.6). Scaling its *diffuse* here is the
       // only place the total indirect budget can actually be controlled from.
       // Specular radiance is left alone — that is reflection, not fill.
-      iblDiffuse: 0.030,
+      iblDiffuse: 0.012,
       // Indirect floor inside a coarse interior volume. Skylight does not reach
       // the middle of a closed room; without this the doorway reads as a hole
       // cut in a card because the room is brighter than the street outside it.

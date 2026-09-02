@@ -56,8 +56,8 @@ export class SkySystem {
     const hour = this._time;
     const alt = Math.sin((hour / 24) * Math.PI * 2 - Math.PI / 2);
     this._sunAltitude = alt;
-    const intensity = Math.max(4, Math.sin(Math.max(0, alt)) * 12);
-    const col = [0.75, 0.78, 0.85];
+    const intensity = Math.max(2, Math.sin(Math.max(0, alt)) * 6);
+    const col = [0.55, 0.58, 0.65];
 
     this._sun = new THREE.DirectionalLight(
       new THREE.Color(col[0], col[1], col[2]),
@@ -69,11 +69,11 @@ export class SkySystem {
     this._scene.add(this._sun);
     this._scene.add(this._sun.target);
 
-    const hemi = new THREE.HemisphereLight(0x8899aa, 0x222222, 2.5);
+    const hemi = new THREE.HemisphereLight(0x556677, 0x111111, 1.0);
     hemi.name = 'ow-hemi';
     this._scene.add(hemi);
 
-    const ambient = new THREE.AmbientLight(0x445566, 2.0);
+    const ambient = new THREE.AmbientLight(0x223344, 0.8);
     ambient.name = 'ow-ambient';
     this._scene.add(ambient);
 
@@ -90,9 +90,9 @@ export class SkySystem {
     }
 
     const alt = this._sunAltitude;
-    const zenith = [0.18, 0.2, 0.24];
-    const horizon = [0.28, 0.3, 0.35];
-    const ground = [0.08, 0.07, 0.06];
+    const zenith = [0.09, 0.10, 0.12];
+    const horizon = [0.15, 0.16, 0.19];
+    const ground = [0.04, 0.035, 0.03];
 
     const canvas = document.createElement('canvas');
     canvas.width = 2;

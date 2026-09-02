@@ -47,12 +47,12 @@ export class AiSystem {
     for (let i = 0; i < count; i++) {
       const ny = mesh.n[i * 3 + 1];
       const x = mesh.p[i * 3], y = mesh.p[i * 3 + 1], z = mesh.p[i * 3 + 2];
-      const ao = 0.45 + 0.55 * Math.max(0, ny);
-      const grime = 0.82 + 0.18 * Math.sin(x * 6.1 + noise.n3(x, y, z)) * Math.cos(z * 4.7);
+      const ao = 0.35 + 0.65 * Math.max(0, ny);
+      const grime = 0.8 + 0.2 * Math.sin(x * 6.1 + noise.n3(x, y, z)) * Math.cos(z * 4.7);
       const c = ao * grime;
-      colors[i * 3] = 0.22 * c;
-      colors[i * 3 + 1] = 0.32 * c;
-      colors[i * 3 + 2] = 0.18 * c;
+      colors[i * 3] = 0.14 * c;
+      colors[i * 3 + 1] = 0.18 * c;
+      colors[i * 3 + 2] = 0.14 * c;
     }
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     return geo;
@@ -77,12 +77,12 @@ export class AiSystem {
     for (let i = 0; i < count; i++) {
       const ny = mesh.n[i * 3 + 1];
       const x = mesh.p[i * 3], y = mesh.p[i * 3 + 1], z = mesh.p[i * 3 + 2];
-      const ao = 0.5 + 0.5 * Math.max(0, ny);
+      const ao = 0.4 + 0.6 * Math.max(0, ny);
       const grime = 0.85 + 0.15 * Math.sin(x * 8.3) * Math.cos(z * 6.1);
       const c = ao * grime;
-      colors[i * 3] = 0.52 * c;
-      colors[i * 3 + 1] = 0.38 * c;
-      colors[i * 3 + 2] = 0.32 * c;
+      colors[i * 3] = 0.28 * c;
+      colors[i * 3 + 1] = 0.22 * c;
+      colors[i * 3 + 2] = 0.20 * c;
     }
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     return geo;
@@ -119,9 +119,9 @@ export class AiSystem {
       const ao = 0.45 + 0.55 * Math.max(0, ny);
       const grime = 0.8 + 0.2 * Math.sin(x * 5.7 + 1.3) * Math.cos(z * 4.3);
       const c = ao * grime;
-      colors[i * 3] = 0.2 * c;
-      colors[i * 3 + 1] = 0.3 * c;
-      colors[i * 3 + 2] = 0.16 * c;
+      colors[i * 3] = 0.12 * c;
+      colors[i * 3 + 1] = 0.16 * c;
+      colors[i * 3 + 2] = 0.12 * c;
     }
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     return geo;
