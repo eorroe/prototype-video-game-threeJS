@@ -24,14 +24,14 @@
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1280/720, 0.1, 100);
     camera.position.set(0, 1.5, 4);
-    camera.lookAt(0, 1.2, 0);
+    camera.lookAt(0, 1.5, 0);
 
-    scene.add(new THREE.AmbientLight(0x445566, 2.0));
-    const key = new THREE.DirectionalLight(0x8899aa, 5);
-    key.position.set(3, 4, 5);
+    scene.add(new THREE.AmbientLight(0x667788, 8.0));
+    const key = new THREE.DirectionalLight(0xffffff, 20);
+    key.position.set(30, 40, 50);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0x223344, 2);
-    fill.position.set(-3, 2, -2);
+    const fill = new THREE.DirectionalLight(0x445566, 8);
+    fill.position.set(-30, 20, -20);
     scene.add(fill);
 
     const rng = new (class { constructor(s){this.s=s;} int(a,b){return a+((this.s=(this.s*1664525+1013904223)>>>0)%(b-a+1));} float(){return(this.s=this.s*1664525+1013904223)>>>0/4294967296;} })(42);
@@ -62,19 +62,19 @@
     }
 
     const SURFACES = {
-      black_ops: { albedo: [0.08, 0.08, 0.1], roughness: 0.6, metal: 0.1 },
+      black_ops: { albedo: [0.25, 0.25, 0.3], roughness: 0.6, metal: 0.1 },
     };
 
     const s = SURFACES.black_ops;
     const albedo = makeColorTex(s.albedo, 256);
     const mat = new THREE.MeshStandardMaterial({
-      map: albedo,
-      roughness: s.roughness,
-      metalness: s.metal,
-      envMapIntensity: 0.5,
+      color: 0xff0000,
+      roughness: 0.5,
+      metalness: 0.1,
     });
 
     const group = new THREE.Group();
+    group.position.y = 1.5;
     scene.add(group);
 
     const m = { p: [], n: [], uv: [], i: [] };

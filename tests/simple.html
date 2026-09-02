@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Box Test</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    #c { display: block; width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(1);
+    renderer.setSize(1280, 720);
+    renderer.setClearColor(0x111111, 1);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, 1280/720, 0.1, 100);
+    camera.position.set(0, 0, 5);
+    camera.lookAt(0, 0, 0);
+
+    const light = new THREE.DirectionalLight(0xffffff, 10);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0xffffff, 2));
+
+    const box = new THREE.Mesh(
+      new THREE.BoxGeometry(2, 2, 2),
+      new THREE.MeshStandardMaterial({ color: 0xff0000, roughness: 0.5 })
+    );
+    scene.add(box);
+
+    console.info('[simple-test] scene children:', scene.children.length);
+
+    window.__READY__ = true;
+    renderer.render(scene, camera);
+    setTimeout(() => {
+      renderer.domElement.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'simple-test.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        console.info('[simple-test] screenshot saved');
+      });
+    }, 500);
+  </script>
+</body>
+</html>

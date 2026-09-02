@@ -27,21 +27,21 @@
     camera.position.set(0, 15, 35);
     camera.lookAt(0, 0, 0);
 
-    const sun = new THREE.DirectionalLight(0x8899aa, 3);
+    const sun = new THREE.DirectionalLight(0xffffff, 8);
     sun.position.set(-30, 20, 30);
     scene.add(sun);
-    scene.add(new THREE.HemisphereLight(0x667788, 0x222222, 1.0));
-    scene.add(new THREE.AmbientLight(0x334455, 1.0));
+    scene.add(new THREE.HemisphereLight(0x8899aa, 0x222222, 3.0));
+    scene.add(new THREE.AmbientLight(0x445566, 2.0));
 
     const rng = new (class { constructor(s){this.s=s;} int(a,b){return a+((this.s=(this.s*1664525+1013904223)>>>0)%(b-a+1));} float(){return(this.s=this.s*1664525+1013904223)>>>0/4294967296;} })(42);
     const noise = new Noise(rng);
 
     const SURFACES = {
-      concrete: { albedo: [0.45, 0.44, 0.42], roughness: 0.92, metal: 0 },
-      brick: { albedo: [0.5, 0.38, 0.28], roughness: 0.93, metal: 0 },
-      plaster: { albedo: [0.6, 0.58, 0.56], roughness: 0.9, metal: 0 },
-      metal_painted: { albedo: [0.38, 0.4, 0.44], roughness: 0.65, metal: 0.85 },
-      asphalt: { albedo: [0.15, 0.15, 0.15], roughness: 0.96, metal: 0 },
+      concrete: { albedo: [0.7, 0.68, 0.65], roughness: 0.92, metal: 0 },
+      brick: { albedo: [0.8, 0.6, 0.45], roughness: 0.93, metal: 0 },
+      plaster: { albedo: [0.85, 0.82, 0.78], roughness: 0.9, metal: 0 },
+      metal_painted: { albedo: [0.6, 0.65, 0.7], roughness: 0.65, metal: 0.85 },
+      asphalt: { albedo: [0.25, 0.25, 0.25], roughness: 0.96, metal: 0 },
     };
 
     function makeColorTex(base, size) {
