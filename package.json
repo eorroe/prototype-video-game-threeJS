@@ -1,0 +1,18 @@
+{
+  "name": "overwatch-fps",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "capture": "node tools/capture.mjs"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "playwright": "^1.49.0"
+  }
+}
