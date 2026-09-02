@@ -129,6 +129,69 @@ function bakeNormal(surface, size) {
   return tex;
 }
 
+function _addRimExtension(mat) {
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.owRimStrength = { value: 0.3 };
+    shader.uniforms.owRimPower = { value: 3.0 };
+
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <normal_vertex>',
+      `#include <normal_vertex>
+      vGeometricNormal = normalize(normalMatrix * normal);`
+    );
+
+    shader.vertexShader = shader.vertexShader.replace(
+      'varying vec3 vViewPosition;',
+      `varying vec3 vViewPosition;
+      varying vec3 vColor;
+      varying vec3 vGeometricNormal;`
+    );
+
+    shader.vertexShader = shader.vertexShader.replace(
+      'void main() {',
+      `attribute vec3 color;
+      varying vec3 vColor;
+      void main() {`
+    );
+
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <worldpos_vertex>',
+      `#include <worldpos_vertex>
+      vColor = color;`
+    );
+
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <common>',
+      `#include <common>
+      uniform float owRimStrength;
+      uniform float owRimPower;`
+    );
+
+    shader.fragmentShader = shader.fragmentShader.replace(
+      'varying vec3 vViewPosition;',
+      `varying vec3 vViewPosition;
+      varying vec3 vColor;
+      varying vec3 vGeometricNormal;`
+    );
+
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <tonemapping_fragment>',
+      `float NdotV = abs(dot(normalize(vViewPosition), vGeometricNormal));
+      float rim = pow(1.0 - NdotV, owRimPower) * owRimStrength;
+      outgoingLight *= (1.0 - rim);
+      outgoingLight *= vColor;
+      #include <tonemapping_fragment>`
+    );
+  };
+}
+
+function _applyFlags(mat) {
+  mat.vertexColors = true;
+  if (mat.userData.owNoShadow) {
+    mat.userData.owNoShadow = true;
+  }
+}
+
 export class MaterialSystem {
   static id = 'materials';
   static deps = ['render'];
@@ -178,6 +241,8 @@ export class MaterialSystem {
         envMapIntensity: 0.5,
       });
       mat.userData.surface = s;
+      _applyFlags(mat);
+      _addRimExtension(mat);
       this._cache.set(s, mat);
     }
   }
@@ -198,6 +263,8 @@ export class MaterialSystem {
         envMapIntensity: 0.5,
       });
       mat.userData.surface = name;
+      _applyFlags(mat);
+      _addRimExtension(mat);
       this._cache.set(name, mat);
     }
     return mat;

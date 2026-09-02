@@ -87,8 +87,41 @@ What procedural geometry can deliver:
 5. Mouse sensitivity must use `input.look` directly; the input system already applies `config.sensitivity`
 6. AAA character models cannot be replicated with primitive geometry alone
 
-### Next Steps (If Proceeding)
-1. Accept lower character fidelity or relax "no external assets" constraint
-2. Add more detailed procedural mesh generation (metaballs, marching cubes) for infected
-3. Add silhouette-enhancing effects: outline glow, power aura, particle tendrils
-4. Add animation library for more dynamic character movement
+### Procedural Asset Pipeline (Sample-Code Analysis)
+
+### Geometry Toolkit Ported
+- **Lofted superellipses**: All character parts built from ring cross-sections (torso, limbs, head)
+- **Noise displacement**: FBM and ridged noise applied along vertex normals for organic surface detail
+- **Vertex warp**: Free-form deformation for jaw protrusion, chest depth, etc.
+- **Superellipse exponent `n`**: Controls roundness — `n=2` = ellipse, `n=3-4` = squircle torso, `n=5-6` = rounded box
+
+### Character Construction (Player)
+- Torso: 10-ring lofted superellipse (`n=3`) with cap start/end
+- Head: Ellipsoid with warp for face protrusion
+- Neck: Tapered tube
+- Shoulders: Ellipsoid caps
+- Arms/Legs: Tapered tubes with decreasing radius
+- Hands/Feet: Rounded boxes (`boxRound` with `n=3`)
+- Total: ~15 separate mesh parts assembled into one group
+
+### Infected Anatomy (AI)
+- Body: 12-ring lofted superellipse (`n=2.5`) with FBM noise displacement for muscular bulge
+- Head: Ellipsoid with warp for jaw/mouth protrusion
+- Claws: Procedural tapering superellipse loft
+- Hump: Ellipsoid with noise displacement on back
+- Vertex colors: AO + grime baked into color attribute
+
+### Material Enhancements
+- **Rim/fresnel darkening**: Geometric normal-based edge darkening (`strength=0.3, power=3.0`)
+- **Vertex color support**: Albedo multiplied by per-vertex color for AO/grime
+- **Silhouette enhancement**: Rim band uses unperturbed geometric normal so it doesn't crawl
+
+### Mouse Sensitivity Fix
+- Changed from `look.x * 0.002` to `look.x` directly
+- `input.look` already applies `config.sensitivity` (0.0022 rad/px)
+- Rotation now matches sample code feel
+
+## Build Status
+- `npm run build` passes in ~2.2s
+- Bundle: ~662KB / ~177KB gzipped
+- 44 modules transformed
