@@ -28,10 +28,12 @@ export class AiSystem {
     this._player = ctx.get('player');
     this._matInfected = ctx.get('materials').get('infected');
     this._matFlesh = ctx.get('materials').get('flesh');
+    this._matClaws = ctx.get('materials').get('metal_brushed');
 
-    const geoBody = new THREE.CapsuleGeometry(0.45, 1.4, 4, 8);
-    const geoHead = new THREE.SphereGeometry(0.24, 8, 6);
-    this._geometries.push(geoBody, geoHead);
+    const geoBody = new THREE.CapsuleGeometry(0.5, 1.4, 4, 8);
+    const geoHead = new THREE.SphereGeometry(0.28, 8, 6);
+    const geoClaw = new THREE.ConeGeometry(0.06, 0.4, 4);
+    this._geometries.push(geoBody, geoHead, geoClaw);
 
     for (let i = 0; i < SPAWN_POINTS.length; i++) {
       const [x, y, z] = SPAWN_POINTS[i];
@@ -39,14 +41,30 @@ export class AiSystem {
       group.name = `infected_${i}`;
 
       const body = new THREE.Mesh(geoBody, this._matInfected);
-      body.position.y = 1.0;
+      body.position.y = 1.1;
       group.add(body);
 
       const head = new THREE.Mesh(geoHead, this._matFlesh);
-      head.position.y = 1.85;
+      head.position.y = 1.9;
       group.add(head);
 
+      const leftClaw = new THREE.Mesh(geoClaw, this._matClaws);
+      leftClaw.position.set(-0.5, 1.3, -0.3);
+      leftClaw.rotation.x = Math.PI / 2;
+      group.add(leftClaw);
+
+      const rightClaw = new THREE.Mesh(geoClaw, this._matClaws);
+      rightClaw.position.set(0.5, 1.3, -0.3);
+      rightClaw.rotation.x = Math.PI / 2;
+      group.add(rightClaw);
+
+      const hump = new THREE.Mesh(new THREE.SphereGeometry(0.25, 6, 4), this._matInfected);
+      hump.position.set(0, 1.7, -0.2);
+      hump.scale.set(1, 0.6, 0.8);
+      group.add(hump);
+
       group.position.set(x, y, z);
+      group.scale.setScalar(1.05);
       this._scene.add(group);
       this._actors.push({
         group,

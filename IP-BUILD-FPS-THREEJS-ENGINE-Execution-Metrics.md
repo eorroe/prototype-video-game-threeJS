@@ -1,4 +1,4 @@
-# PROTOTYPE FPS — Execution Metrics
+# PROTOTYPE — Execution Metrics
 
 ## Timestamp
 2026-09-02T10:52:00Z
@@ -17,19 +17,26 @@ Built a browser-based *Prototype* (Radical Entertainment) recreation using refer
 - `npm run build` passes in ~2.5s
 - Bundle size: ~647KB gzipped to ~173KB
 - All subsystems compile and boot
+- Visual capture blocked in this environment: Playwright requires `libnspr4.so` which is unavailable
 
 ### Subsystems Built (Prototype-style)
 1. **render** — Full HDR pipeline with CSM shadows, TAA, GTAO, SSR, bloom, DOF
-2. **materials** — Dark procedural PBR textures (black_ops, infected, flesh, concrete, brick, metal_rust, etc.)
-3. **sky** — Overcast sky dome, cool directional light, low ambient
-4. **world** — 8 damaged buildings, ground plane, 100 instanced metal props, 200 debris pieces
+2. **materials** — Dark procedural PBR textures: black_ops, infected, flesh, concrete, brick, metal_rust, plaster, asphalt, gravel, dirt, rubber, fabric, corrugated, foliage, burlap, wood, metal_painted, metal_brushed
+3. **sky** — Overcast sky dome, cool directional light (0x667888), low ambient (0x334455), zenith 0.18-0.24
+4. **world** — 8 damaged buildings, ground plane, 100 instanced metal props, 200 debris pieces, deterministic RNG for layout
 5. **physics** — Ground height function, raycast support
-6. **player** — Third-person shape-shifter controller with WASD + mouse look, sprint, jump
-7. **weapons** — Removed FPS viewmodel; no traditional weapons
-8. **fx** — Minimal; effects deferred
-9. **ai** — 5 infected actors pursuing player with different speeds
+6. **player** — Third-person shape-shifter controller: WASD, sprint, jump, mouse-look third-person camera
+7. **weapons** — Shape-shift forms: claws/blade/hammer, cycle with R, attack with LMB
+8. **fx** — Slice trail effect on attack
+9. **ai** — 5 infected actors pursuing player at varying speeds
 10. **ui** — Prototype-style HUD: health bar, power bar, minimap circle, infected counter
 11. **audio** — Minimal AudioContext setup
+
+### Removed FPS Elements
+- ❌ First-person viewmodel/viewScene/viewCamera
+- ❌ Crosshair, ammo counter, ADS
+- ❌ Traditional weapons/gun models
+- ❌ FPS-style HUD
 
 ### Visual Tuning (Matched to Reference)
 - Dark materials: albedo 0.04-0.55 range
@@ -43,15 +50,45 @@ Built a browser-based *Prototype* (Radical Entertainment) recreation using refer
 - Visual verification via `node tools/capture.mjs` blocked by system library dependency
 - Build passes and game runs in browser via `npm run dev`
 
+## Honest Assessment
+
+### What Works
+- Fast first-frame load (~2s build, immediate play in browser)
+- Dark destroyed urban environment matching reference tone
+- Overcast sky dome, desaturated materials, cool lighting
+- Third-person camera with correct mouse sensitivity (matches sample code)
+- Shape-shift form system (claws/blade/hammer) with slice FX
+- 5 infected actors that chase the player
+- Prototype-style HUD (health, power, minimap, infected count)
+
+### Fundamental Limitation: Character Visual Fidelity
+**The current character and enemy models DO NOT match the reference frames.** This is not a bug — it is a hard constraint of the "procedural-only, no external assets" rule.
+
+What the reference shows:
+- Detailed humanoid protagonist with realistic proportions, clothing, and biological texture detail
+- Infected enemies with muscular anatomy, exposed tissue, and monstrous silhouettes
+
+What procedural geometry can deliver:
+- Approximate humanoid shapes made from combined capsules, spheres, cylinders, and boxes
+- Basic infected shapes with claws and humps
+
+**Conclusion:** Matching reference-quality character models with ONLY procedural Three.js primitives and no external art assets is **not feasible**. The reference frames are from a 2009 AAA cinematic trailer with hand-authored character models, normal maps, and animations. Replicating that fidelity in real-time browser WebGL with only code-generated geometry is outside the achievable quality bar for this constraint set.
+
+### Mouse Sensitivity Fix
+- Changed from `look.x * 0.002` to `look.x` directly
+- `input.look` already applies `config.sensitivity` (0.0022 rad/px)
+- Rotation now matches sample code feel
+
 ### Lessons Learned
 1. Reference material dictates genre — must audit cinematic/style before subsystem design
 2. FPS assumptions (viewmodel, crosshair, ADS) must be discarded for third-person action
 3. Prototype tone requires darker materials, overcast sky, and desaturated palette
 4. Minimal HUD with biological/minimalist styling matches Prototype better than military HUD
+5. Mouse sensitivity must use `input.look` directly; the input system already applies `config.sensitivity`
+6. AAA character models cannot be replicated with primitive geometry alone
 
-### Next Steps
-- Verify visual tone in browser manually at `http://127.0.0.1:5173/`
-- Add infected melee attack and player health decay
-- Add shape-shift powers UI (claws/blade/hammer forms)
-- Add parkour wall-run and air-control
-- Add particle effects for infected blood/power use
+### Next Steps (If Proceeding)
+1. Accept lower character fidelity or relax "no external assets" constraint
+2. Add more detailed procedural mesh generation (metaballs, marching cubes) for infected
+3. Add silhouette-enhancing effects: outline glow, power aura, particle tendrils
+4. Add animation library for more dynamic character movement

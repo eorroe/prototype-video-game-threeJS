@@ -1,5 +1,11 @@
 import * as THREE from 'three';
 
+function createLimb(w, h, d) {
+  const g = new THREE.CylinderGeometry(w * 0.8, w, h, 6, 1);
+  g.translate(0, h / 2, 0);
+  return g;
+}
+
 export class PlayerSystem {
   static id = 'player';
   static deps = ['physics'];
@@ -23,13 +29,69 @@ export class PlayerSystem {
     const group = new THREE.Group();
     group.name = 'player';
 
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 1.6, 4, 8), mat);
-    body.position.y = 1.0;
-    group.add(body);
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.3, 1.2, 8), mat);
+    torso.position.y = 1.1;
+    group.add(torso);
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), mat);
-    head.position.y = 1.9;
+    const chest = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+    chest.position.y = 1.6;
+    group.add(chest);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), mat);
+    head.position.y = 1.95;
     group.add(head);
+
+    const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat);
+    jaw.position.y = 1.78;
+    group.add(jaw);
+
+    const leftArm = new THREE.Group();
+    const leftShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 4), mat);
+    leftArm.add(leftShoulder);
+    const leftUpper = new THREE.Mesh(createLimb(0.1, 0.7, 0.1), mat);
+    leftUpper.position.y = -0.35;
+    leftArm.add(leftUpper);
+    const leftLower = new THREE.Mesh(createLimb(0.08, 0.7, 0.08), mat);
+    leftLower.position.y = -1.05;
+    leftArm.add(leftLower);
+    leftArm.position.set(-0.42, 1.55, 0);
+    group.add(leftArm);
+
+    const rightArm = new THREE.Group();
+    const rightShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 4), mat);
+    rightArm.add(rightShoulder);
+    const rightUpper = new THREE.Mesh(createLimb(0.1, 0.7, 0.1), mat);
+    rightUpper.position.y = -0.35;
+    rightArm.add(rightUpper);
+    const rightLower = new THREE.Mesh(createLimb(0.08, 0.7, 0.08), mat);
+    rightLower.position.y = -1.05;
+    rightArm.add(rightLower);
+    rightArm.position.set(0.42, 1.55, 0);
+    group.add(rightArm);
+
+    const leftLeg = new THREE.Group();
+    const leftThigh = new THREE.Mesh(createLimb(0.14, 0.9, 0.14), mat);
+    leftLeg.add(leftThigh);
+    const leftShin = new THREE.Mesh(createLimb(0.1, 0.9, 0.1), mat);
+    leftShin.position.y = -0.9;
+    leftLeg.add(leftShin);
+    const leftFoot = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.25), mat);
+    leftFoot.position.set(0, -1.8, 0.08);
+    leftLeg.add(leftFoot);
+    leftLeg.position.set(-0.18, 0.6, 0);
+    group.add(leftLeg);
+
+    const rightLeg = new THREE.Group();
+    const rightThigh = new THREE.Mesh(createLimb(0.14, 0.9, 0.14), mat);
+    rightLeg.add(rightThigh);
+    const rightShin = new THREE.Mesh(createLimb(0.1, 0.9, 0.1), mat);
+    rightShin.position.y = -0.9;
+    rightLeg.add(rightShin);
+    const rightFoot = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.25), mat);
+    rightFoot.position.set(0, -1.8, 0.08);
+    rightLeg.add(rightFoot);
+    rightLeg.position.set(0.18, 0.6, 0);
+    group.add(rightLeg);
 
     group.position.set(0, 2, 0);
     this._scene.add(group);
@@ -38,12 +100,12 @@ export class PlayerSystem {
     this._rig = new THREE.Group();
     this._rig.name = 'camera-rig';
     this._rig.position.copy(group.position);
-    this._rig.position.y += 1.6;
+    this._rig.position.y += 1.7;
     this._scene.add(this._rig);
 
-    this._camera.position.set(0, 3, -8);
+    this._camera.position.set(0, 2.2, -7);
     this._rig.add(this._camera);
-    this._camera.position.set(0, 1.2, 0);
+    this._camera.position.set(0, -0.5, 0);
 
     this._velocity = new THREE.Vector3();
     this._onGround = false;
@@ -99,7 +161,7 @@ export class PlayerSystem {
     }
 
     this._rig.position.copy(this._mesh.position);
-    this._rig.position.y += 1.6;
+    this._rig.position.y += 1.7;
 
     ctx.events.emit('player:state', {
       stance: this._onGround ? 'ground' : 'air',
@@ -111,8 +173,8 @@ export class PlayerSystem {
   update(dt, ctx) {
     if (!this._built) return;
     const look = ctx.input.look;
-    this._rig.rotation.y -= look.x * 0.002;
-    this._rig.rotation.x -= look.y * 0.002;
+    this._rig.rotation.y -= look.x;
+    this._rig.rotation.x -= look.y;
     this._rig.rotation.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, this._rig.rotation.x));
   }
 
