@@ -62,16 +62,17 @@ try {
 
 const blocker = document.getElementById('blocker');
 if (blocker) {
-  blocker.style.display = 'none';
-  blocker.remove();
+  blocker.style.cssText = 'display:none !important;visibility:hidden !important;pointer-events:none !important;';
+  blocker.setAttribute('disabled', '');
+  setTimeout(() => blocker.remove(), 0);
+  setTimeout(() => blocker.remove(), 1000);
 }
 
-if (canvas) {
-  canvas.style.position = 'fixed';
-  canvas.style.inset = '0';
-  canvas.style.width = '100vw';
-  canvas.style.height = '100vh';
-  canvas.style.zIndex = '1';
+const gameCanvas = document.getElementById('game');
+if (gameCanvas) {
+  gameCanvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:9999;display:block;';
+  gameCanvas.remove();
+  document.body.appendChild(gameCanvas);
 }
 
 const shotApi = installShotApi(engine, { capture, lockstep });
