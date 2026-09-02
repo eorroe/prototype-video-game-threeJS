@@ -1,28 +1,26 @@
-# OVERWATCH — engine contract
+# PROTOTYPE — engine contract
 
 **Every agent must read this before writing code. It is the only coordination mechanism.**
 
-Target: a browser FPS whose *visual and tactile quality* stands next to a modern
-Call of Duty. WebGL2 + Three.js r180, no external art assets — all textures,
-meshes, animation and audio are generated procedurally at load time.
+Target: a browser third-person action game whose *visual and tactile quality* stands next to Radical Entertainment's *Prototype* (2009). WebGL2 + Three.js r180, no external art assets — all textures, meshes, animation and audio are generated procedurally at load time. Dark destroyed urban, overcast exposure, shape-shifter protagonist, infected, parkour, melee combat.
 
 ## Hard rules
 
 1. **You own your directory. Never edit files outside it.** Another agent owns
-   every other directory and your edit will be clobbered or will break them.
+    every other directory and your edit will be clobbered or will break them.
 2. **Never import another subsystem's module.** Get it at runtime:
-   `const fx = ctx.get('fx')`. This is what makes parallel work safe.
+    `const fx = ctx.get('fx')`. This is what makes parallel work safe.
 3. **No new npm dependencies.** `three` only. No CDN fetches, no external
-   images/HDRIs/models/audio files — the game must run fully offline.
+    images/HDRIs/models/audio files — the game must run fully offline.
 4. **No `Math.random()` in gameplay or visuals.** Use `ctx.rng` (see
-   `src/core/rng.js`) or a `ctx.rng.fork()` you keep. Capture reproducibility
-   depends on it.
+    `src/core/rng.js`) or a `ctx.rng.fork()` you keep. Capture reproducibility
+    depends on it.
 5. **Allocate nothing per-frame.** Preallocate vectors, matrices and arrays in
-   `init()` and reuse. A `new THREE.Vector3()` inside `update()` is a bug.
+    `init()` and reuse. A `new THREE.Vector3()` inside `update()` is a bug.
 6. **Dispose what you create.** Geometries, materials, textures and render
-   targets get freed in `dispose()`.
+    targets get freed in `dispose()`.
 7. `npm run build` must pass and `node tools/capture.mjs` must produce a frame
-   after your change. If you break the boot, nobody else can work.
+    after your change. If you break the boot, nobody else can work.
 
 ## Subsystem interface
 

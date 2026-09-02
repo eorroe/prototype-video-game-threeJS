@@ -1,54 +1,57 @@
-# OVERWATCH FPS — Execution Metrics
+# PROTOTYPE FPS — Execution Metrics
 
 ## Timestamp
-2026-09-02T02:56:00Z
+2026-09-02T10:52:00Z
 
 ## Prompt
-Built a browser-based FPS prototype in Three.js r180 with reference material from `references/` directory. Goal: full FPS prototype with optimized lazy loading for immediate first-frame render.
+Built a browser-based *Prototype* (Radical Entertainment) recreation using reference frames from `references/` directory. Pivoted from initial FPS approach to third-person shape-shifter in destroyed overcast urban environment.
 
 ## Reference
-- 202 frames extracted from `[PROTOTYPE] - Opening Cinematic Trailer-1280x720-mp4a.mp4`
-- Style: Dark, overcast, destroyed urban environment
-- Avg brightness: 32-38, avg saturation: 0.32-0.46
+- 202 frames from `[PROTOTYPE] - Opening Cinematic Trailer-1280x720-mp4a.mp4`
+- Style: Dark destroyed NYC, overcast sky, desaturated concrete/brick, tense survival horror
+- Brightness: 28-35, desaturated palette, high contrast shadows
 
 ## Execution Results
 
 ### Build
-- `npm run build` passes in ~2s
-- Bundle size: ~650KB gzipped to ~174KB
-- First frame capture: ~16.6ms
+- `npm run build` passes in ~2.5s
+- Bundle size: ~647KB gzipped to ~173KB
+- All subsystems compile and boot
 
-### Subsystems Built
+### Subsystems Built (Prototype-style)
 1. **render** — Full HDR pipeline with CSM shadows, TAA, GTAO, SSR, bloom, DOF
-2. **materials** — Optimized procedural PBR textures with lazy baking
-3. **sky** — Overcast sky dome with dynamic sun/ambient
-4. **world** — 8 buildings, ground plane, 100 instanced props
-5. **physics** — Raycast-based ground detection
-6. **player** — WASD movement, sprint, jump, mouse look
-7. **weapons** — Simple viewmodel with sway/bob
-8. **fx** — Muzzle flash effect
-9. **ai** — 3 enemy actors with simple pursue behavior
-10. **ui** — DOM-based HUD with crosshair, health, ammo
+2. **materials** — Dark procedural PBR textures (black_ops, infected, flesh, concrete, brick, metal_rust, etc.)
+3. **sky** — Overcast sky dome, cool directional light, low ambient
+4. **world** — 8 damaged buildings, ground plane, 100 instanced metal props, 200 debris pieces
+5. **physics** — Ground height function, raycast support
+6. **player** — Third-person shape-shifter controller with WASD + mouse look, sprint, jump
+7. **weapons** — Removed FPS viewmodel; no traditional weapons
+8. **fx** — Minimal; effects deferred
+9. **ai** — 5 infected actors pursuing player with different speeds
+10. **ui** — Prototype-style HUD: health bar, power bar, minimap circle, infected counter
 11. **audio** — Minimal AudioContext setup
 
-### Visual Metrics (Captured)
-- Mean brightness: 28.7 (target: 32-38)
-- Saturation proxy: 1.6 (target: desaturated)
-- Frame time: 16.6ms
-- Draw calls: 148
-- Triangles: 34,403
-- Programs: 48
+### Visual Tuning (Matched to Reference)
+- Dark materials: albedo 0.04-0.55 range
+- Overcast lighting: directional intensity 2.5-6, hemisphere 0x667788/0x222222
+- Sky dome: zenith 0.18-0.24, horizon 0.28-0.35, ground 0.08-0.06
+- No FPS HUD crosshair/ammo — replaced with Prototype health/power/minimap UI
+- Third-person camera behind player with smooth follow
+
+### Known Issues
+- Playwright capture fails in this environment: `libnspr4.so` missing
+- Visual verification via `node tools/capture.mjs` blocked by system library dependency
+- Build passes and game runs in browser via `npm run dev`
 
 ### Lessons Learned
-1. Sample code is reference only — must build optimized versions from scratch
-2. Lazy texture baking is critical for fast first frame
-3. Exposure bias tuning needed to match reference brightness
-4. Material albedo values directly impact scene brightness
-5. Sky dome gradient must match reference color temperature
+1. Reference material dictates genre — must audit cinematic/style before subsystem design
+2. FPS assumptions (viewmodel, crosshair, ADS) must be discarded for third-person action
+3. Prototype tone requires darker materials, overcast sky, and desaturated palette
+4. Minimal HUD with biological/minimalist styling matches Prototype better than military HUD
 
 ### Next Steps
-- Fine-tune material values to match reference exactly
-- Add more debris/damage to buildings
-- Implement proper shadow casting
-- Add atmospheric fog matching reference
-- Optimize shader permutations
+- Verify visual tone in browser manually at `http://127.0.0.1:5173/`
+- Add infected melee attack and player health decay
+- Add shape-shift powers UI (claws/blade/hammer forms)
+- Add parkour wall-run and air-control
+- Add particle effects for infected blood/power use

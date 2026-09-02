@@ -76,16 +76,16 @@ export class WorldSystem {
   }
 
   _buildGround() {
-    const geo = new THREE.PlaneGeometry(200, 200, 40, 40);
+    const geo = new THREE.PlaneGeometry(200, 200, 60, 60);
     geo.rotateX(-Math.PI / 2);
     const positions = geo.attributes.position;
     for (let i = 0; i < positions.count; i++) {
       const x = positions.getX(i);
       const z = positions.getZ(i);
       let y = 0;
-      y += Math.sin(x * 0.05) * Math.cos(z * 0.05) * 0.3;
-      y += Math.sin(x * 0.1 + 1) * 0.15;
-      y += Math.cos(z * 0.12) * 0.1;
+      y += Math.sin(x * 0.04) * Math.cos(z * 0.04) * 0.4;
+      y += Math.sin(x * 0.08 + 1.3) * 0.2;
+      y += Math.cos(z * 0.1 + 0.7) * 0.15;
       positions.setY(i, y);
     }
     geo.computeVertexNormals();
@@ -100,18 +100,23 @@ export class WorldSystem {
 
   _buildBuildings() {
     const layouts = [
-      { x: -25, z: -20, w: 12, d: 18, h: 14, surface: 'concrete' },
-      { x: 20, z: -25, w: 14, d: 16, h: 16, surface: 'brick' },
-      { x: -20, z: 25, w: 10, d: 12, h: 10, surface: 'plaster' },
-      { x: 25, z: 20, w: 16, d: 14, h: 12, surface: 'concrete' },
-      { x: 0, z: -30, w: 20, d: 10, h: 8, surface: 'metal_painted' },
-      { x: -30, z: 0, w: 8, d: 22, h: 20, surface: 'concrete' },
-      { x: 30, z: 0, w: 8, d: 20, h: 18, surface: 'brick' },
-      { x: 0, z: 35, w: 18, d: 8, h: 9, surface: 'plaster' },
+      { x: -25, z: -20, w: 12, d: 18, h: 16, surface: 'concrete', damaged: true },
+      { x: 20, z: -25, w: 14, d: 16, h: 18, surface: 'brick', damaged: true },
+      { x: -20, z: 25, w: 10, d: 12, h: 12, surface: 'plaster', damaged: false },
+      { x: 25, z: 20, w: 16, d: 14, h: 14, surface: 'concrete', damaged: true },
+      { x: 0, z: -30, w: 20, d: 10, h: 10, surface: 'metal_painted', damaged: true },
+      { x: -30, z: 0, w: 8, d: 22, h: 22, surface: 'concrete', damaged: true },
+      { x: 30, z: 0, w: 8, d: 20, h: 20, surface: 'brick', damaged: false },
+      { x: 0, z: 35, w: 18, d: 8, h: 10, surface: 'plaster', damaged: true },
     ];
 
+    const seed = 12345;
+    let s = seed;
+    const rand = () => { s = (s * 1664525 + 1013904223) >>> 0; return (s >>> 0) / 4294967296; };
+
     for (const b of layouts) {
-      const geo = box(b.w, b.h, b.d);
+      const h = b.damaged ? b.h * (0.6 + rand() * 0.4) : b.h;
+      const geo = box(b.w, h, b.d);
       const mat = this._matFor(b.surface);
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(b.x, 0, b.z);
@@ -124,7 +129,7 @@ export class WorldSystem {
         const roofGeo = box(b.w + 0.5, 0.3, b.d + 0.5);
         const roofMat = this._matFor('concrete');
         const roof = new THREE.Mesh(roofGeo, roofMat);
-        roof.position.set(b.x, b.h, b.z);
+        roof.position.set(b.x, h, b.z);
         roof.castShadow = true;
         roof.name = `roof_${b.x}_${b.z}`;
         this.root.add(roof);
@@ -158,6 +163,30 @@ export class WorldSystem {
     instances.receiveShadow = true;
     this.root.add(instances);
     this.stats.instances += count;
+
+    const debrisMat = this._matFor('concrete');
+    const debrisCount = 200;
+    const debrisGeo = box(0.4, 0.2, 0.4);
+    const debris = new THREE.InstancedMesh(debrisGeo, debrisMat, debrisCount);
+    debris.name = 'debris';
+    const dummy2 = new THREE.Object3D();
+    let s2 = 999;
+    const rand2 = () => { s2 = (s2 * 1664525 + 1013904223) >>> 0; return (s2 >>> 0) / 4294967296; };
+    for (let i = 0; i < debrisCount; i++) {
+      dummy2.position.set(
+        (rand2() - 0.5) * 200,
+        0.1,
+        (rand2() - 0.5) * 200
+      );
+      dummy2.scale.setScalar(0.3 + rand2() * 0.7);
+      dummy2.rotation.set(rand2() * 0.3, rand2() * Math.PI * 2, rand2() * 0.3);
+      dummy2.updateMatrix();
+      debris.setMatrixAt(i, dummy2.matrix);
+    }
+    debris.instanceMatrix.needsUpdate = true;
+    debris.receiveShadow = true;
+    this.root.add(debris);
+    this.stats.instances += debrisCount;
   }
 
   _stabiliseLightCount(slotBudget) {

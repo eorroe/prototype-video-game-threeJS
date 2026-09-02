@@ -5,98 +5,130 @@ export class PlayerSystem {
   static deps = ['physics'];
 
   constructor() {
-    this._position = new THREE.Vector3(13.7, 1.0, 19.8);
+    this._rig = null;
+    this._mesh = null;
     this._velocity = new THREE.Vector3();
-    this._forward = new THREE.Vector3();
-    this._right = new THREE.Vector3();
-    this._wishDir = new THREE.Vector3();
-    this._rayOrigin = new THREE.Vector3();
-    this._rayDir = new THREE.Vector3(0, -1, 0);
-    this._up = new THREE.Vector3(0, 1, 0);
-    this._grounded = false;
-    this._jumpProcessed = false;
-
-    this._walk = 4.5;
-    this._sprint = 7.0;
-    this._tac = 8.5;
-    this._jump = 5.0;
+    this._onGround = false;
+    this._health = 100;
+    this._built = false;
   }
 
   async init(ctx) {
-    this._ctx = ctx;
-    this._physics = ctx.get('physics');
+    this.ctx = ctx;
     this._input = ctx.input;
+    this._scene = ctx.scene;
     this._camera = ctx.camera;
 
-    const { x, y, z } = this._position;
-    console.log(`[player] spawn ${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)} · walk ${this._walk} sprint ${this._sprint} tac ${this._tac} m/s · jump ${this._jump} m/s`);
+    const mat = ctx.get('materials').get('black_ops');
+    const group = new THREE.Group();
+    group.name = 'player';
 
-    this._camera.position.copy(this._position);
-    ctx.scene.add(this._camera);
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 1.6, 4, 8), mat);
+    body.position.y = 1.0;
+    group.add(body);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), mat);
+    head.position.y = 1.9;
+    group.add(head);
+
+    group.position.set(0, 2, 0);
+    this._scene.add(group);
+    this._mesh = group;
+
+    this._rig = new THREE.Group();
+    this._rig.name = 'camera-rig';
+    this._rig.position.copy(group.position);
+    this._rig.position.y += 1.6;
+    this._scene.add(this._rig);
+
+    this._camera.position.set(0, 3, -8);
+    this._rig.add(this._camera);
+    this._camera.position.set(0, 1.2, 0);
+
+    this._velocity = new THREE.Vector3();
+    this._onGround = false;
+    this._health = 100;
+    this._built = true;
+
+    console.info(`[player] shape-shifter spawned at ${group.position.x.toFixed(1)}, ${group.position.y.toFixed(1)}, ${group.position.z.toFixed(1)}`);
   }
 
   fixedUpdate(h, ctx) {
+    if (!this._built) return;
     const input = this._input;
-    const move = input.moveVector();
-    const speed = input.action('sprint') ? this._sprint : this._walk;
+    const phys = ctx.get('physics');
+    const speed = input.action('sprint') ? 8.5 : 5.0;
 
-    const camera = this._camera;
-    const forward = this._forward;
-    camera.getWorldDirection(forward);
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this._rig.quaternion);
     forward.y = 0;
     forward.normalize();
-    const right = this._right;
-    right.crossVectors(forward, this._up).normalize();
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(this._rig.quaternion);
+    right.y = 0;
+    right.normalize();
 
-    const wishDir = this._wishDir;
-    wishDir.addScaledVector(forward, move.y);
-    wishDir.addScaledVector(right, move.x);
-    if (wishDir.lengthSq() > 1) wishDir.normalize();
+    const move = new THREE.Vector3();
+    if (input.action('forward')) move.add(forward);
+    if (input.action('back')) move.sub(forward);
+    if (input.action('right')) move.add(right);
+    if (input.action('left')) move.sub(right);
+    if (move.lengthSq() > 0) move.normalize();
 
-    this._velocity.y -= 9.8 * h;
+    const gravity = -14;
+    this._velocity.y += gravity * h;
 
-    const rayOrigin = this._rayOrigin.copy(this._position);
-    rayOrigin.y += 0.1;
-    const hit = this._physics.raycast(rayOrigin, this._rayDir, 2.0);
-    this._grounded = !!hit;
-
-    if (this._grounded) {
+    const groundY = phys.groundHeight(this._mesh.position.x, this._mesh.position.z);
+    if (this._mesh.position.y <= groundY + 0.1 && this._velocity.y <= 0) {
+      this._mesh.position.y = groundY + 0.1;
       this._velocity.y = 0;
-      this._position.y = hit.point.y + 0.1;
-      if (input.actionPressed('jump') && !this._jumpProcessed) {
-        this._velocity.y = this._jump;
-        this._jumpProcessed = true;
-      }
-    }
-    if (!input.action('jump')) {
-      this._jumpProcessed = false;
+      this._onGround = true;
+    } else {
+      this._onGround = false;
     }
 
-    this._position.x += wishDir.x * speed * h;
-    this._position.z += wishDir.z * speed * h;
-    this._position.y += this._velocity.y * h;
+    const target = move.multiplyScalar(speed);
+    this._velocity.x = target.x;
+    this._velocity.z = target.z;
 
-    camera.rotation.y -= input.look.x;
-    camera.rotation.x -= input.look.y;
-    camera.rotation.x = Math.max(-89 * Math.PI / 180, Math.min(89 * Math.PI / 180, camera.rotation.x));
+    this._mesh.position.x += this._velocity.x * h;
+    this._mesh.position.y += this._velocity.y * h;
+    this._mesh.position.z += this._velocity.z * h;
 
-    if (this._grounded && wishDir.lengthSq() > 0.001) {
-      ctx.events.emit('player:footstep', {});
+    if (move.lengthSq() > 0) {
+      const angle = Math.atan2(move.x, move.z);
+      this._mesh.rotation.y = angle;
     }
-  }
 
-  update(dt, ctx) {
-    this._camera.position.copy(this._position);
+    this._rig.position.copy(this._mesh.position);
+    this._rig.position.y += 1.6;
+
     ctx.events.emit('player:state', {
-      stance: 'stand',
-      sprinting: this._input.action('sprint'),
-      ads: this._input.ads
+      stance: this._onGround ? 'ground' : 'air',
+      sprinting: input.action('sprint'),
+      health: this._health,
     });
   }
 
+  update(dt, ctx) {
+    if (!this._built) return;
+    const look = ctx.input.look;
+    this._rig.rotation.y -= look.x * 0.002;
+    this._rig.rotation.x -= look.y * 0.002;
+    this._rig.rotation.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, this._rig.rotation.x));
+  }
+
   dispose() {
-    if (this._camera && this._ctx?.scene) {
-      this._ctx.scene.remove(this._camera);
+    if (this._mesh) {
+      this._scene.remove(this._mesh);
+      this._mesh.traverse((c) => {
+        c.geometry?.dispose();
+        if (c.material) {
+          if (Array.isArray(c.material)) c.material.forEach(m => m.dispose());
+          else c.material.dispose();
+        }
+      });
+    }
+    if (this._rig) {
+      this._scene.remove(this._rig);
     }
   }
 }
