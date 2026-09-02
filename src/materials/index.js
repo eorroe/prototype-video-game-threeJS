@@ -173,21 +173,12 @@ function _addRimExtension(mat) {
     shader.vertexShader = shader.vertexShader.replace(
       'varying vec3 vViewPosition;',
       `varying vec3 vViewPosition;
-      varying vec3 vColor;
       varying vec3 vGeometricNormal;`
     );
 
     shader.vertexShader = shader.vertexShader.replace(
-      'void main() {',
-      `attribute vec3 color;
-      varying vec3 vColor;
-      void main() {`
-    );
-
-    shader.vertexShader = shader.vertexShader.replace(
       '#include <worldpos_vertex>',
-      `#include <worldpos_vertex>
-      vColor = color;`
+      `#include <worldpos_vertex>`
     );
 
     shader.fragmentShader = shader.fragmentShader.replace(
@@ -200,7 +191,6 @@ function _addRimExtension(mat) {
     shader.fragmentShader = shader.fragmentShader.replace(
       'varying vec3 vViewPosition;',
       `varying vec3 vViewPosition;
-      varying vec3 vColor;
       varying vec3 vGeometricNormal;`
     );
 
@@ -209,7 +199,6 @@ function _addRimExtension(mat) {
       `float NdotV = abs(dot(normalize(vViewPosition), vGeometricNormal));
       float rim = pow(1.0 - NdotV, owRimPower) * owRimStrength;
       outgoingLight *= (1.0 - rim);
-      outgoingLight *= vColor;
       #include <tonemapping_fragment>`
     );
   };
