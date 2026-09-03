@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { bakeAO, bakeGrime, bakeRim, buildBufferGeometryWithColors } from './vertexColors.js';
-import { Noise, superEllipse, loft, boxRound, ellipsoid, computeNormals, displace, warp, appendMesh, emptyMesh, buildBufferGeometry } from './geo.js';
+import { bakeAO, bakeGrime, bakeRim, buildBufferGeometryWithColors, tintColor, syncColor } from './vertexColors.js';
+import { Noise, superEllipse, loft, boxRound, ellipsoid, computeNormals, displace, warp, appendMesh, emptyMesh, buildBufferGeometry, vcount } from './geo.js';
 
 function limbProfile(topR, botR, seg = 12) {
   const pts = [];
@@ -35,8 +35,8 @@ export class PlayerSystem {
 
     const mat = ctx.get('materials').get('black_ops');
     const matBright = mat.clone();
-    matBright.color = new THREE.Color(3.0, 3.0, 3.5);
-    matBright.vertexColors = false;
+    matBright.color = new THREE.Color(1.0, 1.0, 1.0);
+    matBright.vertexColors = true;
     const group = new THREE.Group();
     group.name = 'player';
 
@@ -54,6 +54,8 @@ export class PlayerSystem {
     bakeAO(torso, this._noise, 0.6);
     bakeGrime(torso, this._noise, 0.3);
     bakeRim(torso, 0.4, 2.0);
+    for (let i = 0; i < vcount(torso); i++) tintColor(torso.vc, i * 3, 0.85, 0.90, 0.75);
+    syncColor(torso);
 
     const headGeo = ellipsoid(0.24, 0.28, 0.24, { seg: 20, rows: 12 });
     warp(headGeo, (v) => {
@@ -65,6 +67,8 @@ export class PlayerSystem {
     bakeAO(headGeo, this._noise, 0.6);
     bakeGrime(headGeo, this._noise, 0.3);
     bakeRim(headGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(headGeo); i++) tintColor(headGeo.vc, i * 3, 1.05, 0.90, 0.75);
+    syncColor(headGeo);
 
     const neckGeo = emptyMesh();
     for (let i = 0; i <= 6; i++) {
@@ -77,11 +81,15 @@ export class PlayerSystem {
     bakeAO(neckGeo, this._noise, 0.6);
     bakeGrime(neckGeo, this._noise, 0.3);
     bakeRim(neckGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(neckGeo); i++) tintColor(neckGeo.vc, i * 3, 0.95, 0.85, 0.70);
+    syncColor(neckGeo);
 
     const shoulderGeo = ellipsoid(0.18, 0.12, 0.14, { seg: 14, rows: 8 });
     bakeAO(shoulderGeo, this._noise, 0.6);
     bakeGrime(shoulderGeo, this._noise, 0.3);
     bakeRim(shoulderGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(shoulderGeo); i++) tintColor(shoulderGeo.vc, i * 3, 1.0, 0.90, 0.75);
+    syncColor(shoulderGeo);
 
     const armUpperGeo = emptyMesh();
     for (let i = 0; i <= 10; i++) {
@@ -94,6 +102,8 @@ export class PlayerSystem {
     bakeAO(armUpperGeo, this._noise, 0.6);
     bakeGrime(armUpperGeo, this._noise, 0.3);
     bakeRim(armUpperGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(armUpperGeo); i++) tintColor(armUpperGeo.vc, i * 3, 0.75, 0.80, 0.65);
+    syncColor(armUpperGeo);
 
     const armLowerGeo = emptyMesh();
     for (let i = 0; i <= 10; i++) {
@@ -106,11 +116,15 @@ export class PlayerSystem {
     bakeAO(armLowerGeo, this._noise, 0.6);
     bakeGrime(armLowerGeo, this._noise, 0.3);
     bakeRim(armLowerGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(armLowerGeo); i++) tintColor(armLowerGeo.vc, i * 3, 0.75, 0.80, 0.65);
+    syncColor(armLowerGeo);
 
     const handGeo = ellipsoid(0.08, 0.1, 0.06, { seg: 10, rows: 8 });
     bakeAO(handGeo, this._noise, 0.6);
     bakeGrime(handGeo, this._noise, 0.3);
     bakeRim(handGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(handGeo); i++) tintColor(handGeo.vc, i * 3, 1.0, 0.85, 0.70);
+    syncColor(handGeo);
 
     const legUpperGeo = emptyMesh();
     for (let i = 0; i <= 12; i++) {
@@ -123,6 +137,8 @@ export class PlayerSystem {
     bakeAO(legUpperGeo, this._noise, 0.6);
     bakeGrime(legUpperGeo, this._noise, 0.3);
     bakeRim(legUpperGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(legUpperGeo); i++) tintColor(legUpperGeo.vc, i * 3, 0.70, 0.75, 0.60);
+    syncColor(legUpperGeo);
 
     const legLowerGeo = emptyMesh();
     for (let i = 0; i <= 12; i++) {
@@ -135,11 +151,15 @@ export class PlayerSystem {
     bakeAO(legLowerGeo, this._noise, 0.6);
     bakeGrime(legLowerGeo, this._noise, 0.3);
     bakeRim(legLowerGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(legLowerGeo); i++) tintColor(legLowerGeo.vc, i * 3, 0.70, 0.75, 0.60);
+    syncColor(legLowerGeo);
 
     const footGeo = boxRound(0.1, 0.08, 0.28, { n: 4, roundY: 0.3 });
     bakeAO(footGeo, this._noise, 0.6);
     bakeGrime(footGeo, this._noise, 0.3);
     bakeRim(footGeo, 0.4, 2.0);
+    for (let i = 0; i < vcount(footGeo); i++) tintColor(footGeo.vc, i * 3, 0.5, 0.5, 0.5);
+    syncColor(footGeo);
 
     const allGeo = buildBufferGeometry(torso);
     const headMesh = new THREE.Mesh(buildBufferGeometryWithColors(headGeo), matBright);

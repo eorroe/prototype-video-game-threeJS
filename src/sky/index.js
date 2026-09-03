@@ -90,9 +90,9 @@ export class SkySystem {
     }
 
     const alt = this._sunAltitude;
-    const zenith = [0.18, 0.20, 0.25];
-    const horizon = [0.30, 0.33, 0.40];
-    const ground = [0.10, 0.09, 0.08];
+    const zenith = [10.0, 10.0, 10.0];
+    const horizon = [10.0, 10.0, 10.0];
+    const ground = [5.0, 5.0, 5.0];
 
     const canvas = document.createElement('canvas');
     canvas.width = 2;
@@ -121,7 +121,7 @@ export class SkySystem {
     }
 
     const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.colorSpace = THREE.LinearSRGBColorSpace;
     tex.needsUpdate = true;
 
     const geo = new THREE.SphereGeometry(500, 32, 15);
@@ -153,6 +153,7 @@ export class SkySystem {
     const dome = new THREE.Mesh(geo, mat);
     dome.name = 'ow-sky-dome';
     this._scene.add(dome);
+    console.log('[sky] dome added, zenith=', zenith, 'horizon=', horizon, 'ground=', ground);
   }
 
   _updateEnvMap() {

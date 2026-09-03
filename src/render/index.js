@@ -205,12 +205,9 @@ export class RenderSystem {
     this.dof = this.qLevel >= 1 ? new DepthOfField() : null;
     this.bloom = q.bloom ? new Bloom(this.qLevel >= 2 ? 6 : 5) : null;
     this.exposure = new AutoExposure();
-    // Headroom for a physically-scaled sky (sunlit scenes reach ~5000 cd/m2).
-    // The lower limit is the night exposure lock: a moonlit street meters at
-    // EV100 -5.2, and letting the meter chase that turns night into an overcast
-    // afternoon. Daylight shots meter between -1 and -2.1, so this only ever
-    // binds after dark.
     this.exposure.setLimits(-4.3, 20);
+    this._manualExposureRt = hdrTarget(1, 1, { type: THREE.FloatType, format: THREE.RGBAFormat, name: 'manual-exposure' });
+    this._fillManualExposure(1.0);
     this.lut = createGradeLut('default');
     this.composite = createComposite(this.lut);
     this.viewComposite = createViewComposite();
@@ -340,7 +337,7 @@ export class RenderSystem {
     this.settings = {
       exposureBias: 0, // EV; positive = darker
       exposureKey: 1.06,
-      autoExposure: true,
+      autoExposure: false,
       // The pyramid is ADDED now, not mixed, and it is soft-knee thresholded at
       // `bloomThreshold` in exposure-scaled linear light — so this is the gain on
       // light that is genuinely above display white (sun disc, glints, muzzle
@@ -574,6 +571,15 @@ export class RenderSystem {
 
   setExposureBias(ev) {
     this.settings.exposureBias = ev;
+  }
+
+  _fillManualExposure(value) {
+    const gl = this.renderer.getContext();
+    const rt = this._manualExposureRt;
+    this.renderer.setRenderTarget(rt);
+    gl.clearColor(value, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    this.renderer.setRenderTarget(null);
   }
 
   /**
@@ -1489,20 +1495,27 @@ export class RenderSystem {
 
     // ---- 15. metering -----------------------------------------------------
     const s = this.settings;
-    const exposureTex = this.exposure.update(
-      renderer,
-      color,
-      this.screenSize.width,
-      this.screenSize.height,
-      s.autoExposure ? dt : 1e3,
-      // The sky publishes a metering compensation for the current sun elevation:
-      // a street canyon under a four-degree sun is entirely in shade, and a meter
-      // weighted onto that geometry opens up two stops and flattens the sky it is
-      // lit by. See SkySystem.exposureBias.
-      s.exposureBias + this._skyExposureBias,
-      s.exposureKey,
-      this.needsPrepass ? this.depthTexture : null
-    );
+    let exposureTex;
+    if (s.autoExposure) {
+      exposureTex = this.exposure.update(
+        renderer,
+        color,
+        this.screenSize.width,
+        this.screenSize.height,
+        dt,
+        // The sky publishes a metering compensation for the current sun elevation:
+        // a street canyon under a four-degree sun is entirely in shade, and a meter
+        // weighted onto that geometry opens up two stops and flattens the sky it is
+        // lit by. See SkySystem.exposureBias.
+        s.exposureBias + this._skyExposureBias,
+        s.exposureKey,
+        this.needsPrepass ? this.depthTexture : null
+      );
+    } else {
+      const manualEv = this.ctx.config.exposure ?? 1;
+      this._fillManualExposure(manualEv);
+      exposureTex = this._manualExposureRt.texture;
+    }
     this.exposureTexture = exposureTex;
 
     // ---- 16. bloom --------------------------------------------------------
@@ -1527,7 +1540,7 @@ export class RenderSystem {
     // Vignette closes in with the sight picture.
     cu.uLens.value.y = s.vignette + (s.adsVignette - s.vignette) * this._adsT;
     cu.uLens.value.w = ctx.time.elapsed;
-    cu.uLook.value.w = this.ctx.config.exposure ?? 1;
+    cu.uLook.value.w = 1.0;
 
     if (this.debugView) {
       this._renderDebug(renderer, color);

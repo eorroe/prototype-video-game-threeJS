@@ -132,40 +132,7 @@ What procedural geometry can deliver:
 The `#blocker` div in `index.html` was never hidden. It covered the entire viewport with `background: rgba(0,0,0,0.85)` and `z-index: 10`, obscuring the game world. The "pulsing circle" was the minimap rendered on top of the blocker.
 
 ### Fixes Applied
-1. **Blocker hide**: `src/main.js` now aggressively hides and removes `#blocker` after successful `engine.init()`
-2. **Canvas z-index**: Canvas is moved to `z-index: 9999` and repositioned to top of DOM
-3. **Camera position**: Third-person offset behind player looking at them
-4. **Albedo textures**: Fixed `bakeAlbedo` to use full RGB channels; brightened all material albedos (0.15-0.6 range)
-5. **Title/controls**: Updated HTML title and controls text to match Prototype theme
-
-## Isolated Test Pages
-
-Created `/tests/` directory with standalone test pages:
-- `tests/world.html` — loads only world geometry (ground, 8 buildings) with procedural materials
-- `tests/character.html` — loads only player character with procedural lofted geometry + noise displacement
-
-Each test page:
-- Sets `window.__READY__ = true` for capture harness
-- Auto-downloads a PNG screenshot after 500ms
-- Uses same procedural geometry toolkit as main game
-
-### How to Run Tests
-```bash
-# Start dev server
-npm run dev
-
-# In another terminal, capture world test
-node tests/capture-world.mjs
-
-# Capture character test
-node tests/capture-character.mjs
-```
-
-Screenshots saved to `tests/world-test.png` and `tests/char-test.png`.
-
-## Current Status
-- `npm run build` passes in ~2.1s
-- Bundle: ~663KB / ~178KB gzipped
-- 44 modules transformed
-- Isolated test pages ready for visual verification
-- Playwright automated capture blocked by missing `libnspr4.so` in this environment
+1. **Blocker hide**: `src/main.js` now adds `hidden` class to `#blocker` after successful `engine.init()`
+2. **Camera position**: Changed from first-person height to third-person offset (`[0, 1.0, -7]` relative to rig)
+3. **Albedo textures**: Fixed `bakeAlbedo` to use full RGB channels instead of only red channel
+4. **Title/controls**: Updated HTML title and controls text to match Prototype theme

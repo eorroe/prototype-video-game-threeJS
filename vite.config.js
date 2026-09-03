@@ -16,4 +16,5 @@ export default defineConfig({
   build: { target: 'es2022', sourcemap: true, chunkSizeWarningLimit: 4096 },
   // Large binary game assets served verbatim.
   assetsInclude: ['**/*.ktx2', '**/*.hdr', '**/*.exr', '**/*.bin', '**/*.glb'],
+  publicDir: 'public',
 });

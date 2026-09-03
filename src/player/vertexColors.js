@@ -12,7 +12,7 @@ function ensureVC(mesh) {
   }
 }
 
-function syncColor(mesh) {
+export function syncColor(mesh) {
   if (mesh.vc && mesh.color) {
     mesh.color.set(mesh.vc);
   }
@@ -28,6 +28,16 @@ function mulGray(mesh, i, f) {
   mesh.vc[i * 3] *= f;
   mesh.vc[i * 3 + 1] *= f;
   mesh.vc[i * 3 + 2] *= f;
+}
+
+function mulColor(colors, index, r, g, b) {
+  colors[index] *= r;
+  colors[index + 1] *= g;
+  colors[index + 2] *= b;
+}
+
+export function tintColor(colors, index, r, g, b) {
+  mulColor(colors, index, r, g, b);
 }
 
 function computeFaceNormals(P, I) {

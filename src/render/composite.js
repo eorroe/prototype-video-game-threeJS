@@ -341,7 +341,7 @@ export function createComposite(lut) {
     // image at the point where AgX has already decided where mid-grey goes.
     // Together with a contrast pivot below mid-grey it is what put 18% scene
     // grey on code value 153.
-    uLook: { value: new THREE.Vector4(100.0, 1.0, 0.85, 1) },
+    uLook: { value: new THREE.Vector4(100.0, 1.0, 2.5, 1) },
   });
 }
 

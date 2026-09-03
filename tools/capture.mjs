@@ -87,23 +87,27 @@ page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}\n${e.stack ?? ''
 
 let failed = null;
 try {
-  await page.goto(`http://127.0.0.1:${PORT}/?capture=1&shot=${encodeURIComponent(SHOT)}`, {
-    waitUntil: 'domcontentloaded',
+  await page.goto(`http://127.0.0.1:${PORT}/?capture=1&lockstep=1&shot=${encodeURIComponent(SHOT)}`, {
+    waitUntil: 'commit',
     timeout: TIMEOUT,
   });
 
-  // Engine sets window.__READY__ = true once assets are loaded and first frame drawn.
-  await page.waitForFunction('window.__READY__ === true', null, { timeout: TIMEOUT });
+  // Wait for engine to finish init and lockstep pump to be available.
+  await page.waitForFunction('typeof window.__PUMP__ === "function"', null, { timeout: TIMEOUT });
+
+  // Pump a few frames to ensure engine is fully running.
+  await page.evaluate('window.__PUMP__(3)', null, { timeout: TIMEOUT });
 
   if (args.list) {
-    const shots = await page.evaluate('Object.keys(window.__SHOTS__ ?? {})');
+    const shots = await page.evaluate('Object.keys(window.__SHOTS__ ?? {})', null, { timeout: TIMEOUT });
     console.log(JSON.stringify(shots, null, 2));
   } else {
     // Apply the shot (camera pose, time of day, weapon state, ...).
     const applied = await page.evaluate(
       ({ s, settle }) =>
         window.__APPLY_SHOT__ ? window.__APPLY_SHOT__(s, { grabFrame: settle }) : 'no-shot-api',
-      { s: SHOT, settle: SETTLE }
+      { s: SHOT, settle: SETTLE },
+      { timeout: TIMEOUT }
     );
     logs.push(`[shot] ${JSON.stringify(applied)}`);
 
@@ -115,13 +119,14 @@ try {
           const tick = () => (++i >= n ? done() : requestAnimationFrame(tick));
           requestAnimationFrame(tick);
         }),
-      SETTLE
+      SETTLE,
+      { timeout: TIMEOUT }
     );
 
     mkdirSync(dirname(OUT), { recursive: true });
     await page.screenshot({ path: OUT, type: 'png' });
 
-    const info = await page.evaluate('window.__RENDER_INFO__ ?? null');
+    const info = await page.evaluate('window.__RENDER_INFO__ ?? null', null, { timeout: TIMEOUT });
     console.log(JSON.stringify({ ok: true, out: OUT, shot: SHOT, w: W, h: H, info }, null, 2));
   }
 } catch (e) {
