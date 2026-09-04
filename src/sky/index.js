@@ -122,6 +122,9 @@ export class SkySystem {
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.LinearSRGBColorSpace;
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.generateMipmaps = false;
     tex.needsUpdate = true;
 
     const geo = new THREE.SphereGeometry(500, 32, 15);
@@ -141,19 +144,21 @@ export class SkySystem {
         uniform sampler2D skyTex;
         void main() {
           vec3 dir = normalize(vWorldPos);
-          float t = dir.y * 0.5 + 0.5;
-          vec3 col = texture2D(skyTex, vec2(0.5, t)).rgb;
+          float t = 0.5 - dir.y * 0.5;
+          vec3 col = texture2D(skyTex, vec2(0.5, t)).rgb * 10.0;
           gl_FragColor = vec4(col, 1.0);
         }
       `,
       side: THREE.BackSide,
       depthWrite: false,
+      depthTest: false,
     });
 
     const dome = new THREE.Mesh(geo, mat);
     dome.name = 'ow-sky-dome';
+    dome.frustumCulled = false;
+    dome.renderOrder = -1000;
     this._scene.add(dome);
-    console.log('[sky] dome added, zenith=', zenith, 'horizon=', horizon, 'ground=', ground);
   }
 
   _updateEnvMap() {

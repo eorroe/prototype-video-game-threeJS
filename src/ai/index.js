@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Noise, superEllipse, loft, ellipsoid, boxRound, computeNormals, displace, warp, buildBufferGeometry } from './geo.js';
+import { bakeAO, bakeGrime, bakeRim, bakeColor, buildBufferGeometryWithColors } from '../player/vertexColors.js';
 
 const SPAWN_POINTS = [
   [10, 2, 20],
@@ -41,20 +42,11 @@ export class AiSystem {
       return 0.06 * noise.fbm3(x * 4, y * 4, z * 4, 4);
     });
     computeNormals(mesh);
-    const geo = buildBufferGeometry(mesh);
-    const count = geo.attributes.position.count;
-    const colors = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const ny = mesh.n[i * 3 + 1];
-      const x = mesh.p[i * 3], y = mesh.p[i * 3 + 1], z = mesh.p[i * 3 + 2];
-      const ao = 0.35 + 0.65 * Math.max(0, ny);
-      const grime = 0.8 + 0.2 * Math.sin(x * 6.1 + noise.n3(x, y, z)) * Math.cos(z * 4.7);
-      const c = ao * grime;
-      colors[i * 3] = 0.40 * c;
-      colors[i * 3 + 1] = 0.50 * c;
-      colors[i * 3 + 2] = 0.35 * c;
-    }
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    bakeAO(mesh, noise, 0.6);
+    bakeGrime(mesh, noise, 0.3);
+    bakeRim(mesh, 0.4, 2.0);
+    bakeColor(mesh, noise, 0.40, 0.50, 0.35, 0.3);
+    const geo = buildBufferGeometryWithColors(mesh);
     return geo;
   }
 
@@ -71,20 +63,11 @@ export class AiSystem {
       return 0.015 * noise.fbm3(x * 8, y * 8, z * 8, 3);
     });
     computeNormals(mesh);
-    const geo = buildBufferGeometry(mesh);
-    const count = geo.attributes.position.count;
-    const colors = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const ny = mesh.n[i * 3 + 1];
-      const x = mesh.p[i * 3], y = mesh.p[i * 3 + 1], z = mesh.p[i * 3 + 2];
-      const ao = 0.4 + 0.6 * Math.max(0, ny);
-      const grime = 0.85 + 0.15 * Math.sin(x * 8.3) * Math.cos(z * 6.1);
-      const c = ao * grime;
-      colors[i * 3] = 0.60 * c;
-      colors[i * 3 + 1] = 0.50 * c;
-      colors[i * 3 + 2] = 0.45 * c;
-    }
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    bakeAO(mesh, noise, 0.6);
+    bakeGrime(mesh, noise, 0.3);
+    bakeRim(mesh, 0.4, 2.0);
+    bakeColor(mesh, noise, 0.60, 0.50, 0.45, 0.3);
+    const geo = buildBufferGeometryWithColors(mesh);
     return geo;
   }
 
@@ -110,20 +93,11 @@ export class AiSystem {
       return 0.035 * noise.fbm3(x * 5, y * 5, z * 5, 3);
     });
     computeNormals(mesh);
-    const geo = buildBufferGeometry(mesh);
-    const count = geo.attributes.position.count;
-    const colors = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const ny = mesh.n[i * 3 + 1];
-      const x = mesh.p[i * 3], y = mesh.p[i * 3 + 1], z = mesh.p[i * 3 + 2];
-      const ao = 0.4 + 0.6 * Math.max(0, ny);
-      const grime = 0.85 + 0.15 * Math.sin(x * 5.7 + 1.3) * Math.cos(z * 4.3);
-      const c = ao * grime;
-      colors[i * 3] = 0.35 * c;
-      colors[i * 3 + 1] = 0.45 * c;
-      colors[i * 3 + 2] = 0.30 * c;
-    }
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    bakeAO(mesh, noise, 0.6);
+    bakeGrime(mesh, noise, 0.3);
+    bakeRim(mesh, 0.4, 2.0);
+    bakeColor(mesh, noise, 0.35, 0.45, 0.30, 0.3);
+    const geo = buildBufferGeometryWithColors(mesh);
     return geo;
   }
 

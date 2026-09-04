@@ -37,7 +37,29 @@ function mulColor(colors, index, r, g, b) {
 }
 
 export function tintColor(colors, index, r, g, b) {
-  mulColor(colors, index, r, g, b);
+  colors[index] += r;
+  colors[index + 1] += g;
+  colors[index + 2] += b;
+}
+
+export function bakeColor(mesh, noise, baseR, baseG, baseB, variation = 0.3) {
+  ensureVC(mesh);
+  const P = mesh.p;
+  const nv = vcount(mesh);
+  
+  for (let i = 0; i < nv; i++) {
+    const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
+    const nr = noise.fbm3(x * 2.0, y * 2.0, z * 2.0, 3) * variation;
+    const ng = noise.fbm3(x * 2.0 + 100, y * 2.0 + 100, z * 2.0 + 100, 3) * variation;
+    const nb = noise.fbm3(x * 2.0 + 200, y * 2.0 + 200, z * 2.0 + 200, 3) * variation;
+    
+    const brightness = mesh.vc[i * 3];
+    mesh.vc[i * 3] = (baseR + nr) * brightness;
+    mesh.vc[i * 3 + 1] = (baseG + ng) * brightness;
+    mesh.vc[i * 3 + 2] = (baseB + nb) * brightness;
+  }
+  
+  syncColor(mesh);
 }
 
 function computeFaceNormals(P, I) {

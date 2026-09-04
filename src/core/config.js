@@ -88,7 +88,7 @@ export const DEFAULTS = {
   sensitivity: 0.0022,
   adsSensScale: 0.65,
   invertY: false,
-  exposure: 1000.0,
+  exposure: 2.0,
   /** Capture mode disables anything nondeterministic so screenshots are stable. */
   deterministic: false,
 };
