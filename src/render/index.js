@@ -205,9 +205,12 @@ export class RenderSystem {
     this.dof = this.qLevel >= 1 ? new DepthOfField() : null;
     this.bloom = q.bloom ? new Bloom(this.qLevel >= 2 ? 6 : 5) : null;
     this.exposure = new AutoExposure();
+    // Headroom for a physically-scaled sky (sunlit scenes reach ~5000 cd/m2).
+    // The lower limit is the night exposure lock: a moonlit street meters at
+    // EV100 -5.2, and letting the meter chase that turns night into an overcast
+    // afternoon. Daylight shots meter between -1 and -2.1, so this only ever
+    // binds after dark.
     this.exposure.setLimits(-4.3, 20);
-    this._manualExposureRt = hdrTarget(1, 1, { type: THREE.FloatType, format: THREE.RGBAFormat, name: 'manual-exposure' });
-    this._fillManualExposure(1.0);
     this.lut = createGradeLut('default');
     this.composite = createComposite(this.lut);
     this.viewComposite = createViewComposite();
@@ -337,7 +340,7 @@ export class RenderSystem {
     this.settings = {
       exposureBias: 0, // EV; positive = darker
       exposureKey: 1.06,
-      autoExposure: false,
+      autoExposure: true,
       // The pyramid is ADDED now, not mixed, and it is soft-knee thresholded at
       // `bloomThreshold` in exposure-scaled linear light — so this is the gain on
       // light that is genuinely above display white (sun disc, glints, muzzle
@@ -359,7 +362,7 @@ export class RenderSystem {
       chromatic: 0.0011,
       // Vignette and grain are applied in DISPLAY space (see composite.js), so
       // these are code-value amplitudes, not linear-light ones.
-      vignette: 0.0,
+      vignette: 0.24,
       // Closes in while the sights are up: the frame has to tell you your eye is
       // behind a tube, not just that the gun moved.
       adsVignette: 0.34,
@@ -406,22 +409,22 @@ export class RenderSystem {
       // came down by the same amount to pay for it. Measured on the 16:30
       // frame: a shaded facade went from B-R = 0.0002 (4.5% saturation, "dead
       // neutral regardless of surroundings") to a legible cool cast.
-      skyFill: 1.0,
+      skyFill: 0.32,
       // Warm bounce off the street, onto soffits, undersides and low faces.
-      groundFill: 0.5,
+      groundFill: 0.013,
       // ...and the wrap term: the shaded side of the street lit by the sunlit
       // side of it. Both up hard, because this is the "warm kick where a shadow
       // faces a sunlit surface" that was missing entirely.
-      bounceFill: 0.3,
+      bounceFill: 0.008,
       // The PMREM sky cubemap is the single biggest indirect term in the frame
       // (materials ship envMapIntensity 1.6). Scaling its *diffuse* here is the
       // only place the total indirect budget can actually be controlled from.
       // Specular radiance is left alone — that is reflection, not fill.
-      iblDiffuse: 1.0,
+      iblDiffuse: 0.030,
       // Indirect floor inside a coarse interior volume. Skylight does not reach
       // the middle of a closed room; without this the doorway reads as a hole
       // cut in a card because the room is brighter than the street outside it.
-      interiorIndirect: 0.5,
+      interiorIndirect: 0.035,
       // Global trim on room and street practicals (see PRACTICAL_RANGE).
       //
       // Twenty interior bulbs and twenty-two sodium lamps are the ONLY light in
@@ -433,7 +436,7 @@ export class RenderSystem {
       // surface in the night frame took its hue from a lamp. Half a stop off
       // them buys most of both, and it is applied here rather than at the
       // source because the balance is a lighting decision, not an art one.
-      practicalGain: 2.0,
+      practicalGain: 0.55,
       // Sky the viewmodel can actually see, past the shooter's own body.
       viewFillOcclusion: 0.45,
       // Viewmodel 3-point rig. The key is scaled off the scene's own light
@@ -571,15 +574,6 @@ export class RenderSystem {
 
   setExposureBias(ev) {
     this.settings.exposureBias = ev;
-  }
-
-  _fillManualExposure(value) {
-    const gl = this.renderer.getContext();
-    const rt = this._manualExposureRt;
-    this.renderer.setRenderTarget(rt);
-    gl.clearColor(value, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    this.renderer.setRenderTarget(null);
   }
 
   /**
@@ -1495,27 +1489,20 @@ export class RenderSystem {
 
     // ---- 15. metering -----------------------------------------------------
     const s = this.settings;
-    let exposureTex;
-    if (s.autoExposure) {
-      exposureTex = this.exposure.update(
-        renderer,
-        color,
-        this.screenSize.width,
-        this.screenSize.height,
-        dt,
-        // The sky publishes a metering compensation for the current sun elevation:
-        // a street canyon under a four-degree sun is entirely in shade, and a meter
-        // weighted onto that geometry opens up two stops and flattens the sky it is
-        // lit by. See SkySystem.exposureBias.
-        s.exposureBias + this._skyExposureBias,
-        s.exposureKey,
-        this.needsPrepass ? this.depthTexture : null
-      );
-    } else {
-      const manualEv = this.ctx.config.exposure ?? 1;
-      this._fillManualExposure(manualEv);
-      exposureTex = this._manualExposureRt.texture;
-    }
+    const exposureTex = this.exposure.update(
+      renderer,
+      color,
+      this.screenSize.width,
+      this.screenSize.height,
+      s.autoExposure ? dt : 1e3,
+      // The sky publishes a metering compensation for the current sun elevation:
+      // a street canyon under a four-degree sun is entirely in shade, and a meter
+      // weighted onto that geometry opens up two stops and flattens the sky it is
+      // lit by. See SkySystem.exposureBias.
+      s.exposureBias + this._skyExposureBias,
+      s.exposureKey,
+      this.needsPrepass ? this.depthTexture : null
+    );
     this.exposureTexture = exposureTex;
 
     // ---- 16. bloom --------------------------------------------------------
@@ -1540,7 +1527,7 @@ export class RenderSystem {
     // Vignette closes in with the sight picture.
     cu.uLens.value.y = s.vignette + (s.adsVignette - s.vignette) * this._adsT;
     cu.uLens.value.w = ctx.time.elapsed;
-    cu.uLook.value.w = 1.0;
+    cu.uLook.value.w = this.ctx.config.exposure ?? 1;
 
     if (this.debugView) {
       this._renderDebug(renderer, color);

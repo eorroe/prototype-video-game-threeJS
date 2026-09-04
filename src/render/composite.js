@@ -330,7 +330,7 @@ export function createComposite(lut) {
     uTexel: { value: new THREE.Vector2() },
     uResolution: { value: new THREE.Vector2() },
     uLens: { value: new THREE.Vector4(0.0016, 0.24, 0.010, 0) },
-    uGrade: { value: new THREE.Vector4(0.05, 0.4, 0.22, lut.size) },
+    uGrade: { value: new THREE.Vector4(0.05, 0.85, 0.22, lut.size) },
     // slope / power / saturation of the AgX look, applied to the LOG-NORMALISED
     // value. minEv..maxEv spans 16.5 stops, so power > 1 costs whole stops in
     // the shadows (1.35 lost ~1.8) — the contrast belongs in the LUT, which
@@ -341,7 +341,7 @@ export function createComposite(lut) {
     // image at the point where AgX has already decided where mid-grey goes.
     // Together with a contrast pivot below mid-grey it is what put 18% scene
     // grey on code value 153.
-    uLook: { value: new THREE.Vector4(100.0, 1.0, 1.5, 1) },
+    uLook: { value: new THREE.Vector4(1.0, 1.0, 1.08, 1) },
   });
 }
 
