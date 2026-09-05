@@ -76,6 +76,5 @@ export function hdrTarget(w, h, opts = {}) {
     ...opts,
   });
   rt.texture.name = opts.name ?? 'hdr';
-  rt.texture.colorSpace = THREE.LinearSRGBColorSpace;
   return rt;
 }

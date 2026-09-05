@@ -55,24 +55,9 @@ try {
     'beforeend',
     `<pre style="position:fixed;inset:0;padding:2rem;color:#f66;background:#000;
        font:12px/1.5 ui-monospace,monospace;overflow:auto;z-index:9999;white-space:pre-wrap">
- BOOT FAILURE\n\n${err.stack ?? err.message}</pre>`
+BOOT FAILURE\n\n${err.stack ?? err.message}</pre>`
   );
   throw err;
-}
-
-const blocker = document.getElementById('blocker');
-if (blocker) {
-  blocker.style.cssText = 'display:none !important;visibility:hidden !important;pointer-events:none !important;';
-  blocker.setAttribute('disabled', '');
-  setTimeout(() => blocker.remove(), 0);
-  setTimeout(() => blocker.remove(), 1000);
-}
-
-const gameCanvas = document.getElementById('game');
-if (gameCanvas) {
-  gameCanvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:9999;display:block;';
-  gameCanvas.remove();
-  document.body.appendChild(gameCanvas);
 }
 
 const shotApi = installShotApi(engine, { capture, lockstep });

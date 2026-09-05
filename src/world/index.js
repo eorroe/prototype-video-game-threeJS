@@ -1,419 +1,445 @@
 import * as THREE from 'three';
+import { Assembler } from './builder.js';
+import { BUILDINGS, STREET, SET_PIECES, GATE } from './layout.js';
+import { buildGround } from './ground.js';
+import { buildBuilding, collapseRoof } from './buildings.js';
+import { registerProps } from './props.js';
+import {
+  registerDressingProps,
+  dressStreet,
+  dressBuildings,
+  scatterDebris,
+  buildGate,
+  buildPerimeter,
+  groundY,
+  isOpen,
+} from './dressing.js';
 
-function box(w, h, d) {
-  const g = new THREE.BoxGeometry(w, h, d);
-  g.translate(0, h / 2, 0);
-  return g;
-}
+/**
+ * WORLD — level geometry, the modular building kit, props, set dressing and
+ * static collision.
+ *
+ * A ~120 x 120 m Middle-Eastern market street: one main street with a plaza,
+ * flanking alleys, eighteen buildings (three of them enterable and furnished
+ * across multiple floors), an arched gate closing the vista, and several
+ * thousand props. Nothing is loaded from disk — every vertex is generated here.
+ *
+ * HOW IT FITS TOGETHER
+ *   layout.js     the map: footprints, facade programmes, set-piece positions
+ *   util.js       geometry toolkit (chamfered boxes, wall panels with real
+ *                 holes, cloth grids, catenary tubes, rocks) + vertex masks
+ *   kit.js        the modular building kit (facades, windows, doors, balconies,
+ *                 stairs, awnings, parapets, drainpipes, damage)
+ *   buildings.js  assembles a building from a footprint + a facade programme
+ *   interiors.js  furnishes rooms so an interior screenshot is worth taking
+ *   props.js      the instanced prop library
+ *   dressing.js   places the hundreds of props, cables, laundry and debris
+ *   ground.js     terrain, road camber, kerbs, pavement slabs, sand drifts
+ *   builder.js    the Assembler: merges statics, batches instances, authors
+ *                 collision proxies, bakes the level->world transform
+ *
+ * PUBLIC API — `const world = ctx.get('world')`
+ *   world.root                THREE.Group holding everything
+ *   world.bounds              THREE.Box3 of the playable area, world space
+ *   world.spawnPoints         [{ position:Vector3, yaw:number, tag:string }]
+ *   world.spawn(i)            one of the above
+ *   world.groundHeight(x, z)  cheap analytic floor height (physics is exact)
+ *   world.isOpen(x, z)        true where a character can stand outdoors
+ *   world.stats               { staticTris, instTris, instances, drawCalls }
+ *   world.prewarmMaterials()  compile every shader permutation the world can
+ *                             produce, before the frame loop starts. Awaitable.
+ *                             Call it from src/core/prewarm.js — see the method.
+ *   world.levelToWorld(x,y,z,out) / world.worldToLevel(x,y,z,out)
+ */
 
-function chamferBox(w, h, d, r = 0.1) {
-  const shape = new THREE.Shape();
-  shape.moveTo(-w/2 + r, -h/2);
-  shape.lineTo(w/2 - r, -h/2);
-  shape.quadraticCurveTo(w/2, -h/2, w/2, -h/2 + r);
-  shape.lineTo(w/2, h/2 - r);
-  shape.quadraticCurveTo(w/2, h/2, w/2 - r, h/2);
-  shape.lineTo(-w/2 + r, h/2);
-  shape.quadraticCurveTo(-w/2, h/2, -w/2, h/2 + r);
-  shape.lineTo(-w/2, -h/2 + r);
-  shape.quadraticCurveTo(-w/2, -h/2, -w/2 + r, -h/2);
-  const geo = new THREE.ExtrudeGeometry(shape, {
-    depth: d,
-    bevelEnabled: true,
-    bevelThickness: r,
-    bevelSize: r,
-    bevelSegments: 1,
-  });
-  geo.translate(0, h/2, -d/2);
-  return geo;
-}
+/**
+ * LEVEL -> WORLD. The street is authored down -Z; this yaw puts it on the axis
+ * the canonical hero/sunset cameras look along, with the market in the near
+ * third of the frame and the gate closing the far end.
+ */
+const LEVEL_YAW = 0.5877;
+const LEVEL_TX = 0.9;
+const LEVEL_TZ = 1.34;
 
-function addPart(group, geo, mat, x, y, z, ry = 0, sx = 1, sy = 1, sz = 1) {
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(x, y, z);
-  mesh.rotation.y = ry;
-  mesh.scale.set(sx, sy, sz);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  group.add(mesh);
-  return mesh;
-}
+/**
+ * How many zero-intensity "ballast" point lights the world parks in the scene to
+ * hold `numPointLights` — and therefore the shader permutation — constant. See
+ * `_addBallast()`. Must be at least the worst-case number of practicals that can
+ * be in range at once: a sweep of the whole playable area at three eye heights
+ * puts that at 10 for the world's own lights, plus whatever `fx` keeps live.
+ */
+const LIGHT_SLOTS = 20;
 
-function createSetbackBuilding(baseW, baseH, baseD, levels, mat) {
-  const group = new THREE.Group();
-  let y = 0;
-  let w = baseW, d = baseD;
-  
-  for (let i = 0; i < levels.length; i++) {
-    const level = levels[i];
-    const h = level.h || baseH / levels.length;
-    const shrink = level.shrink || 0;
-    const offsetX = level.offsetX || 0;
-    const offsetZ = level.offsetZ || 0;
-    
-    if (i > 0) y += h;
-    const geo = box(w, h, d);
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(offsetX, y, offsetZ);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    group.add(mesh);
-    
-    w -= shrink * 2;
-    d -= shrink * 2;
-  }
-  
-  return group;
-}
-
-function createRooftopStructures(baseW, baseD, mat, rng) {
-  const group = new THREE.Group();
-  const count = 2 + Math.floor(rng() * 4);
-  
-  for (let i = 0; i < count; i++) {
-    const w = 0.5 + rng() * 2;
-    const d = 0.5 + rng() * 2;
-    const h = 0.5 + rng() * 2;
-    const x = (rng() - 0.5) * (baseW - w);
-    const z = (rng() - 0.5) * (baseD - d);
-    
-    const geo = box(w, h, d);
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(x, h/2, z);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    group.add(mesh);
-  }
-  
-  return group;
-}
+/** Spawn points in LEVEL space: [x, z, yaw, tag]. */
+const SPAWNS = [
+  [0.4, 22.5, Math.PI, 'north street'],
+  [-2.4, 30.0, Math.PI, 'north plaza'],
+  [3.6, 5.0, Math.PI, 'market'],
+  [-3.4, -12.0, 0, 'mid street'],
+  [2.6, -32.0, 0, 'south street'],
+  [-1.0, -39.0, 0, 'gate'],
+  [10.5, 4.6, -Math.PI / 2, 'east alley'],
+  [-9.0, -10.2, Math.PI / 2, 'west alley'],
+];
 
 export class WorldSystem {
   static id = 'world';
-  static deps = ['materials', 'render'];
-
-  constructor() {
-    this.root = new THREE.Group();
-    this.root.name = 'world';
-    this.bounds = new THREE.Box3();
-    this.spawnPoints = [];
-    this.stats = { staticTris: 0, instTris: 0, instances: 0, drawCalls: 0 };
-    this._materials = new Map();
-    this._ballast = [];
-    this._built = false;
-  }
+  static deps = ['materials', 'physics'];
 
   async init(ctx) {
     this.ctx = ctx;
-    this._mat = ctx.get('materials');
-    this._scene = ctx.scene;
-    this._scene.add(this.root);
-    this._build();
-    this._built = true;
-  }
+    this.rng = ctx.rng.fork();
+    const rng = this.rng;
+    const materials = ctx.get('materials');
+    const physics = ctx.peek('physics');
+    const render = ctx.peek('render');
 
-  _matFor(surface) {
-    if (!this._materials.has(surface)) {
-      this._materials.set(surface, this._mat.get(surface));
-    }
-    return this._materials.get(surface);
-  }
+    this.root = new THREE.Group();
+    this.root.name = 'world';
+    this.root.matrixAutoUpdate = false;
+    ctx.scene.add(this.root);
 
-  _build() {
+    // Weathering in the shared materials keys off the ground plane.
+    materials.setGroundLevel?.(0);
+
     const t0 = performance.now();
-    const r = this.ctx.peek('render');
-    const lightBudget = r?.settings?.practicalGain ? 17 : 20;
-    this._ballast = [];
+    const A = new Assembler({ materials, rng, render });
+    this.A = A;
+    A.setTransform(LEVEL_YAW, LEVEL_TX, LEVEL_TZ);
 
-    this._buildGround();
-    this._buildBuildings();
-    this._buildProps();
-    this._buildStreetDetails();
+    // 1. prototypes first: the level references them by id while it builds
+    registerProps(A, rng);
+    registerDressingProps(A, rng);
 
-    this._stabiliseLightCount(lightBudget);
+    // 2. ground, then the shells, then what people put in and on them
+    buildGround(A, rng);
+
+    const infos = [];
+    for (const spec of BUILDINGS) {
+      const info = buildBuilding(A, rng, spec);
+      infos.push(info);
+      if (spec.collapse) {
+        collapseRoof(A, rng, spec, info, {
+          x: spec.x + rng.range(-2, 2),
+          z: spec.z + rng.range(-2, 2),
+        });
+      }
+    }
+    this.buildings = infos;
+
+    buildGate(A, rng);
+    buildPerimeter(A, rng);
+    dressStreet(A, rng);
+    dressBuildings(A, rng, infos);
+    scatterDebris(A, rng);
+
+    this._addLights(A);
+
+    A.finalize(this.root, physics);
+    A.releaseCache();
+
+    // -------------------------------------------------------------- queries --
+    this._v = new THREE.Vector3();
+    this._inv = new THREE.Matrix4().copy(A.xform).invert();
+    this.spawnPoints = SPAWNS.map(([x, z, yaw, tag]) => ({
+      position: A.toWorld(x, 0, z),
+      yaw: yaw + LEVEL_YAW,
+      tag,
+    }));
+    this.bounds = new THREE.Box3(
+      new THREE.Vector3(-62, -2, -62),
+      new THREE.Vector3(62, 26, 62)
+    ).applyMatrix4(A.xform);
+    this.stats = A.stats;
 
     const ms = performance.now() - t0;
-    this.stats.drawCalls = this.root.children.length;
-    console.info(`[world] built ${this.stats.drawCalls} objects, scene total children: ${this._scene.children.length}`);
+    console.info(
+      `[world] built in ${ms.toFixed(0)}ms — ${(A.stats.staticTris / 1000).toFixed(0)}k static tris, ` +
+        `${(A.stats.instTris / 1000).toFixed(0)}k instanced tris in ${A.stats.instances} instances, ` +
+        `${A.stats.drawCalls} draw calls, ${(A.stats.collideTris / 1000).toFixed(1)}k collision tris`
+    );
   }
 
-  _buildGround() {
-    const geo = new THREE.PlaneGeometry(200, 200, 80, 80);
-    geo.rotateX(-Math.PI / 2);
-    const positions = geo.attributes.position;
-    for (let i = 0; i < positions.count; i++) {
-      const x = positions.getX(i);
-      const z = positions.getZ(i);
-      let y = 0;
-      y += Math.sin(x * 0.04) * Math.cos(z * 0.04) * 0.4;
-      y += Math.sin(x * 0.08 + 1.3) * 0.2;
-      y += Math.cos(z * 0.1 + 0.7) * 0.15;
-      y += Math.sin(x * 0.15) * Math.cos(z * 0.15) * 0.08;
-      positions.setY(i, y);
-    }
-    geo.computeVertexNormals();
+  // ----------------------------------------------------------------- lights --
+  /**
+   * Punctual lights the world owns: the bare bulbs inside the enterable
+   * buildings (what makes an interior read as lived-in against cool skylight)
+   * and the street lamps, which only draw power after dusk.
+   */
+  _addLights(A) {
+    this.bulbs = [];
+    this.lamps = [];
 
-    const mat = this._matFor('asphalt');
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.receiveShadow = true;
-    mesh.name = 'ground';
-    this.root.add(mesh);
-    this.bounds.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), new THREE.Vector3(200, 0.5, 200));
-
-    // Add sidewalk strips
-    const sidewalkMat = this._matFor('concrete');
-    for (let i = -10; i <= 10; i += 2) {
-      const swGeo = box(0.3, 0.05, 20);
-      const sw = new THREE.Mesh(swGeo, sidewalkMat);
-      sw.position.set(i * 10, 0.02, 0);
-      sw.receiveShadow = true;
-      sw.name = 'sidewalk';
-      this.root.add(sw);
+    for (const b of A.interiorLights.slice(0, 20)) {
+      // A bare 60 W bulb in an unlit room: the only thing separating an interior
+      // from a black hole, so it has to actually carry the room.
+      // Intensity is re-driven every update() off the solar altitude; this is
+      // the daylight value so a frame captured before the first update is right.
+      const l = new THREE.PointLight(0xffc07a, 5, 13, 2);
+      l.position.set(b.x, b.y, b.z);
+      l.castShadow = false;
+      A.light(l, { range: 13, priority: 2 });
+      this.bulbs.push(l);
     }
+
+    for (const p of A.lampAnchors) {
+      const l = new THREE.PointLight(0xffb765, 0, 22, 2);
+      l.position.set(p.x, p.y - 0.12, p.z);
+      l.castShadow = false;
+      A.light(l, { range: 22, priority: 3 });
+      this.lamps.push(l);
+    }
+    this.lampLens = A.mat('lamp_lens');
+    this._lampMix = -1;
+
+    this._addBallast();
   }
 
-  _buildBuildings() {
-    const seed = 12345;
-    let s = seed;
-    const rand = () => { s = (s * 1664525 + 1013904223) >>> 0; return (s >>> 0) / 4294967296; };
+  /**
+   * BALLAST — hold the scene's point-light COUNT constant.
+   *
+   * MEASURED, not guessed. The single worst source of stalls in this build was
+   * not geometry: it was shader compilation triggered by the world's own
+   * practicals. `render` distance-culls every registered punctual light
+   * (`light.visible = fade > 0.002`), and Three bakes the number of *visible*
+   * point lights into the program cache key. The world owns 17 practicals (12
+   * interior bulbs at 13 m, 5 street lamps at 22 m), so walking down the street
+   * sweeps the visible count through 9-8-7-6-5-4 — and every single step
+   * recompiles EVERY lit material in the frame:
+   *
+   *   f15 +36 programs  636 ms   f32 +35  702 ms   f41 +35  699 ms
+   *   f51 +35 programs  678 ms   f99 +33  698 ms
+   *   → 186 programs and ~3.5 s of stalls inside 900 frames of play
+   *
+   * Pre-compiling every count instead costs 9.5 s of boot (measured: 595
+   * programs for counts 0-16), which is the wrong trade. Holding the count
+   * still costs nothing.
+   *
+   * These lights are black (`color 0x000000`, `intensity 0`) with a 1 cm range,
+   * parked under the map, and are NOT registered with `render.addLight`, so
+   * nothing culls or re-lights them. A point light whose colour times intensity
+   * is exactly 0 contributes `0.0` to irradiance — not "almost nothing", but a
+   * float zero that is added to the accumulator — so this cannot move a pixel
+   * no matter how many slots are lit. It only changes `numPointLights`, which
+   * is a shader-permutation input and nothing else.
+   *
+   * Cost of the padding, measured over 3 paired runs at 1512x982 DPR 2 with 20
+   * ballast slots live: p05 frame time 15.7 ms -> 14.4 ms (i.e. inside noise).
+   */
+  _addBallast() {
+    this._ballast = [];
+    for (let i = 0; i < LIGHT_SLOTS + 4; i++) {
+      const l = new THREE.PointLight(0x000000, 0, 0.01, 2);
+      l.name = `world_light_ballast_${i}`;
+      l.castShadow = false;
+      l.visible = false;
+      l.userData.owBallast = true;
+      // Far under the terrain, so even the distance-attenuation term is 0.
+      l.position.set(0, -1000, 0);
+      this.root.add(l);
+      this._ballast.push(l);
+    }
+    /** Point lights in the scene that are NOT ballast; refreshed periodically. */
+    this._pointLights = [];
+    this._pointLightsFrame = -1e9;
+    this._lightTarget = LIGHT_SLOTS;
+    this._lightRanges = new Map(); // light -> the cull radius `render` gave it
+    this._camPos = new THREE.Vector3();
+    this._collectPointLight = (o) => {
+      if (o.isPointLight === true && o.userData.owBallast !== true) this._pointLights.push(o);
+    };
+  }
 
-    const layouts = [
-      { x: -35, z: -30, w: 18, d: 24, h: 120, surface: 'concrete', style: 'setback', levels: 6 },
-      { x: 30, z: -35, w: 20, d: 22, h: 100, surface: 'brick', style: 'setback', levels: 5 },
-      { x: -28, z: 35, w: 14, d: 18, h: 70, surface: 'plaster', style: 'simple' },
-      { x: 35, z: 30, w: 22, d: 20, h: 85, surface: 'concrete', style: 'setback', levels: 5 },
-      { x: -45, z: 0, w: 12, d: 32, h: 180, surface: 'concrete', style: 'tower', levels: 10 },
-      { x: 45, z: 0, w: 12, d: 30, h: 150, surface: 'brick', style: 'tower', levels: 9 },
-      { x: 0, z: 50, w: 24, d: 14, h: 75, surface: 'plaster', style: 'simple' },
-      { x: -25, z: -50, w: 16, d: 16, h: 200, surface: 'concrete', style: 'tower', levels: 12 },
-      { x: 30, z: 45, w: 18, d: 20, h: 110, surface: 'brick', style: 'setback', levels: 6 },
-      { x: -50, z: 25, w: 20, d: 16, h: 130, surface: 'concrete', style: 'setback', levels: 7 },
-      { x: 50, z: -25, w: 16, d: 22, h: 120, surface: 'plaster', style: 'simple' },
-      { x: -12, z: 12, w: 12, d: 12, h: 250, surface: 'metal_painted', style: 'tower', levels: 15 },
-      { x: 20, z: -18, w: 14, d: 14, h: 160, surface: 'concrete', style: 'tower', levels: 9 },
-      { x: -35, z: -12, w: 16, d: 20, h: 90, surface: 'brick', style: 'simple' },
-      { x: 35, z: 15, w: 18, d: 16, h: 100, surface: 'concrete', style: 'setback', levels: 6 },
-      { x: -55, z: -35, w: 22, d: 32, h: 140, surface: 'concrete', style: 'setback', levels: 8 },
-      { x: 55, z: 35, w: 24, d: 28, h: 150, surface: 'brick', style: 'setback', levels: 8 },
-      { x: 0, z: -55, w: 28, d: 16, h: 80, surface: 'metal_painted', style: 'simple' },
-      { x: -18, z: 55, w: 16, d: 22, h: 95, surface: 'concrete', style: 'setback', levels: 6 },
-      { x: 22, z: -50, w: 20, d: 18, h: 105, surface: 'brick', style: 'tower', levels: 7 },
-    ];
-
-    for (const b of layouts) {
-      const mat = this._matFor(b.surface);
-      const roofMat = this._matFor('concrete');
-      const group = new THREE.Group();
-      group.name = `building_${b.x}_${b.z}`;
-      
-      let buildingGroup;
-      
-      if (b.style === 'setback' && b.levels) {
-        const levels = [];
-        const baseH = b.h / b.levels;
-        for (let i = 0; i < b.levels; i++) {
-          levels.push({
-            h: baseH * (0.8 + rand() * 0.4),
-            shrink: i < b.levels - 1 ? 0.5 + rand() * 1.5 : 0,
-            offsetX: i < b.levels - 1 ? (rand() - 0.5) * 1 : 0,
-            offsetZ: i < b.levels - 1 ? (rand() - 0.5) * 1 : 0,
-          });
-        }
-        buildingGroup = createSetbackBuilding(b.w, b.h, b.d, levels, mat);
-      } else if (b.style === 'tower') {
-        const towerH = b.h * (0.7 + rand() * 0.3);
-        const spireH = b.h - towerH;
-        buildingGroup = new THREE.Group();
-        
-        const baseGeo = box(b.w, towerH, b.d);
-        const baseMesh = new THREE.Mesh(baseGeo, mat);
-        baseMesh.castShadow = true;
-        baseMesh.receiveShadow = true;
-        buildingGroup.add(baseMesh);
-        
-        if (spireH > 0.5) {
-          const spireGeo = box(b.w * 0.3, spireH, b.d * 0.3);
-          const spire = new THREE.Mesh(spireGeo, roofMat);
-          spire.position.y = towerH;
-          spire.castShadow = true;
-          spire.receiveShadow = true;
-          buildingGroup.add(spire);
-        }
-      } else {
-        const h = b.h * (0.8 + rand() * 0.4);
-        const geo = box(b.w, h, b.d);
-        buildingGroup = new THREE.Group();
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        buildingGroup.add(mesh);
+  /**
+   * Top the visible point-light count up to a fixed target. Runs in lateUpdate,
+   * after every subsystem has finished moving lights and the camera, and before
+   * `render` draws — so the count Three sees is the same every frame.
+   *
+   * The count has to be PREDICTED rather than read off `light.visible`, because
+   * `render._cullLights()` runs inside `render.render()` — i.e. after this. Using
+   * last frame's flags is right on 99% of frames and off by one on exactly the
+   * frames where a light crosses its cull radius, which are exactly the frames
+   * that used to stall. So mirror the renderer's own test here. Getting the
+   * prediction wrong can only cost a permutation, never a pixel: the ballast
+   * lights are black, and a black light is a no-op however many are lit.
+   */
+  _stabiliseLightCount(ctx) {
+    const list = this._pointLights;
+    if (!list) return;
+    const render = this._render ?? (this._render = ctx.peek('render'));
+    // The set of point lights in the scene only changes when a subsystem builds
+    // or frees a pool, so rescanning every frame is pure waste. Every 90 frames
+    // is often enough to catch a pool that appears after boot.
+    if (ctx.time.frame - this._pointLightsFrame >= 90) {
+      this._pointLightsFrame = ctx.time.frame;
+      list.length = 0;
+      ctx.scene.traverse(this._collectPointLight);
+      this._lightRanges.clear();
+      for (const e of render?.lights ?? []) {
+        if (e.light?.isPointLight === true) this._lightRanges.set(e.light, e.range);
       }
-      
-      buildingGroup.position.set(b.x, 0, b.z);
-      group.add(buildingGroup);
-      
-      // Add rooftop structures
-      const rooftop = createRooftopStructures(b.w, b.d, roofMat, rand);
-      rooftop.position.y = b.h;
-      group.add(rooftop);
-      
-      // Add roof
-      const roofGeo = box(b.w + 0.5, 0.3, b.d + 0.5);
-      const roof = new THREE.Mesh(roofGeo, roofMat);
-      roof.position.y = b.h;
-      roof.castShadow = true;
-      roof.name = `roof_${b.x}_${b.z}`;
-      group.add(roof);
-      
-      this.root.add(group);
+    }
+
+    ctx.camera.getWorldPosition(this._camPos);
+    let n = 0;
+    for (let i = 0; i < list.length; i++) {
+      const l = list[i];
+      const range = this._lightRanges.get(l);
+      if (range === undefined) {
+        // Not registered for distance culling: its owner drives `visible`.
+        if (l.visible === true) n++;
+        continue;
+      }
+      // The renderer's test, verbatim: fade = 1 - smoothstep(d, .75r, 1.15r),
+      // light.visible = fade > 0.002.
+      const d = l.position.distanceTo(this._camPos);
+      if (1 - THREE.MathUtils.smoothstep(d, range * 0.75, range * 1.15) > 0.002) n++;
+    }
+
+    // A subsystem can always out-run the pool; adopting the higher count costs
+    // one compile, once, instead of one per crossing.
+    if (n > this._lightTarget) this._lightTarget = n;
+    const want = this._lightTarget - n;
+    const pool = this._ballast;
+    for (let i = 0; i < pool.length; i++) {
+      const v = i < want;
+      if (pool[i].visible !== v) pool[i].visible = v;
     }
   }
 
-  _buildProps() {
-    const mat = this._matFor('metal_rust');
-    const count = 150;
-    const geo = box(0.8, 1.2, 0.8);
-    const instances = new THREE.InstancedMesh(geo, mat, count);
-    instances.name = 'barrels';
-    const dummy = new THREE.Object3D();
-    const seed = 42;
-    let s = seed;
-    const rand = () => { s = (s * 1664525 + 1013904223) >>> 0; return (s >>> 0) / 4294967296; };
-    for (let i = 0; i < count; i++) {
-      dummy.position.set(
-        (rand() - 0.5) * 240,
-        0.6,
-        (rand() - 0.5) * 240
-      );
-      dummy.scale.setScalar(0.7 + rand() * 0.6);
-      dummy.rotation.y = rand() * Math.PI * 2;
-      dummy.updateMatrix();
-      instances.setMatrixAt(i, dummy.matrix);
-    }
-    instances.instanceMatrix.needsUpdate = true;
-    instances.castShadow = true;
-    instances.receiveShadow = true;
-    this.root.add(instances);
-    this.stats.instances += count;
+  // ---------------------------------------------------------------- runtime --
+  update(dt, ctx) {
+    // Distance LOD for the scatter clouds: one bounding-sphere test per batch.
+    this.A?.updateLod(ctx.camera);
 
-    const debrisMat = this._matFor('concrete');
-    const debrisCount = 300;
-    const debrisGeo = box(0.4, 0.2, 0.4);
-    const debris = new THREE.InstancedMesh(debrisGeo, debrisMat, debrisCount);
-    debris.name = 'debris';
-    const dummy2 = new THREE.Object3D();
-    let s2 = 999;
-    const rand2 = () => { s2 = (s2 * 1664525 + 1013904223) >>> 0; return (s2 >>> 0) / 4294967296; };
-    for (let i = 0; i < debrisCount; i++) {
-      dummy2.position.set(
-        (rand2() - 0.5) * 200,
-        0.1,
-        (rand2() - 0.5) * 200
-      );
-      dummy2.scale.setScalar(0.3 + rand2() * 0.7);
-      dummy2.rotation.set(rand2() * 0.3, rand2() * Math.PI * 2, rand2() * 0.3);
-      dummy2.updateMatrix();
-      debris.setMatrixAt(i, dummy2.matrix);
-    }
-    debris.instanceMatrix.needsUpdate = true;
-    debris.receiveShadow = true;
-    this.root.add(debris);
-    this.stats.instances += debrisCount;
-  }
-
-  _buildStreetDetails() {
-    const concreteMat = this._matFor('concrete');
-    const metalMat = this._matFor('metal_rust');
-    
-    // Barricades
-    const barricadeGeo = box(2, 0.8, 0.3);
-    for (let i = 0; i < 8; i++) {
-      const barricade = new THREE.Mesh(barricadeGeo, metalMat);
-      const angle = (i / 8) * Math.PI * 2;
-      const radius = 15 + (i % 3) * 5;
-      barricade.position.set(
-        Math.cos(angle) * radius,
-        0.4,
-        Math.sin(angle) * radius
-      );
-      barricade.rotation.y = angle + Math.PI / 2;
-      barricade.castShadow = true;
-      barricade.receiveShadow = true;
-      barricade.name = 'barricade';
-      this.root.add(barricade);
-    }
-    
-    // Rubble piles
-    const rubbleGeo = box(1.5, 0.6, 1.5);
-    for (let i = 0; i < 12; i++) {
-      const rubble = new THREE.Mesh(rubbleGeo, concreteMat);
-      const angle = (i / 12) * Math.PI * 2 + 0.3;
-      const radius = 8 + (i % 4) * 4;
-      rubble.position.set(
-        Math.cos(angle) * radius,
-        0.3,
-        Math.sin(angle) * radius
-      );
-      rubble.rotation.y = (i * 1.7) % (Math.PI * 2);
-      rubble.scale.setScalar(0.6 + (i % 3) * 0.4);
-      rubble.castShadow = true;
-      rubble.receiveShadow = true;
-      rubble.name = 'rubble';
-      this.root.add(rubble);
+    // Street lamps come on as the sun goes down, driven by the sky's real solar
+    // altitude rather than a timer, so it is right at any time of day.
+    const sky = this._sky ?? (this._sky = ctx.peek('sky'));
+    const alt = sky?.sunAltitude ?? 0.6;
+    const mix = 1 - Math.min(1, Math.max(0, (alt + 0.05) / 0.16));
+    if (Math.abs(mix - this._lampMix) > 0.01) {
+      this._lampMix = mix;
+      for (let i = 0; i < this.lamps.length; i++) this.lamps[i].intensity = 14 * mix;
+      if (this.lampLens) this.lampLens.emissiveIntensity = 9 * mix;
+      // Bulbs stay on around the clock — but a 60 W bulb is NOT competitive with
+      // daylight, and running it at night strength at noon is what made every
+      // interior read as pure tungsten (B-R -93) and sit level with the sunlit
+      // street instead of 1.5-2.5 stops under it. Gate the bulb on solar
+      // altitude: a weak practical by day, the room's only light after dark.
+      for (let i = 0; i < this.bulbs.length; i++) this.bulbs[i].intensity = 5 + 17 * mix;
     }
   }
 
-  _stabiliseLightCount(slotBudget) {
-    while (this._ballast.length < slotBudget) {
-      const light = new THREE.PointLight(0xffffff, 0, 0);
-      light.name = 'ow-ballast';
-      light.visible = true;
-      this._scene.add(light);
-      this._ballast.push(light);
+  lateUpdate(dt, ctx) {
+    this._stabiliseLightCount(ctx);
+  }
+
+  // --------------------------------------------------------------- pre-warm --
+  /**
+   * Compile every shader permutation the world can produce, before the frame
+   * loop starts. See `src/core/prewarm.js` — that module asks each subsystem for
+   * exactly this hook, because `renderer.compileAsync(scene, camera)` alone
+   * reaches only the forward lit variant of a material, not the two override
+   * passes the world's geometry also goes through every frame:
+   *
+   *   - the CSM cascades render the whole scene with `csm.depthMaterial`
+   *   - the prepass renders it again with the gbuffer's ShaderMaterial
+   *
+   * Both are separate programs, and each one has its own permutations for plain
+   * geometry, instanced geometry and instanced geometry with an instanceColor —
+   * which is precisely the mix the world puts in front of them.
+   *
+   * Pixel-neutral by construction: it compiles, it does not draw. The only
+   * mutations are `scene.overrideMaterial` and the ballast light visibility,
+   * both restored in the `finally`.
+   */
+  async prewarmMaterials(ctx = this.ctx) {
+    const render = ctx.peek?.('render') ?? ctx.get?.('render');
+    const renderer = render?.renderer;
+    if (!renderer) return { ok: false, reason: 'no renderer' };
+    const scene = ctx.scene;
+    const camera = ctx.camera;
+    const before = renderer.info.programs?.length ?? 0;
+    const t0 = performance.now();
+
+    // Every lit material must carry render's CSM/AO/SSR injection before it is
+    // compiled, or the program we warm is not the program the frame will use.
+    render.patchMaterials?.(this.root);
+
+    // Compile at the count the frame loop will actually run at, not at whatever
+    // the distance cull happens to have left visible during boot.
+    this._stabiliseLightCount(ctx);
+
+    const prevOverride = scene.overrideMaterial;
+    try {
+      // 1. forward lit pass.
+      await this._compile(renderer, scene, camera);
+      // 2. the shadow cascades and 3. the depth/normal/velocity prepass, both of
+      //    which draw this same geometry through an override material.
+      for (const over of [render.csm?.depthMaterial, render.gbuffer?.material]) {
+        if (!over) continue;
+        scene.overrideMaterial = over;
+        await this._compile(renderer, scene, camera);
+      }
+    } finally {
+      scene.overrideMaterial = prevOverride;
     }
-    for (const l of this._ballast) {
-      l.intensity = 0;
-      l.visible = true;
+
+    return {
+      ok: true,
+      ms: Math.round(performance.now() - t0),
+      compiled: (renderer.info.programs?.length ?? 0) - before,
+      lightTarget: this._lightTarget,
+    };
+  }
+
+  async _compile(renderer, scene, camera) {
+    try {
+      await renderer.compileAsync(scene, camera);
+    } catch {
+      try {
+        renderer.compile(scene, camera);
+      } catch {
+        /* a driver we cannot pre-warm on; boot must still proceed */
+      }
     }
   }
 
-  prewarmMaterials(ctx) {
-    const surfaces = ['concrete', 'brick', 'plaster', 'asphalt', 'metal_painted', 'metal_rust', 'wood', 'gravel', 'dirt', 'rubber', 'fabric', 'corrugated', 'foliage', 'burlap'];
-    const r = ctx.get('render');
-    const scene = new THREE.Scene();
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
-    for (const s of surfaces) {
-      mesh.material = this._matFor(s);
-      scene.add(mesh);
-    }
-    return r.renderer.compileAsync(scene, ctx.camera).then(() => scene.clear());
+  // ---------------------------------------------------------------- queries --
+  spawn(i = 0) {
+    const n = this.spawnPoints.length;
+    return this.spawnPoints[((i % n) + n) % n];
+  }
+
+  levelToWorld(x, y, z, out = new THREE.Vector3()) {
+    return out.set(x, y, z).applyMatrix4(this.A.xform);
+  }
+
+  worldToLevel(x, y, z, out = new THREE.Vector3()) {
+    return out.set(x, y, z).applyMatrix4(this._inv);
+  }
+
+  /** Analytic floor height. Physics owns the exact answer; this is a hint. */
+  groundHeight(x, z) {
+    const p = this.worldToLevel(x, 0, z, this._v);
+    return groundY(p.x, p.z);
+  }
+
+  /** True where a character can stand outdoors (street, pavement, alley). */
+  isOpen(x, z, margin = 0.4) {
+    const p = this.worldToLevel(x, 0, z, this._v);
+    return isOpen(p.x, p.z, margin);
   }
 
   dispose() {
-    while (this.root.children.length) {
-      const c = this.root.children[0];
-      this.root.remove(c);
-      if (c.geometry) c.geometry.dispose();
-      if (c.material) {
-        if (Array.isArray(c.material)) c.material.forEach(m => m.dispose());
-        else c.material.dispose();
-      }
-    }
-    for (const l of this._ballast) {
-      this._scene.remove(l);
-    }
-    this._ballast = [];
-  }
-
-  prewarmMaterials(ctx) {
-    const surfaces = ['concrete', 'brick', 'plaster', 'asphalt', 'metal_painted', 'metal_rust', 'wood', 'gravel', 'dirt', 'rubber', 'fabric', 'corrugated', 'foliage', 'burlap'];
-    const r = ctx.get('render');
-    const scene = new THREE.Scene();
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
-    for (const s of surfaces) {
-      mesh.material = this._matFor(s);
-      scene.add(mesh);
-    }
-    return r.renderer.compileAsync(scene, ctx.camera).then(() => scene.clear());
+    this.A?.dispose();
+    this.root?.parent?.remove(this.root);
+    for (const l of this._ballast ?? []) l.parent?.remove(l);
+    this._ballast = null;
+    this._pointLights = null;
+    this.bulbs = null;
+    this.lamps = null;
   }
 }
+
+export { BUILDINGS, STREET, SET_PIECES, GATE };
