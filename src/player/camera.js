@@ -59,6 +59,7 @@ export class CameraRig {
     this.turnRoll = 0;
     this.slideRoll = 0;
     this.airRoll = 0;
+    this.wallRunRoll = 0;
 
     // ---- shake -----------------------------------------------------------
     this.trauma = 0;
@@ -88,6 +89,23 @@ export class CameraRig {
     // scratch
     this._fwd = new THREE.Vector3();
     this._right = new THREE.Vector3();
+
+    // ---- third-person ------------------------------------------------------
+    this.orbitYaw = 0;
+    this.orbitPitch = 0.35;
+    this.orbitDistance = 4.0;
+    this.orbitHeight = 1.0;
+    this._currentDistance = 4.0;
+    this.cameraPosition = new THREE.Vector3();
+    this.lookTarget = new THREE.Vector3();
+    this._tpFollowPos = new THREE.Vector3();
+    this._tpLookTarget = new THREE.Vector3();
+    this._tpFollowTau = 14;
+    this._tpLookTau = 20;
+    this._tpPitchLimit = Math.PI * 0.38;
+    this._tpMat = new THREE.Matrix4();
+    this._tpUp = new THREE.Vector3(0, 1, 0);
+    this._wasThirdPerson = false;
   }
 
   reset(eye) {
@@ -108,8 +126,15 @@ export class CameraRig {
     this.turnRoll = 0;
     this.slideRoll = 0;
     this.slideBlend = 0;
+    this.wallRunRoll = 0;
     this.fovMove = 1;
     this.fovAds = 1;
+    this._wasThirdPerson = false;
+    this._currentDistance = this.orbitDistance;
+    this.cameraPosition.set(0, this.eye, 0);
+    this.lookTarget.set(0, this.eye, 0);
+    this._tpFollowPos.copy(this.cameraPosition);
+    this._tpLookTarget.copy(this.lookTarget);
   }
 
   /* ==================================================================== */
@@ -219,6 +244,10 @@ export class CameraRig {
     const airTarget = m.grounded ? 0 : clamp(-m.velocity.y * 0.02, -1, 1) * R.air;
     this.airRoll = approach(this.airRoll, airTarget, 0.22, dt);
 
+    // Wall-run roll
+    const wallRunTarget = m.wallrunning ? m.wallRunMotion.cameraRoll * m.wallRunMotion.progress : 0;
+    this.wallRunRoll = approach(this.wallRunRoll, wallRunTarget, 0.18, dt);
+
     // ---- trauma shake ----------------------------------------------------
     const S = C.shake;
     this.trauma = Math.max(0, this.trauma - S.decay * dt);
@@ -279,6 +308,78 @@ export class CameraRig {
       base.z + m.leanOffsetZ + this.offset.z
     );
 
+    // ---- third-person follow camera --------------------------------------
+    const isTP = cfg.thirdPerson;
+    if (isTP) {
+      if (!this._wasThirdPerson) {
+        this.orbitYaw = m.yaw;
+        this.orbitPitch = 0.35;
+        this._wasThirdPerson = true;
+        this._currentDistance = this.orbitDistance;
+        this.cameraPosition.copy(this.eyePosition);
+        this.lookTarget.copy(this.eyePosition);
+        this._tpFollowPos.copy(this.eyePosition);
+        this._tpLookTarget.copy(this.eyePosition);
+      }
+
+      if (m.targetLocked && m.lockTarget && !m.lockTarget.dead) {
+        const tPos = m.lockTarget.position.clone();
+        tPos.y += 1.4;
+        const dir = new THREE.Vector3().subVectors(tPos, this.eyePosition).normalize();
+        const targetYaw = Math.atan2(-dir.x, -dir.z);
+        const targetPitch = Math.asin(clamp(dir.y, -1, 1));
+        let dYaw = targetYaw - this.orbitYaw;
+        while (dYaw > Math.PI) dYaw -= Math.PI * 2;
+        while (dYaw < -Math.PI) dYaw += Math.PI * 2;
+        this.orbitYaw += dYaw * (1 - Math.exp(-14 * dt));
+        this.orbitPitch += (targetPitch - this.orbitPitch) * (1 - Math.exp(-14 * dt));
+      }
+
+      const dist = this._currentDistance;
+      const ph = this.orbitPitch;
+      const oy = this.orbitYaw;
+      const oh = this.orbitHeight;
+      const hOff = dist > 0.01 ? oh + Math.sin(ph) * dist : 0;
+      const desiredPos = new THREE.Vector3(
+        this.eyePosition.x + Math.sin(oy) * Math.cos(ph) * dist,
+        this.eyePosition.y + hOff,
+        this.eyePosition.z + Math.cos(oy) * Math.cos(ph) * dist
+      );
+
+      const phys = this.ctx.peek('physics');
+      if (phys && dist > 0.1) {
+        const toCam = new THREE.Vector3().subVectors(desiredPos, this.eyePosition);
+        const totalDist = toCam.length();
+        if (totalDist > 0.01) {
+          const dir = toCam.normalize();
+          const hit = phys.raycast(
+            this.eyePosition.x, this.eyePosition.y, this.eyePosition.z,
+            dir.x, dir.y, dir.z,
+            totalDist,
+            phys.MASK.WORLD
+          );
+          if (hit.hit) {
+            const newDist = Math.max(0.2, hit.distance - 0.15);
+            desiredPos.copy(this.eyePosition).addScaledVector(dir, newDist);
+          }
+        }
+      }
+
+      const followT = 1 - Math.exp(-this._tpFollowTau * dt);
+      this._tpFollowPos.lerp(desiredPos, followT);
+      this.cameraPosition.copy(this._tpFollowPos);
+
+      const wantLook = m.targetLocked && m.lockTarget && !m.lockTarget.dead
+        ? m.lockTarget.position.clone().add(new THREE.Vector3(0, 1.4, 0))
+        : this.eyePosition.clone();
+      const lookT = 1 - Math.exp(-this._tpLookTau * dt);
+      this._tpLookTarget.lerp(wantLook, lookT);
+      this.lookTarget.copy(this._tpLookTarget);
+
+      const wantDist = (ads > 0.5 || (m.targetLocked && m.lockTarget && !m.lockTarget.dead)) ? 0 : this.orbitDistance;
+      this._currentDistance += (wantDist - this._currentDistance) * (1 - Math.exp(-12 * dt));
+    }
+
     // ---- assemble rotation ----------------------------------------------
     const pitch = clamp(
       m.pitch + this.recoilPitch.value + this.kickPitch.value + breathPitch +
@@ -288,23 +389,32 @@ export class CameraRig {
     );
     const yaw = m.yaw + this.recoilYaw.value + this.kickYaw.value + breathYaw + shakeYaw;
     const roll =
-      this.strafeRoll + this.turnRoll + this.slideRoll + this.airRoll +
+      this.strafeRoll + this.turnRoll + this.slideRoll + this.airRoll + this.wallRunRoll +
       this.bobRoll + this.recoilRoll.value + this.kickRoll.value + shakeRoll +
       mantleRoll - m.leanAmount * MOVE.lean.roll;
 
     this.rotation.set(pitch, yaw, roll);
 
-    // ---- FOV -------------------------------------------------------------
+    // ---- FOV / motion blur -----------------------------------------------
     const F = C.fov;
     let moveTarget = 1;
     if (m.sliding) moveTarget = F.slide;
     else if (m.tacticalSprint) moveTarget = F.tacSprint;
     else if (m.sprinting) moveTarget = F.sprint;
     else if (!m.grounded && m.velocity.y < -6) moveTarget = F.air;
+    else if (m.wallrunning) moveTarget = 1.04;
+    else if (m.dashing) moveTarget = 1.08;
     this.fovMove = approach(this.fovMove, moveTarget, F.moveTau, dt);
     this.fovAds = approach(this.fovAds, lerp(1, cfg.adsFovScale, ads), F.adsTau, dt);
     this.baseFov = cfg.fov;
     this.fov = this.baseFov * this.fovMove * this.fovAds;
+
+    // Motion blur weight: exposed for the renderer's post-process pass.
+    // 0 = no blur, 1 = full speed blur.
+    this.motionBlur = clamp01(
+      (m.horizontalSpeed - MOVE.sprintSpeed) / (MOVE.tacSprintSpeed - MOVE.sprintSpeed) * 0.6 +
+      (m.wallrunning ? 0.25 : 0) + (m.dashing ? 0.4 : 0)
+    );
 
     // ---- publish the kick channel for the viewmodel ----------------------
     this.viewKick.pitch = this.recoilPitch.value + this.kickPitch.value;
@@ -344,8 +454,16 @@ export class CameraRig {
 
   /** Write the composed transform onto the engine camera. */
   applyTo(camera) {
-    camera.position.copy(this.eyePosition);
-    camera.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
+    const isTP = this.ctx.config.thirdPerson;
+    if (isTP && this._currentDistance > 0.05) {
+      camera.position.copy(this.cameraPosition);
+      this._tpMat.lookAt(this.cameraPosition, this.lookTarget, this._tpUp);
+      camera.quaternion.setFromRotationMatrix(this._tpMat);
+      this.rotation.setFromQuaternion(camera.quaternion);
+    } else {
+      camera.position.copy(this.eyePosition);
+      camera.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
+    }
     if (Math.abs(camera.fov - this.fov) > 1e-3) {
       camera.fov = this.fov;
       camera.updateProjectionMatrix();

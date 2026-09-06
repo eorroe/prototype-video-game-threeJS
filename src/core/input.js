@@ -24,6 +24,7 @@ export const ACTIONS = {
   grenade: ['KeyG'],
   flashlight: ['KeyT'],
   pause: ['Escape'],
+  targetLock: ['Mouse4', 'Mouse5'],
 };
 
 export class Input {

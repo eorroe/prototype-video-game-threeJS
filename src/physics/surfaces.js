@@ -22,6 +22,7 @@ export const SURFACE_NAMES = [
   'foliage',
   'fabric',
   'flesh',
+  'flesh_infected',
   'rubber',
   'plaster',
 ];
@@ -62,6 +63,8 @@ export const SURFACE_PROPS = [
   { penDepth: 2.2, energyLoss: 0.06, deflect: 0.01, friction: 0.8, restitution: 0.05, density: 400, hardness: 0.02, shatters: false },
   // flesh
   { penDepth: 0.55, energyLoss: 0.35, deflect: 0.02, friction: 0.9, restitution: 0.05, density: 1050, hardness: 0.05, shatters: false },
+  // flesh_infected: softer, higher energy loss, lower hardness
+  { penDepth: 0.62, energyLoss: 0.45, deflect: 0.025, friction: 0.85, restitution: 0.04, density: 980, hardness: 0.03, shatters: false },
   // rubber
   { penDepth: 0.28, energyLoss: 0.4, deflect: 0.04, friction: 1.25, restitution: 0.72, density: 1200, hardness: 0.1, shatters: false },
   // plaster / drywall
@@ -90,6 +93,7 @@ const GUESS = [
   [/foliage|leaf|leaves|bush|tree|grass|plant|hedge|shrub/i, SURFACE.foliage],
   [/fabric|cloth|canvas|tarp|curtain|carpet|rug|sofa|awning/i, SURFACE.fabric],
   [/flesh|body|skin|head|torso|limb|enemy|actor|char/i, SURFACE.flesh],
+  [/flesh_infected|infected|zombie|undead/i, SURFACE.flesh_infected],
   [/rubber|tyre|tire|hose|mat/i, SURFACE.rubber],
   [/plaster|drywall|gypsum|stucco|wall|ceiling|partition/i, SURFACE.plaster],
 ];

@@ -14,6 +14,7 @@ import {
   groundY,
   isOpen,
 } from './dressing.js';
+import { ChunkStreamer } from './chunkstream.js';
 
 /**
  * WORLD — level geometry, the modular building kit, props, set dressing and
@@ -37,6 +38,8 @@ import {
  *   ground.js     terrain, road camber, kerbs, pavement slabs, sand drifts
  *   builder.js    the Assembler: merges statics, batches instances, authors
  *                 collision proxies, bakes the level->world transform
+ *   districts.js  district themes, safe houses, collectibles
+ *   chunkstream.js chunk-based district streaming for the open world
  *
  * PUBLIC API — `const world = ctx.get('world')`
  *   world.root                THREE.Group holding everything
@@ -48,8 +51,8 @@ import {
  *   world.stats               { staticTris, instTris, instances, drawCalls }
  *   world.prewarmMaterials()  compile every shader permutation the world can
  *                             produce, before the frame loop starts. Awaitable.
- *                             Call it from src/core/prewarm.js — see the method.
  *   world.levelToWorld(x,y,z,out) / world.worldToLevel(x,y,z,out)
+ *   world.districtManager     ChunkStreamer instance for open-world districts
  */
 
 /**
@@ -102,6 +105,11 @@ export class WorldSystem {
     // Weathering in the shared materials keys off the ground plane.
     materials.setGroundLevel?.(0);
 
+    // ---- open-world district streaming ----
+    this.districtManager = new ChunkStreamer(ctx);
+    await this.districtManager.init();
+
+    // ---- legacy single-level build (retained as fallback / capture mode) ----
     const t0 = performance.now();
     const A = new Assembler({ materials, rng, render });
     this.A = A;
@@ -312,6 +320,9 @@ export class WorldSystem {
     // Distance LOD for the scatter clouds: one bounding-sphere test per batch.
     this.A?.updateLod(ctx.camera);
 
+    // Stream districts around the player.
+    this.districtManager?.update(dt);
+
     // Street lamps come on as the sun goes down, driven by the sky's real solar
     // altitude rather than a timer, so it is right at any time of day.
     const sky = this._sky ?? (this._sky = ctx.peek('sky'));
@@ -321,11 +332,6 @@ export class WorldSystem {
       this._lampMix = mix;
       for (let i = 0; i < this.lamps.length; i++) this.lamps[i].intensity = 14 * mix;
       if (this.lampLens) this.lampLens.emissiveIntensity = 9 * mix;
-      // Bulbs stay on around the clock — but a 60 W bulb is NOT competitive with
-      // daylight, and running it at night strength at noon is what made every
-      // interior read as pure tungsten (B-R -93) and sit level with the sunlit
-      // street instead of 1.5-2.5 stops under it. Gate the bulb on solar
-      // altitude: a weak practical by day, the room's only light after dark.
       for (let i = 0; i < this.bulbs.length; i++) this.bulbs[i].intensity = 5 + 17 * mix;
     }
   }
@@ -432,6 +438,7 @@ export class WorldSystem {
   }
 
   dispose() {
+    this.districtManager?.dispose();
     this.A?.dispose();
     this.root?.parent?.remove(this.root);
     for (const l of this._ballast ?? []) l.parent?.remove(l);

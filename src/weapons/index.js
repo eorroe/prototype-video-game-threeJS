@@ -4,6 +4,8 @@ import { WeaponMaterials, ENV_OCCLUSION } from './materials.js';
 import { Viewmodel } from './viewmodel.js';
 import { ProjectileSim } from './ballistics.js';
 import { WEAPON_DEFS, buildRecoilPattern, SPREAD_MODS } from './defs.js';
+import { MELEE_TYPES, ATTACK_DEFS, DEATH_STATE } from './melee-defs.js';
+import { MeleeSystem, ComboTracker, LimbHealth } from './melee.js';
 import { buildRifle } from './models/rifle.js';
 import { buildSmg } from './models/smg.js';
 import { buildPistol } from './models/pistol.js';
@@ -68,6 +70,9 @@ export class WeaponSystem {
     this.states = new Map();
     this.activeId = 'rifle';
     this.debugMode = null;
+    this.melee = null;
+    this.meleeActive = false;
+    this.meleeWeaponId = 'knife';
 
     this._fireTimer = 0;
     this._burstLeft = 0;
@@ -79,6 +84,11 @@ export class WeaponSystem {
     this._switchTimer = 0;
     this._switchTo = null;
     this._reloadPhase = null;
+    this._meleeType = 'blade';
+    this._meleeAttackType = null;
+    this._meleeCharging = false;
+    this._meleeBlocking = false;
+    this._meleeCooldown = 0;
 
     this._muzzle = new THREE.Vector3();
     this._dir = new THREE.Vector3();
@@ -117,11 +127,26 @@ export class WeaponSystem {
       airborne: false,
       trigger: false,
       empty: false,
+      locked: false,
+      melee: false,
+      meleeAttacking: false,
+      meleeBlocking: false,
+      meleeCharging: false,
+      meleeChargeProgress: 0,
+      meleeComboCount: 0,
+      meleeFinisherAvailable: false,
+      meleeStamina: 100,
+      meleeStunTimer: 0,
+      meleePerfectParryFlash: false,
+      meleeType: 'blade',
     };
     // Preallocated HUD snapshot handed to `ui` (see getHudState).
     this._hudState = {
       name: '', mode: 'auto', ammo: 0, reserve: 0, magSize: 0,
       reloading: false, reloadProgress: 0, ads: false, spread: 0, firing: false,
+      meleeActive: false, meleeType: 'blade', meleeComboCount: 0, meleeFinisherAvailable: false,
+      meleeStamina: 100, meleeStunTimer: 0, meleePerfectParryFlash: false,
+      meleeBlocking: false, meleeCharging: false, meleeChargeProgress: 0,
     };
   }
 
@@ -172,6 +197,7 @@ export class WeaponSystem {
     this.fx = ctx.peek('fx');
     this.physics = ctx.peek('physics');
     this._off = [];
+    this.melee = new MeleeSystem(ctx);
     this._off.push(
       ctx.events.on('player:land', (e) => this.viewmodel.land(Math.abs(e?.velocity ?? 3)))
     );
@@ -197,7 +223,7 @@ export class WeaponSystem {
   }
 
   get weaponIds() {
-    return [...this.states.keys()];
+    return [...this.states.keys(), 'knife', 'fists', 'claws'];
   }
 
   get ammo() {
@@ -255,7 +281,7 @@ export class WeaponSystem {
    * documented at the top of src/ui/index.js; the object is preallocated and
    * mutated in place because `ui` reads it once per frame and never keeps it.
    */
-  getHudState() {
+   getHudState() {
     const h = this._hudState;
     const s = this.state;
     if (!s) return h;
@@ -279,6 +305,22 @@ export class WeaponSystem {
     // normalised 0..1 rather than raw degrees.
     h.spread = Math.min(1, Math.max(0, this._spread / 6));
     h.firing = this.firing;
+    const melee = this.melee;
+    if (melee) {
+      const comboState = melee.combo.getState();
+      const playerLimb = this.players?.get(this.player);
+      const blockState = melee.getBlockState(playerLimb);
+      h.meleeActive = melee.getCurrentAttack() !== null;
+      h.meleeType = melee.getMeleeType();
+      h.meleeComboCount = comboState.count;
+      h.meleeFinisherAvailable = comboState.finisherAvailable;
+      h.meleeStamina = blockState.stamina;
+      h.meleeStunTimer = blockState.stunTimer;
+      h.meleePerfectParryFlash = blockState.perfectFlash;
+      h.meleeBlocking = blockState.blocking;
+      h.meleeCharging = melee.getCurrentAttack()?.charging ?? false;
+      h.meleeChargeProgress = melee.getCurrentAttack()?.getProgress?.() ?? 0;
+    }
     return h;
   }
 
@@ -599,6 +641,7 @@ export class WeaponSystem {
     // ---- gather state ----------------------------------------------------
     const live = !input.frozen && input.enabled !== false && this.debugMode === null;
     st.ads = live ? input.ads || player?.adsRequested === true : this.debugMode === 'ads';
+    st.locked = live ? player?.targetLocked === true : false;
     st.sprint = live ? player?.sprinting === true && this._sinceShot > 0.3 : false;
     st.speed = player?.horizontalSpeed ?? player?.speed ?? 0;
     st.crouch = player?.stance === 'crouch';
@@ -620,6 +663,8 @@ export class WeaponSystem {
       st.trigger = input.fire && this.canFire();
       // Auto-reload on a dry trigger pull, like every modern shooter.
       if (input.firePressed && st.empty) this.reload();
+      // Melee input.
+      this._runMeleeInput(dt, input, st, ctx);
     } else if (this.debugMode) {
       this._runDebug(ctx);
       st.trigger = this._sinceShot < 0.09;
@@ -658,6 +703,119 @@ export class WeaponSystem {
     }
   }
 
+  _runMeleeInput(dt, input, st, ctx) {
+    const melee = this.melee;
+    if (!melee) return;
+    if (this._meleeCooldown > 0) {
+      this._meleeCooldown -= dt;
+      return;
+    }
+    const attack = melee.getCurrentAttack();
+    const combo = melee.combo;
+    if (input.actionPressed('melee')) {
+      if (attack && !attack.getCanInterrupt()) return;
+      const attackType = combo.canChain('light') ? 'light' : 'light';
+      ctx.events.emit('melee:attack', { attacker: this.player, attackType, meleeType: this._meleeType });
+      this._meleeAttackType = attackType;
+      this._meleeCooldown = 0.1;
+    }
+    if (input.pressed('Mouse3')) {
+      if (attack && !attack.getCanInterrupt()) return;
+      const attackType = combo.canChain('heavy') ? 'heavy' : 'heavy';
+      ctx.events.emit('melee:attack', { attacker: this.player, attackType, meleeType: this._meleeType });
+      this._meleeAttackType = attackType;
+      this._meleeCooldown = 0.2;
+    }
+    if (input.pressed('Mouse4')) {
+      if (attack && !attack.getCanInterrupt()) return;
+      ctx.events.emit('melee:charge_start', { attacker: this.player, meleeType: this._meleeType });
+      this._meleeCharging = true;
+    }
+    if (input.actionReleased('melee') && this._meleeCharging) {
+      ctx.events.emit('melee:charge_release', { attacker: this.player, meleeType: this._meleeType });
+      this._meleeCharging = false;
+      this._meleeCooldown = 0.3;
+    }
+    if (input.fire && input.firePressed) {
+      const finisherType = 'finisher';
+      if (combo.canChain(finisherType) && combo.getState().finisherAvailable) {
+        ctx.events.emit('melee:attack', { attacker: this.player, attackType: finisherType, meleeType: this._meleeType });
+        this._meleeAttackType = finisherType;
+        this._meleeCooldown = 0.4;
+      }
+    }
+    const blockInput = input.altFire || (input.fire && input.aim);
+    if (blockInput && !this._meleeBlocking) {
+      ctx.events.emit('melee:block', { target: this.player });
+      this._meleeBlocking = true;
+    } else if (!blockInput && this._meleeBlocking) {
+      this._meleeBlocking = false;
+    }
+    if (input.pressed('Digit4')) this.setMeleeType('blade');
+    if (input.pressed('Digit5')) this.setMeleeType('blunt');
+    if (input.pressed('Digit6')) this.setMeleeType('infected_claw');
+  }
+
+  setMeleeType(type) {
+    if (MELEE_TYPES[type]) {
+      this._meleeType = type;
+      this.melee?.setMeleeType?.(type);
+    }
+  }
+
+  getMeleeType() {
+    return this._meleeType;
+  }
+
+  lightAttack() {
+    this.ctx?.events?.emit('melee:attack', { attacker: this.player, attackType: 'light', meleeType: this._meleeType });
+  }
+
+  heavyAttack() {
+    this.ctx?.events?.emit('melee:attack', { attacker: this.player, attackType: 'heavy', meleeType: this._meleeType });
+  }
+
+  startChargedAttack() {
+    this.ctx?.events?.emit('melee:charge_start', { attacker: this.player, meleeType: this._meleeType });
+  }
+
+  releaseChargedAttack() {
+    this.ctx?.events?.emit('melee:charge_release', { attacker: this.player, meleeType: this._meleeType });
+  }
+
+  blockStart() {
+    this.ctx?.events?.emit('melee:block', { target: this.player });
+  }
+
+  blockEnd() {
+    this._meleeBlocking = false;
+  }
+
+  getMeleeState() {
+    const melee = this.melee;
+    if (!melee) return null;
+    const comboState = melee.combo.getState();
+    const playerLimb = this.players?.get(this.player);
+    const blockState = melee.getBlockState(playerLimb);
+    return {
+      type: this._meleeType,
+      attacking: melee.getCurrentAttack() !== null,
+      attackType: melee.getCurrentAttack()?.type ?? null,
+      comboCount: comboState.count,
+      finisherAvailable: comboState.finisherAvailable,
+      stamina: blockState.stamina,
+      blocking: blockState.blocking,
+      stunTimer: blockState.stunTimer,
+      parryStunTimer: blockState.parryStun,
+      counterOpen: blockState.counterOpen,
+      perfectParryFlash: blockState.perfectFlash,
+      chargeProgress: melee.getCurrentAttack()?.getProgress?.() ?? 0,
+      charging: melee.getCurrentAttack()?.charging ?? false,
+      deathState: playerLimb?.deathState ?? DEATH_STATE.INTACT,
+      alive: playerLimb?.alive ?? true,
+    };
+  }
+
   _restSpread(def, player, st) {
     let base = lerp(def.spreadHip, def.spreadAds, this.adsProgress);
     if (st.crouch) base *= SPREAD_MODS.crouch;
@@ -672,6 +830,21 @@ export class WeaponSystem {
   lateUpdate(dt, ctx) {
     const vm = this.viewmodel;
     if (!vm) return;
+    this.melee?.update(dt);
+    const meleeState = this.getMeleeState();
+    if (meleeState) {
+      this._state.melee = meleeState.attacking || meleeState.attackType === 'charged';
+      this._state.meleeAttacking = meleeState.attacking;
+      this._state.meleeBlocking = meleeState.blocking;
+      this._state.meleeCharging = meleeState.charging;
+      this._state.meleeChargeProgress = meleeState.chargeProgress;
+      this._state.meleeComboCount = meleeState.comboCount;
+      this._state.meleeFinisherAvailable = meleeState.finisherAvailable;
+      this._state.meleeStamina = meleeState.stamina;
+      this._state.meleeStunTimer = meleeState.stunTimer;
+      this._state.meleePerfectParryFlash = meleeState.perfectParryFlash;
+      this._state.meleeType = meleeState.type;
+    }
     vm.update(dt, this._state);
 
     // ---- muzzle flash / audio, now that the pose is final ---------------
@@ -831,6 +1004,7 @@ export class WeaponSystem {
 
   dispose() {
     for (const off of this._off ?? []) off();
+    this.melee?.dispose?.();
     this.sim?.clear();
     for (const p of this._droppedMags) {
       p.group.removeFromParent();

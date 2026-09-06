@@ -276,6 +276,11 @@ export class Viewmodel {
     this.magInHand = 0;
     this.magVisible = true;
 
+    // morph form state
+    this.morphForm = 'none';
+    this.clawMeshes = [];
+    this._formBlend = 0;
+
     // preallocated working state
     this._basePos = new THREE.Vector3();
     this._baseQuat = new THREE.Quaternion();
@@ -533,6 +538,46 @@ export class Viewmodel {
     return w;
   }
 
+  setMorphForm(form) {
+    if (form === this.morphForm) return;
+    this.morphForm = form;
+    const hideArms = form === 'blade' || form === 'disguise';
+    this.armR.root.visible = !hideArms;
+    this.armL.root.visible = !hideArms;
+    for (const m of this.clawMeshes) { m.visible = false; m.geometry?.dispose?.(); }
+    this.clawMeshes = [];
+    this._formBlend = 0;
+    if (form === 'claw') this._buildClawMeshes();
+  }
+
+  _buildClawMeshes() {
+    const parent = this.armL.root;
+    const clawMat = this.mats.get('polymer');
+    for (const side of [-1, 1]) {
+      const g = new THREE.CylinderGeometry(0.004, 0.0015, 0.06, 6);
+      g.rotateX(Math.PI / 2);
+      const m = new THREE.Mesh(g, clawMat);
+      m.name = `morph-claw-${side < 0 ? 'R' : 'L'}`;
+      m.position.set(side * 0.022, -0.04, -0.03);
+      m.rotation.z = side * 0.35;
+      m.visible = true;
+      m.frustumCulled = false;
+      parent.add(m);
+      this.clawMeshes.push(m);
+    }
+    for (const side of [-1, 1]) {
+      const g = new THREE.ConeGeometry(0.004, 0.055, 5);
+      g.rotateX(-Math.PI / 2);
+      const m = new THREE.Mesh(g, clawMat);
+      m.name = `morph-claw-tip-${side < 0 ? 'R' : 'L'}`;
+      m.position.set(side * 0.03, -0.07, -0.06);
+      m.visible = true;
+      m.frustumCulled = false;
+      parent.add(m);
+      this.clawMeshes.push(m);
+    }
+  }
+
   /* ====================================================================== */
   /*  clip playback                                                         */
   /* ====================================================================== */
@@ -627,6 +672,11 @@ export class Viewmodel {
   update(dt, s) {
     const w = this.active;
     if (!w) return;
+    const cfg = this.ctx.config;
+    if (cfg.thirdPerson && !(s.ads > 0.5 || s.locked)) {
+      this.boltCycle = Math.max(0, this.boltCycle - dt / 0.1);
+      return;
+    }
     const def = w.def;
     // Defensive: a non-positive or absurd dt would integrate the whole
     // animation stack backwards (a negative step snaps ADS straight to 1).
@@ -910,6 +960,31 @@ export class Viewmodel {
         p.magazine.quaternion.copy(w.magSeatQuat);
       }
     }
+
+    // morph form effects
+    if (this.morphForm === 'claw') {
+      const target = 1;
+      this._formBlend += (target - this._formBlend) * (1 - Math.exp(-6 * dt));
+      const dark = 1 - this._formBlend * 0.72;
+      for (const arm of [this.armR, this.armL]) {
+        for (const mesh of arm.root.children) {
+          if (mesh.material && mesh.material.userData?.owUniforms?.owTintCol) {
+            mesh.material.userData.owUniforms.owTintCol.value.setScalar(dark);
+          }
+        }
+      }
+    } else if (this._formBlend > 0.001) {
+      const target = 0;
+      this._formBlend += (target - this._formBlend) * (1 - Math.exp(-4 * dt));
+      const restore = 1 - this._formBlend * 0.72;
+      for (const arm of [this.armR, this.armL]) {
+        for (const mesh of arm.root.children) {
+          if (mesh.material && mesh.material.userData?.owUniforms?.owTintCol) {
+            mesh.material.userData.owUniforms.owTintCol.value.setScalar(restore);
+          }
+        }
+      }
+    }
   }
 
   _magFromHand(w, magGroup, weight) {
@@ -1077,6 +1152,7 @@ export class Viewmodel {
     this.weapons.clear();
     this.armL.dispose();
     this.armR.dispose();
+    for (const m of this.clawMeshes) { m.geometry?.dispose?.(); }
     for (const g of this._reticleGeo) g.dispose();
     this.anchor.removeFromParent();
   }

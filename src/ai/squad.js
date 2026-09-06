@@ -47,6 +47,12 @@ export class Squad {
     this.contactAge += dt;
     if (this.flanker && (!this.flanker.alive || this.flanker.state !== 'flank')) this.flanker = null;
 
+    const hasInfected = this.members.some(m => m.alive && m.infected);
+    if (hasInfected) {
+      this._updateHorde(dt);
+      return;
+    }
+
     // contact sharing: whoever can see the player broadcasts, with a delay
     for (const m of this.members) {
       if (!m.alive) continue;
@@ -108,5 +114,26 @@ export class Squad {
     if (this.grenadeCooldown > 0) return false;
     this.grenadeCooldown = 14 + this.rng.float() * 12;
     return true;
+  }
+
+  /* ---- horde behaviour for infected squads -------------------------- */
+
+  _updateHorde(dt) {
+    const infected = this.members.filter(m => m.alive && m.infected);
+    if (infected.length < 2) return;
+
+    const cx = infected.reduce((s, m) => s + m.position.x, 0) / infected.length;
+    const cz = infected.reduce((s, m) => s + m.position.z, 0) / infected.length;
+    const groupCenter = new THREE.Vector3(cx, infected[0].position.y, cz);
+
+    for (const m of infected) {
+      const d = m.position.distanceTo(groupCenter);
+      if (d > 4.0) {
+        m._goTo(groupCenter);
+        m.desiredSpeed = Math.max(m.desiredSpeed, 4.5);
+      }
+      m.wantFire = !!m.hasTarget;
+      m.peeking = false;
+    }
   }
 }

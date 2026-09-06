@@ -73,6 +73,8 @@
  *   player:mantle     { kind, height }                                        *
  *   player:jump       { position }                                            *
  *   player:death      { position }                                            *
+ *   player:transform   { form, from, energy, label }                         *
+ *   player:ability     { form }                                               *
  *   (*) not in the canonical table in ARCHITECTURE.md — additive, optional, and
  *   safe to ignore. The canonical `player:state` payload carries `health` too so
  *   a listener that only knows the documented four fields still gets everything.
@@ -85,6 +87,7 @@ import { Health } from './health.js';
 import { LowHealthPass } from './lowhealth.js';
 import { STANCE, MOVE, CAMERA, HEALTH, FOOTSTEP, JUMP_SPEED } from './tuning.js';
 import { clamp, clamp01, lerp, approach, DEG } from './springs.js';
+import { WALL_LEFT, WALL_RIGHT } from './wallrun.js';
 
 export class PlayerSystem {
   static id = 'player';
@@ -105,14 +108,32 @@ export class PlayerSystem {
     this._adsExternalAge = 0;
     this.adsRequested = false;
 
+    this.targetLocked = false;
+    this.lockTarget = null;
+    this.targetLockRequested = false;
+
+    this.morph = null;
+
     this._lookFrame = -1;
     this._prevYaw = 0;
+
+    /* ---- infection state -------------------------------------------- */
+    this.infected = false;
+    this.infectionMeter = 0;
+    this.infectionMax = 8;
+    this.infectionDrainRate = 6;
+    this.infectionCooldown = 0;
+    this.antivirals = 3;
+    this._lastInfectionSource = null;
 
     // preallocated event payloads
     this._statePayload = {
       stance: 'stand', sprinting: false, sliding: false, ads: false,
       state: 'stand', grounded: true, airborne: false, mantling: false,
+      wallrunning: false, dashing: false,
       lean: 0, speed: 0, health: HEALTH.max, healthFraction: 1, crouched: false,
+      stamina: 1, targetLocked: false,
+      infected: false, infectionMeter: 0, antivirals: 3,
     };
     this._landPayload = { velocity: 0, surface: 'concrete', position: new THREE.Vector3() };
     this._stepPayload = {
@@ -121,11 +142,20 @@ export class PlayerSystem {
     };
     this._mantlePayload = { kind: 'none', height: 0 };
     this._jumpPayload = { position: new THREE.Vector3() };
+    this._wallRunPayload = { side: 'none', duration: 0 };
+    this._dashPayload = { direction: new THREE.Vector3(), stamina: 0 };
     // Preallocated HUD snapshot polled by `ui` (see getHudState).
     this._hudState = {
       health: HEALTH.max, maxHealth: HEALTH.max, regen: false, dead: false,
       move: 0, sprint: false, crouch: false, ads: false, airborne: false,
       suppression: 0, position: null,
+      infected: false, infectionMeter: 0, antivirals: 3,
+      morphForm: 'none', morphFormLabel: 'Default',
+      evolutionEnergy: 1, morphCooldown: 0,
+      meleeMultiplier: 1,
+      meleeActive: false, meleeType: 'blade', meleeComboCount: 0,
+      meleeFinisherAvailable: false, meleeStamina: 100, meleeBlocking: false,
+      meleeStunTimer: 0, meleePerfectParryFlash: false, meleeDeathState: 'intact',
     };
 
     this._tmp = new THREE.Vector3();
@@ -133,6 +163,7 @@ export class PlayerSystem {
     this._prev = {
       state: '', stance: '', sprinting: false, tacticalSprint: false,
       sliding: false, grounded: true, ads: false, mantling: false,
+      wallrunning: false, dashing: false, targetLocked: false, infected: false,
     };
     this._offEvents = [];
   }
@@ -183,11 +214,17 @@ export class PlayerSystem {
       this._unregisterPass = render.registerPass(this.lowHealthPass);
     }
 
+    // ---- morph / shape-shift --------------------------------------------
+    this.morph = new MorphSystem();
+    await this.morph.init(ctx);
+
     // ---- incoming damage / suppression ----------------------------------
     const on = (type, fn) => this._offEvents.push(ctx.events.on(type, fn));
     on('damage:dealt', (e) => this._onDamageDealt(e));
     on('explosion', (e) => this._onExplosion(e));
     on('bullet:impact', (e) => this._onBulletImpact(e));
+    on('actor:death', (e) => this._onActorDeath(e));
+    on('progression:state', (e) => this._onProgressionState(e));
 
     console.info(
       `[player] spawn ${spawn.feet.x.toFixed(1)}, ${spawn.feet.y.toFixed(2)}, ` +
@@ -249,8 +286,17 @@ export class PlayerSystem {
       dPitch *= 0.55;
     }
 
-    m.yaw += dYaw;
-    m.pitch = clamp(m.pitch + dPitch, -CAMERA.pitchLimit, CAMERA.pitchLimit);
+    if (cfg.thirdPerson) {
+      if (!this.targetLocked) {
+        this.rig.orbitYaw -= dYaw;
+        this.rig.orbitPitch = clamp(this.rig.orbitPitch - dPitch, -this.rig._tpPitchLimit, this.rig._tpPitchLimit);
+      }
+      m.yaw = this.rig.orbitYaw;
+      m.pitch = 0;
+    } else {
+      m.yaw += dYaw;
+      m.pitch = clamp(m.pitch + dPitch, -CAMERA.pitchLimit, CAMERA.pitchLimit);
+    }
     // Keep yaw bounded so long sessions never lose float precision.
     if (m.yaw > Math.PI) m.yaw -= Math.PI * 2;
     else if (m.yaw < -Math.PI) m.yaw += Math.PI * 2;
@@ -278,8 +324,20 @@ export class PlayerSystem {
     this.movement.latchInput(ctx.time.frame);
 
     this._updateAds(dt);
+    this._updateTargetLock(dt);
     this._drainMovementEvents();
     this.health.update(dt);
+
+    this.morph?.update(dt, ctx);
+    this._syncViewmodelForm();
+
+    this._updateInfection(dt, ctx);
+
+    const prog = this.ctx.peek('progression');
+    if (prog && !this.health.dead && this.health.value < this.health.max) {
+      const bonus = (prog.bonuses?.healthRegenMult ?? 1) - 1;
+      if (bonus > 0) this.health.heal(HEALTH.regenRate * bonus * dt);
+    }
 
     this.rig.update(dt, this.movement, this.health);
     if (this.controlEnabled) this.rig.applyTo(ctx.camera);
@@ -316,6 +374,68 @@ export class PlayerSystem {
       this.adsAmount = approach(this.adsAmount, this.adsRequested ? 1 : 0, 0.075, dt);
     }
     m.adsAmount = this.adsAmount;
+  }
+
+  _updateTargetLock(dt) {
+    const input = this.ctx.input;
+    const m = this.movement;
+    this.targetLockRequested = input.action('targetLock');
+
+    if (this.targetLockRequested) {
+      if (!this.targetLocked) {
+        this.lockTarget = this._findLockTarget();
+        this.targetLocked = this.lockTarget !== null;
+      }
+    } else {
+      this.targetLocked = false;
+      this.lockTarget = null;
+    }
+
+    if (this.targetLocked && this.lockTarget?.dead) {
+      this.targetLocked = false;
+      this.lockTarget = null;
+    }
+
+    m.targetLocked = this.targetLocked;
+    m.lockTarget = this.lockTarget;
+  }
+
+  _findLockTarget() {
+    const ai = this.ctx.peek('ai');
+    if (!ai || !ai.agents || ai.agents.length === 0) return null;
+    const phys = this.ctx.get('physics');
+    if (!phys) return null;
+
+    const eyePos = this.rig.eyePosition.clone();
+    const yaw = this.movement.yaw;
+    const pitch = this.movement.pitch;
+    const fwd = new THREE.Vector3(
+      -Math.sin(yaw) * Math.cos(pitch),
+      Math.sin(pitch),
+      -Math.cos(yaw) * Math.cos(pitch)
+    ).normalize();
+
+    let best = null;
+    let bestScore = Infinity;
+    const maxDist = 40;
+    const cosHalf = Math.cos(Math.PI / 5);
+
+    for (const agent of ai.agents) {
+      if (agent.dead) continue;
+      const toA = new THREE.Vector3().subVectors(agent.position, eyePos);
+      const dist = toA.length();
+      if (dist < 0.5 || dist > maxDist) continue;
+      toA.normalize();
+      const dot = fwd.dot(toA);
+      if (dot < cosHalf) continue;
+      if (!phys.lineOfSight(eyePos, agent.position, phys.MASK.WORLD | phys.MASK.CHARACTER)) continue;
+      const score = dist / Math.max(dot, 0.01);
+      if (score < bestScore) {
+        bestScore = score;
+        best = agent;
+      }
+    }
+    return best;
   }
 
   /** Turn the movement machine's one-shot flags into events + camera impulses. */
@@ -371,6 +491,20 @@ export class PlayerSystem {
       this.rig.addTrauma(m.mantleEvent.kind === 'vault' ? 0.08 : 0.14);
       this.ctx.events.emit('player:mantle', this._mantlePayload);
     }
+
+    if (m.wallrunning && !this._prev.wallrunning) {
+      this._wallRunPayload.side = m.wallRunSide === WALL_LEFT ? 'left' : 'right';
+      this._wallRunPayload.duration = MOVE.wallRun.maxDuration;
+      this.ctx.events.emit('player:wallrun', this._wallRunPayload);
+    }
+    if (!m.wallrunning && this._prev.wallrunning) {
+      this.ctx.events.emit('player:wallrunEnd', {});
+    }
+    if (m.dashing && !this._prev.dashing) {
+      this._dashPayload.direction.set(m.dashDirX, 0, m.dashDirZ);
+      this._dashPayload.stamina = MOVE.airDash.staminaCost;
+      this.ctx.events.emit('player:dash', this._dashPayload);
+    }
   }
 
   _publishState() {
@@ -389,21 +523,32 @@ export class PlayerSystem {
     s.grounded = m.grounded;
     s.airborne = !m.grounded;
     s.mantling = m.mantleMotion.active;
+    s.wallrunning = m.wallrunning;
+    s.dashing = m.dashing;
     s.lean = m.leanAmount;
     s.speed = m.horizontalSpeed;
     s.health = this.health.value;
     s.healthFraction = this.health.fraction;
+    s.infected = this.infected;
+    s.infectionMeter = this.infectionMeter / this.infectionMax;
+    s.antivirals = this.antivirals;
+    s.stamina = m.stamina.fraction;
+    s.targetLocked = this.targetLocked;
     // Emit only when something discrete actually changed. Field-wise compare,
     // because building a key string every frame would be a per-frame allocation.
     const q = this._prev;
     if (
       q.state !== s.state || q.stance !== s.stance || q.sprinting !== s.sprinting ||
       q.tacticalSprint !== s.tacticalSprint || q.sliding !== s.sliding ||
-      q.grounded !== s.grounded || q.ads !== s.ads || q.mantling !== s.mantling
+      q.grounded !== s.grounded || q.ads !== s.ads || q.mantling !== s.mantling ||
+      q.wallrunning !== s.wallrunning || q.dashing !== s.dashing ||
+      q.targetLocked !== s.targetLocked || q.infected !== s.infected
     ) {
       q.state = s.state; q.stance = s.stance; q.sprinting = s.sprinting;
       q.tacticalSprint = s.tacticalSprint; q.sliding = s.sliding;
       q.grounded = s.grounded; q.ads = s.ads; q.mantling = s.mantling;
+      q.wallrunning = s.wallrunning; q.dashing = s.dashing;
+      q.targetLocked = s.targetLocked; q.infected = s.infected;
       this.ctx.events.emit('player:state', s);
     }
   }
@@ -416,11 +561,11 @@ export class PlayerSystem {
     if (!e) return;
     const t = e.target;
     if (t !== this && t !== 'player' && t?.isPlayer !== true) return;
-    // Direction indicators need the *shooter*, not the impact point: `ai` sets
-    // `point` to where the round landed (which is the player), and `from` to the
-    // muzzle. Using `point` pinned every arc to dead ahead.
     const from = e.from ?? e.source?.position ?? e.point ?? null;
     this.applyDamage(e.amount ?? 0, from, { type: 'bullet' });
+    if (e.infected && !this.infected) {
+      this._applyInfection(e.source);
+    }
   }
 
   _onExplosion(e) {
@@ -454,6 +599,76 @@ export class PlayerSystem {
     this.health.addSuppression(HEALTH.suppression.perNearMiss * (1 - d / R));
   }
 
+  _meleeState() {
+    const weapons = this.ctx.peek('weapons');
+    return weapons?.getMeleeState?.() ?? null;
+  }
+
+  _onProgressionState(e) {
+    if (!e) return;
+    this.health.max = Math.floor(HEALTH.max * (e.bonuses?.maxHealthMult ?? 1));
+    this.health.value = Math.min(this.health.value, this.health.max);
+  }
+
+  /* ==================================================================== */
+  /* infection                                                            */
+  /* ==================================================================== */
+
+  _updateInfection(dt, ctx) {
+    if (this.health.dead) return;
+    if (this.infectionCooldown > 0) this.infectionCooldown -= dt;
+
+    if (this.infected) {
+      this.health.damage(this.infectionDrainRate * dt, this._lastInfectionSource, { type: 'infection' });
+      return;
+    }
+
+    const ai = ctx.peek('ai');
+    if (!ai?.agents) return;
+    const eye = this.eyePosition;
+    let nearestDist = Infinity;
+    let nearestAgent = null;
+    for (const a of ai.agents) {
+      if (!a.alive || !a.infected) continue;
+      const d = eye.distanceTo(a.position);
+      if (d < nearestDist) { nearestDist = d; nearestAgent = a; }
+    }
+    if (nearestAgent && nearestDist < 4.5) {
+      const proxRate = Math.max(0, 1 - (nearestDist - 1.5) / 3.0);
+      this.infectionMeter += proxRate * dt;
+      if (this.infectionMeter >= this.infectionMax) {
+        this._applyInfection(nearestAgent);
+      }
+    } else if (nearestDist > 6.0) {
+      this.infectionMeter = Math.max(0, this.infectionMeter - dt * 1.5);
+    }
+  }
+
+  _applyInfection(source) {
+    if (this.infected || this.health.dead) return;
+    this.infected = true;
+    this.infectionMeter = this.infectionMax;
+    this._lastInfectionSource = source?.position ?? null;
+    this.ctx.events.emit('infection:caught', { actor: this, source });
+    this.health.regenerating = false;
+  }
+
+  _useAntiviral() {
+    if (!this.infected || this.antivirals <= 0 || this.infectionCooldown > 0) return false;
+    this.antivirals--;
+    this.infectionCooldown = 2;
+    this.infected = false;
+    this.infectionMeter = 0;
+    this._lastInfectionSource = null;
+    this.ctx.events.emit('infection:cured', { actor: this });
+    return true;
+  }
+
+  _onActorDeath(e) {
+    if (!e?.actor?.infected) return;
+    this.infectionMeter = Math.min(this.infectionMax, this.infectionMeter + 1.2);
+  }
+
   /* ==================================================================== */
   /* public API                                                           */
   /* ==================================================================== */
@@ -479,6 +694,33 @@ export class PlayerSystem {
     h.ads = this.adsAmount > 0.5;
     h.airborne = !m.grounded;
     h.position = this.position;
+    h.wallrunning = m.wallrunning;
+    h.dashing = m.dashing;
+    h.stamina = m.stamina.fraction;
+    h.infected = this.infected;
+    h.infectionMeter = this.infectionMeter;
+    h.infectionMax = this.infectionMax;
+    const melee = this._meleeState?.();
+    if (melee) {
+      h.meleeActive = melee.attacking;
+      h.meleeComboCount = melee.comboCount;
+      h.meleeFinisherAvailable = melee.finisherAvailable;
+      h.meleeStamina = melee.stamina;
+      h.meleeBlocking = melee.blocking;
+      h.meleeType = melee.type;
+      h.meleeStunTimer = melee.stunTimer;
+      h.meleePerfectParryFlash = melee.perfectParryFlash;
+      h.meleeDeathState = melee.deathState;
+    }
+    h.staminaDepleted = m.stamina.depleted;
+    h.infected = this.infected;
+    h.infectionMeter = this.infectionMeter / this.infectionMax;
+    h.antivirals = this.antivirals;
+    h.morphForm = this.form;
+    h.morphFormLabel = this.formLabel;
+    h.evolutionEnergy = this.evolutionEnergyFraction;
+    h.morphCooldown = this.morphCooldownFraction;
+    h.meleeMultiplier = this.meleeMultiplier;
     return h;
   }
 
@@ -581,6 +823,18 @@ export class PlayerSystem {
   get bobPhase() {
     return this.rig.bobPhase;
   }
+  get wallrunning() {
+    return this.movement.wallrunning;
+  }
+  get dashing() {
+    return this.movement.dashing;
+  }
+  get stamina() {
+    return this.movement.stamina.fraction;
+  }
+  get staminaDepleted() {
+    return this.movement.stamina.depleted;
+  }
 
   /** `weapons` owns the ADS curve; hand it over and everything else follows. */
   setAdsProgress(v) {
@@ -613,6 +867,9 @@ export class PlayerSystem {
   addSuppression(a) {
     this.health.addSuppression(a);
   }
+  useAntiviral() {
+    return this._useAntiviral();
+  }
 
   setControlEnabled(on) {
     this.controlEnabled = !!on;
@@ -623,6 +880,9 @@ export class PlayerSystem {
       this.movement.sprinting = false;
       this.movement.tacticalSprint = false;
       this.movement.sliding = false;
+      this.movement.wallrunning = false;
+      this.movement.wallRunMotion.end();
+      this.movement.dashing = false;
       this.movement.cancelMantle();
       this.adsAmount = 0;
       this._adsExternal = false;
@@ -737,6 +997,32 @@ export class PlayerSystem {
     };
   }
 
+  /* ==================================================================== */
+  /*  morph / shape-shift public API                                       */
+  /* ==================================================================== */
+
+  transformTo(formId) { return this.morph?.transformTo(formId) ?? false; }
+
+  triggerAbility() { return this.morph?.triggerAbility() ?? null; }
+
+  activateAbility() { return this.morph?.activateAbility() ?? false; }
+
+  deactivateAbility() { this.morph?.deactivateAbility(); }
+
+  get form() { return this.morph?.form ?? 'none'; }
+  get formLabel() { return this.morph?.getFormLabel() ?? 'Default'; }
+  get evolutionEnergy() { return this.morph?.energy ?? 0; }
+  get evolutionEnergyFraction() { return this.morph?.getEnergyFraction() ?? 1; }
+  get morphCooldownFraction() { return this.morph?.getCooldownFraction() ?? 0; }
+  get meleeMultiplier() { return this.morph?.getMeleeMultiplier() ?? 1; }
+  get isMorphClimbing() { return this.morph?.canClimb() ?? false; }
+  get isSilent() { return this.morph?.isSilent() ?? false; }
+
+  _syncViewmodelForm() {
+    const vm = this.ctx.peek('viewmodel');
+    if (vm?.setMorphForm) vm.setMorphForm(this.morph?.form ?? 'none');
+  }
+
   dispose() {
     for (const off of this._offEvents) off?.();
     this._offEvents.length = 0;
@@ -748,5 +1034,7 @@ export class PlayerSystem {
     this.lowHealthPass?.dispose();
     this.lowHealthPass = null;
     this.movement?.dispose();
+    this.morph?.dispose();
+    this.morph = null;
   }
 }

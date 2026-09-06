@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { RIG, GRIP_R, GRIP_L, BORE_DIR } from './rig.js';
 import { CharacterBuilder, Noise, appendMesh, computeNormals, emptyMesh } from './geo.js';
 import * as P from './parts.js';
-import { buildWeapon } from './weapon.js';
+import { buildInfected, resolveInfectedMaterials, INFECTED_MATERIAL_SLOTS } from './infected.js';
 import { CLOTH_TILE } from './textures.js';
 
 /**
@@ -107,7 +107,7 @@ export const VARIANTS = {
   vanguard: {
     camo: 'arid',
     clothTint: [1.03, 1.0, 0.94],
-    gearTint: [1.08, 0.98, 0.80], // coyote brown
+    gearTint: [1.08, 0.98, 0.80],
     plateTint: [1.02, 0.96, 0.84],
     skinTint: [1.0, 0.94, 0.88],
     helmet: true,
@@ -126,14 +126,12 @@ export const VARIANTS = {
   irregular: {
     camo: 'woodland',
     clothTint: [0.98, 1.02, 0.94],
-    gearTint: [0.92, 0.96, 0.74], // olive drab
+    gearTint: [0.92, 0.96, 0.74],
     plateTint: [0.90, 0.94, 0.80],
     skinTint: [0.86, 0.80, 0.74],
     helmet: false,
     headWrap: true,
     goggles: false,
-    // dark wrap-around shooting glasses: the bare head needs a hard horizontal
-    // dark band at the eye line or it is a featureless egg at 35 m
     shades: true,
     faceWrap: true,
     beard: true,
@@ -146,14 +144,12 @@ export const VARIANTS = {
   breacher: {
     camo: 'urban',
     clothTint: [0.98, 0.99, 1.02],
-    gearTint: [0.84, 0.86, 0.90], // wolf grey
+    gearTint: [0.84, 0.86, 0.90],
     plateTint: [0.86, 0.88, 0.92],
     skinTint: [1.06, 0.98, 0.92],
     helmet: true,
-    helmetCover: false, // bare painted shell instead of a cloth cover
+    helmetCover: false,
     helmetTint: [0.82, 0.83, 0.86],
-    // goggles parked on the shell (not over the eyes like vanguard) plus a hard
-    // ballistic half-mask: same helmet family, completely different head read
     goggles: true,
     gogglesDown: false,
     faceWrap: true,
@@ -164,6 +160,27 @@ export const VARIANTS = {
     weapon: 'carbine',
     bulk: 1.06,
     scale: 1.025,
+  },
+  infected: {
+    camo: 'arid',
+    clothTint: [0.55, 0.48, 0.38],
+    gearTint: [0.50, 0.42, 0.30],
+    plateTint: [0.45, 0.38, 0.28],
+    skinTint: [0.42, 0.58, 0.18],
+    muscleTint: [0.55, 0.10, 0.06],
+    boneTint: [0.72, 0.68, 0.52],
+    eyeEmissive: [0.20, 1.0, 0.08],
+    helmet: false,
+    headWrap: false,
+    goggles: false,
+    shades: false,
+    faceWrap: false,
+    beard: false,
+    kneePads: false,
+    fullCarrier: false,
+    weapon: 'ak',
+    bulk: 1.08,
+    scale: 0.97,
   },
 };
 
@@ -177,6 +194,10 @@ const bp = (name) => {
  * @returns { geometry, materials: THREE.Material[], weapon, stats }
  */
 export function buildSoldier(name, { rng, materials }) {
+  if (name === 'infected') {
+    const result = buildInfected(name, { rng, materials });
+    return result;
+  }
   const V = VARIANTS[name] ?? VARIANTS.vanguard;
   const nz = new Noise(rng.fork());
   const B = new CharacterBuilder(RIG, { noise: nz, materials: MATERIALS });
@@ -756,7 +777,7 @@ export function buildSoldier(name, { rng, materials }) {
  * the pixel gate. `buildSoldier` asserts the order below still matches.
  */
 export const MATERIAL_SLOTS = Object.freeze([
-  'cloth', 'gear', 'boot', 'rubber', 'plate', 'polymer', 'skin', 'glass', 'steel',
+  'cloth', 'gear', 'boot', 'rubber', 'plate', 'polymer', 'muscle', 'bone', 'skin', 'glass', 'steel',
 ]);
 
 /**
@@ -777,6 +798,10 @@ export const MATERIAL_SLOTS = Object.freeze([
  * a boot without any per-part tuning.
  */
 export function resolveMaterials(name, slots, materials) {
+  if (name === 'infected') {
+    const V = INFECTED_VARIANT;
+    return resolveInfectedMaterials(name, slots, materials, V);
+  }
   const V = VARIANTS[name] ?? VARIANTS.vanguard;
   const detail = (set, matName, normal, rough) => ({
     set,

@@ -793,7 +793,6 @@ function water(fx, p, n, inc, e) {
 function flesh(fx, p, n, inc, e) {
   const rng = fx.rng;
   const q = fx.pScale;
-  // Blood sprays *with* the round, not against it
   const ax = inc.x * 0.75 - n.x * 0.25;
   const ay = inc.y * 0.75 - n.y * 0.25;
   const az = inc.z * 0.75 - n.z * 0.25;
@@ -835,6 +834,56 @@ function flesh(fx, p, n, inc, e) {
     s.r0 = 0.3; s.g0 = 0.03; s.b0 = 0.025;
     s.r1 = 0.22; s.g1 = 0.022; s.b1 = 0.018;
     s.alpha = 0.95; s.alphaCurve = 0.35; s.soft = 0.05; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+  fx.bloodSpatterBehind(p, inc);
+}
+
+/** Infected flesh: green-tinged, more virulent aerosol, larger spatter. */
+function fleshInfected(fx, p, n, inc, e) {
+  const rng = fx.rng;
+  const q = fx.pScale;
+  const ax = inc.x * 0.75 - n.x * 0.25;
+  const ay = inc.y * 0.75 - n.y * 0.25;
+  const az = inc.z * 0.75 - n.z * 0.25;
+  let s;
+
+  const nMist = Math.round(14 * q) + 6;
+  for (let i = 0; i < nMist; i++) {
+    cone(V2, rng, ax, ay, az, 1.1, 0.9);
+    const sp = rng.range(1.5, 5.5);
+    s = resetSpawn();
+    s.x = p.x - n.x * 0.02; s.y = p.y - n.y * 0.02; s.z = p.z - n.z * 0.02;
+    s.vx = V2.x * sp; s.vy = V2.y * sp + 0.4; s.vz = V2.z * sp;
+    s.tile = i % 3 === 0 ? P.SMOKE_A : P.MIST;
+    s.size0 = rng.range(0.04, 0.09) * e;
+    s.size1 = rng.range(0.2, 0.45) * e;
+    s.sizeCurve = 0.55;
+    s.life = rng.range(0.4, 0.8);
+    s.drag = rng.range(3.5, 5.5);
+    s.gravity = -2.8;
+    s.rot = rng.float() * TWO_PI; s.spin = rng.signed() * 2.2;
+    s.r0 = 0.12; s.g0 = 0.38; s.b0 = 0.04;
+    s.r1 = 0.06; s.g1 = 0.18; s.b1 = 0.02;
+    s.alpha = rng.range(0.65, 0.98); s.alphaCurve = 1.4;
+    s.soft = 0.07; s.turb = 0.06; s.turbFreq = 3.5; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+  const nDrop = Math.round(18 * q) + 7;
+  for (let i = 0; i < nDrop; i++) {
+    cone(V2, rng, ax, ay, az, 1.2, 1.3);
+    const sp = rng.range(2.5, 9);
+    s = resetSpawn();
+    s.x = p.x; s.y = p.y; s.z = p.z;
+    s.vx = V2.x * sp; s.vy = V2.y * sp; s.vz = V2.z * sp;
+    s.tile = P.DROPLET;
+    s.size0 = rng.range(0.009, 0.028); s.size1 = s.size0;
+    s.stretch = 0.7;
+    s.life = rng.range(0.4, 0.95);
+    s.drag = 0.8; s.gravity = -20;
+    s.r0 = 0.10; s.g0 = 0.32; s.b0 = 0.03;
+    s.r1 = 0.06; s.g1 = 0.16; s.b1 = 0.015;
+    s.alpha = 0.95; s.alphaCurve = 0.3; s.soft = 0.04; s.seed = rng.float();
     fx.emitLit(s);
   }
   fx.bloodSpatterBehind(p, inc);
@@ -915,6 +964,160 @@ function soft(fx, p, n, inc, e, rubber) {
   fx.addDecal(p, n, { tile: D.TEAR, size: rng.range(0.09, 0.15), life: 80, roll: rng.float() * TWO_PI });
 }
 
+/** Melee blade slash: heavy blood spray with flesh chunks. */
+function meleeBlade(fx, p, n, inc, e) {
+  const rng = fx.rng;
+  const q = fx.pScale;
+  const ax = inc.x * 0.6 - n.x * 0.4;
+  const ay = inc.y * 0.6 - n.y * 0.4;
+  const az = inc.z * 0.6 - n.z * 0.4;
+  let s;
+
+  const nSpray = Math.round(14 * q) + 6;
+  for (let i = 0; i < nSpray; i++) {
+    cone(V2, rng, ax, ay, az, 0.8, 0.9);
+    const sp = rng.range(2.5, 8);
+    s = resetSpawn();
+    s.x = p.x + rng.signed() * 0.03;
+    s.y = p.y + rng.signed() * 0.03;
+    s.z = p.z + rng.signed() * 0.03;
+    s.vx = V2.x * sp; s.vy = V2.y * sp + 0.8; s.vz = V2.z * sp;
+    s.tile = i % 4 === 0 ? P.DROPLET : P.MIST;
+    s.size0 = rng.range(0.008, 0.028);
+    s.size1 = s.size0 * (i % 4 === 0 ? 0.5 : 1.8);
+    s.stretch = i % 4 === 0 ? 0.7 : 0;
+    s.life = rng.range(0.4, 1.2);
+    s.drag = rng.range(0.8, 3);
+    s.gravity = -14;
+    s.r0 = 0.35; s.g0 = 0.04; s.b0 = 0.03;
+    s.r1 = 0.18; s.g1 = 0.02; s.b1 = 0.015;
+    s.alpha = rng.range(0.7, 1); s.alphaCurve = 0.4;
+    s.soft = 0.05; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+
+  const nFlesh = Math.round(6 * q) + 2;
+  for (let i = 0; i < nFlesh; i++) {
+    cone(V2, rng, ax, ay, az, 0.7, 1.0);
+    const sp = rng.range(3, 9);
+    s = resetSpawn();
+    s.x = p.x; s.y = p.y; s.z = p.z;
+    s.vx = V2.x * sp; s.vy = V2.y * sp + 1.5; s.vz = V2.z * sp;
+    s.tile = P.SPLINTER;
+    s.size0 = rng.range(0.01, 0.04);
+    s.size1 = s.size0;
+    s.life = rng.range(0.5, 1.4);
+    s.drag = 0.9; s.gravity = -16;
+    s.rot = rng.float() * TWO_PI; s.spin = rng.signed() * 18;
+    s.r0 = 0.42; s.g0 = 0.12; s.b0 = 0.08;
+    s.r1 = 0.32; s.g1 = 0.07; s.b1 = 0.05;
+    s.alphaCurve = 0.3; s.soft = 0.04; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+}
+
+/** Melee blunt impact: dust puff, bone-chips. */
+function meleeBlunt(fx, p, n, inc, e) {
+  const rng = fx.rng;
+  const q = fx.pScale;
+  reflect(V, inc.x, inc.y, inc.z, n.x, n.y, n.z);
+  let s;
+
+  const nDust = Math.round(6 * q) + 3;
+  for (let i = 0; i < nDust; i++) {
+    cone(V2, rng, V.x, V.y, V.z, 0.9, 0.8);
+    const sp = rng.range(1.5, 4.5);
+    s = resetSpawn();
+    s.x = p.x + n.x * 0.01; s.y = p.y + n.y * 0.01; s.z = p.z + n.z * 0.01;
+    s.vx = V2.x * sp; s.vy = V2.y * sp + 0.4; s.vz = V2.z * sp;
+    s.tile = P.DUST;
+    s.size0 = rng.range(0.03, 0.08) * e;
+    s.size1 = rng.range(0.12, 0.3) * e;
+    s.sizeCurve = 0.5;
+    s.life = rng.range(0.3, 0.7);
+    s.drag = rng.range(3, 6);
+    s.gravity = -2;
+    s.rot = rng.float() * TWO_PI; s.spin = rng.signed() * 1.5;
+    s.r0 = 0.35; s.g0 = 0.28; s.b0 = 0.22;
+    s.r1 = 0.25; s.g1 = 0.2; s.b1 = 0.16;
+    s.alpha = rng.range(0.4, 0.7); s.alphaCurve = 1.3;
+    s.soft = 0.1; s.turb = 0.04; s.turbFreq = 2; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+
+  const nBone = Math.round(4 * q) + 2;
+  for (let i = 0; i < nBone; i++) {
+    cone(V2, rng, V.x, V.y, V.z, 0.6, 1.1);
+    const sp = rng.range(4, 10);
+    s = resetSpawn();
+    s.x = p.x; s.y = p.y; s.z = p.z;
+    s.vx = V2.x * sp; s.vy = V2.y * sp + 2; s.vz = V2.z * sp;
+    s.tile = P.CHIP;
+    s.size0 = rng.range(0.008, 0.025); s.size1 = s.size0 * 0.8;
+    s.life = rng.range(0.5, 1.2);
+    s.drag = 0.6; s.gravity = -16;
+    s.rot = rng.float() * TWO_PI; s.spin = rng.signed() * 22;
+    s.r0 = 0.65; s.g0 = 0.6; s.b0 = 0.52;
+    s.r1 = 0.5; s.g1 = 0.46; s.b1 = 0.38;
+    s.alphaCurve = 0.25; s.soft = 0.06; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+}
+
+/** Melee infected claw: green blood, infectious particles. */
+function meleeInfected(fx, p, n, inc, e) {
+  const rng = fx.rng;
+  const q = fx.pScale;
+  const ax = inc.x * 0.5 - n.x * 0.5;
+  const ay = inc.y * 0.5 - n.y * 0.5;
+  const az = inc.z * 0.5 - n.z * 0.5;
+  let s;
+
+  const nBlood = Math.round(6 * q) + 3;
+  for (let i = 0; i < nBlood; i++) {
+    cone(V2, rng, ax, ay, az, 0.9, 0.9);
+    const sp = rng.range(1.5, 5);
+    s = resetSpawn();
+    s.x = p.x + rng.signed() * 0.02;
+    s.y = p.y + rng.signed() * 0.02;
+    s.z = p.z + rng.signed() * 0.02;
+    s.vx = V2.x * sp; s.vy = V2.y * sp + 0.3; s.vz = V2.z * sp;
+    s.tile = i % 2 ? P.MIST : P.DROPLET;
+    s.size0 = rng.range(0.007, 0.022);
+    s.size1 = s.size0 * (i % 2 ? 1.6 : 0.5);
+    s.stretch = i % 2 ? 0 : 0.5;
+    s.life = rng.range(0.3, 0.7);
+    s.drag = rng.range(2, 5);
+    s.gravity = -10;
+    s.r0 = 0.15; s.g0 = 0.45; s.b0 = 0.08;
+    s.r1 = 0.08; s.g1 = 0.25; s.b1 = 0.04;
+    s.alpha = rng.range(0.6, 0.95); s.alphaCurve = 0.45;
+    s.soft = 0.06; s.turb = 0.05; s.turbFreq = 2.5; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+
+  const nInfect = Math.round(5 * q) + 2;
+  for (let i = 0; i < nInfect; i++) {
+    cone(V2, rng, ax, ay, az, 1.0, 0.7);
+    s = resetSpawn();
+    s.x = p.x; s.y = p.y; s.z = p.z;
+    s.vx = V2.x * rng.range(0.5, 2); s.vy = Math.abs(V2.y) * rng.range(0.3, 1.5) + 0.3;
+    s.vz = V2.z * rng.range(0.5, 2);
+    s.tile = P.WISP;
+    s.size0 = 0.04; s.size1 = rng.range(0.15, 0.4);
+    s.sizeCurve = 0.7;
+    s.life = rng.range(0.6, 1.5);
+    s.drag = rng.range(1.5, 3);
+    s.gravity = -0.8;
+    s.rot = rng.float() * TWO_PI; s.spin = rng.signed() * 0.8;
+    s.r0 = 0.2; s.g0 = 0.5; s.b0 = 0.1;
+    s.r1 = 0.1; s.g1 = 0.3; s.b1 = 0.05;
+    s.alpha = rng.range(0.3, 0.6); s.alphaCurve = 1.4;
+    s.soft = 0.12; s.turb = 0.08; s.turbFreq = 1.8; s.seed = rng.float();
+    fx.emitLit(s);
+  }
+}
+
 export const IMPACTS = {
   concrete,
   plaster,
@@ -925,6 +1128,7 @@ export const IMPACTS = {
   glass,
   water,
   flesh,
+  flesh_infected: fleshInfected,
   foliage,
   fabric: (fx, p, n, i, e) => soft(fx, p, n, i, e, false),
   rubber: (fx, p, n, i, e) => soft(fx, p, n, i, e, true),
@@ -933,4 +1137,10 @@ export const IMPACTS = {
 /** Dispatch on surface name; unknown surfaces fall back to concrete. */
 export function spawnImpact(fx, point, normal, incident, surface, energy) {
   (IMPACTS[surface] ?? IMPACTS.concrete)(fx, point, normal, incident, energy);
+}
+
+/** Dispatch a melee impact by weapon type. */
+export function spawnMeleeImpact(fx, point, normal, incident, meleeType, energy) {
+  const key = `melee_${meleeType ?? 'blade'}`;
+  (IMPACTS[key] ?? IMPACTS.melee_blade)(fx, point, normal, incident, energy);
 }

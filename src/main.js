@@ -17,6 +17,11 @@ import { FxSystem } from './fx/index.js';
 import { AiSystem } from './ai/index.js';
 import { UiSystem } from './ui/index.js';
 import { AudioSystem } from './audio/index.js';
+import { MissionSystem } from './mission/index.js';
+import { FastTravelSystem } from './world/fasttravel.js';
+import { CollectiblesSystem } from './world/collectibles.js';
+import { DynamicEvents } from './world/dynamicevents.js';
+import { SpawnSystem } from './world/spawning.js';
 
 import { installShotApi } from './dev/shots.js';
 import { prewarm } from './core/prewarm.js';
@@ -50,7 +55,12 @@ engine
   .add(FxSystem)
   .add(AiSystem)
   .add(UiSystem)
-  .add(AudioSystem);
+  .add(AudioSystem)
+  .add(FastTravelSystem)
+  .add(CollectiblesSystem)
+  .add(DynamicEvents)
+  .add(SpawnSystem)
+  .add(MissionSystem);
 
 try {
   await engine.init();
@@ -110,6 +120,16 @@ if (lockstep) {
 }
 
 window.__ENGINE__ = engine;
+
+if (lockstep) {
+  const mission = engine.ctx.get('mission');
+  mission.startMission('escape_infected_zone');
+} else {
+  requestAnimationFrame(() => {
+    const mission = engine.ctx.get('mission');
+    mission.startMission('escape_infected_zone');
+  });
+}
 
 if (import.meta.hot) {
   import.meta.hot.dispose(() => engine.dispose());

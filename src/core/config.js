@@ -83,14 +83,14 @@ export const QUALITY_PRESETS = {
 
 export const DEFAULTS = {
   quality: 'ultra',
-  fov: 80, // horizontal-ish vertical FOV, CoD default feel
+  fov: 80,
   adsFovScale: 0.72,
   sensitivity: 0.0022,
   adsSensScale: 0.65,
   invertY: false,
   exposure: 5.0,
-  /** Capture mode disables anything nondeterministic so screenshots are stable. */
   deterministic: false,
+  thirdPerson: false,
 };
 
 export function createConfig(overrides = {}) {

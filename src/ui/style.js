@@ -677,8 +677,152 @@ const CSS = `
   letter-spacing:.2em; color: var(--ink-3);
 }
 
+/* ================================================================== mission */
+.ow-mission {
+  position:absolute; left:var(--pad); bottom:var(--pad);
+  display:flex; flex-direction:column; gap: calc(var(--u) * 1.2);
+  pointer-events:none;
+  max-width: calc(260px * var(--k));
+}
+.ow-mission-list {
+  display:flex; flex-direction:column; gap: calc(var(--u) * .9);
+}
+.ow-mission-row {
+  display:flex; align-items:center; gap: calc(var(--u) * 1.2);
+  font-size: calc(10.5px * var(--k)); letter-spacing:.14em;
+  text-shadow: var(--sh);
+}
+.ow-mission-icon {
+  width: calc(12px * var(--k)); height: calc(12px * var(--k));
+  border-radius: 50%; background: var(--ink-3);
+  flex-shrink:0;
+}
+.ow-mission-row.goto .ow-mission-icon { background: var(--cyan); }
+.ow-mission-row.kill .ow-mission-icon { background: var(--enemy); }
+.ow-mission-row.escort .ow-mission-icon { background: var(--friend); }
+.ow-mission-row.collect .ow-mission-icon { background: var(--ok); }
+.ow-mission-row.hack .ow-mission-icon { background: var(--amber); }
+.ow-mission-row.survive .ow-mission-icon { background: var(--red); }
+.ow-mission-row.done { opacity:.55; }
+.ow-mission-row.done .ow-mission-label { text-decoration: line-through; }
+.ow-mission-label { flex:1; color: var(--ink); }
+.ow-mission-prog {
+  font-family: var(--fm); font-size: calc(10px * var(--k)); color: var(--ink-2);
+  min-width: calc(38px * var(--k)); text-align:right;
+}
+
+.ow-mission-brief {
+  position:absolute; left:50%; top:calc(var(--pad) * .7 + 41px * var(--k));
+  transform: translateX(-50%);
+  text-align:center; padding: calc(var(--u) * 3.5) calc(var(--u) * 28);
+  pointer-events:none; will-change: opacity;
+}
+.ow-mission-brief::before {
+  content:''; position:absolute; inset:0; z-index:-1;
+  background: rgba(4,7,10,.72);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000 22%, #000 80%, rgba(0,0,0,0) 100%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000 22%, #000 80%, rgba(0,0,0,0) 100%);
+}
+.ow-mission-brief-t {
+  font-family: var(--fd); font-size: calc(24px * var(--k)); letter-spacing:.3em; font-weight:700;
+  color: var(--amber); text-shadow: var(--sh-o1);
+}
+.ow-mission-brief-d {
+  margin-top: calc(var(--u) * 1.4); font-size: calc(11.5px * var(--k)); letter-spacing:.14em;
+  color: var(--ink); text-shadow: var(--sh);
+  max-width: calc(520px * var(--k)); margin-left:auto; margin-right:auto;
+}
+
+.ow-mission-dialogue {
+  position:absolute; left:50%; bottom:calc(var(--pad) + 42px * var(--k));
+  transform: translateX(-50%);
+  text-align:center; width: calc(640px * var(--k)); pointer-events:none;
+  will-change: opacity;
+}
+.ow-mission-dialogue-s {
+  font-size: calc(10px * var(--k)); letter-spacing:.28em; color: var(--amber);
+  text-shadow: var(--sh-o1);
+}
+.ow-mission-dialogue-t {
+  margin-top: calc(var(--u) * 1.1);
+  font-size: calc(14.5px * var(--k)); letter-spacing:.08em; color: var(--ink);
+  text-shadow: var(--sh);
+}
+.ow-mission-dialogue-p {
+  margin-top: calc(var(--u) * 1.6); font-size: calc(9.5px * var(--k));
+  letter-spacing:.24em; color: var(--ink-2); text-shadow: var(--sh);
+}
+
+.ow-mission-rewards {
+  position:absolute; left:50%; top:38%; transform: translate(-50%,-50%);
+  text-align:center; padding: calc(var(--u) * 4) calc(var(--u) * 28);
+  pointer-events:none; will-change: opacity;
+}
+.ow-mission-rewards::before {
+  content:''; position:absolute; inset:0; z-index:-1;
+  background: rgba(4,7,10,.72);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000 22%, #000 80%, rgba(0,0,0,0) 100%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000 22%, #000 80%, rgba(0,0,0,0) 100%);
+}
+.ow-mission-rewards-t {
+  font-family: var(--fd); font-size: calc(28px * var(--k)); letter-spacing:.3em; font-weight:700;
+  color: var(--ok); text-shadow: var(--sh-o1);
+}
+.ow-mission-rewards-b {
+  margin-top: calc(var(--u) * 1.6); font-size: calc(12.5px * var(--k)); letter-spacing:.16em;
+  color: var(--ink); text-shadow: var(--sh);
+}
+
+.ow-mission-choices {
+  position:absolute; left:50%; top:50%; transform: translate(-50%,-50%);
+  text-align:center; padding: calc(var(--u) * 4) calc(var(--u) * 28);
+  pointer-events:none; will-change: opacity;
+}
+.ow-mission-choices::before {
+  content:''; position:absolute; inset:0; z-index:-1;
+  background: rgba(4,7,10,.72);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000 22%, #000 80%, rgba(0,0,0,0) 100%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000 22%, #000 80%, rgba(0,0,0,0) 100%);
+}
+.ow-mission-choices-b {
+  font-size: calc(14px * var(--k)); letter-spacing:.1em; color: var(--ink);
+  text-shadow: var(--sh); line-height: 1.8;
+}
+
 /* ============================================================== fadeouts */
 .ow-hidden { display:none !important; }
+
+/* ============================================================== world map */
+.ow-map {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(4,7,10,.82);
+  pointer-events: auto;
+}
+.ow-map-canvas {
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 4px;
+  background: rgba(0,0,0,.5);
+}
+
+/* ============================================================== loading screen */
+.ow-loading {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(4,7,10,.88);
+  pointer-events: none;
+}
+.ow-loading-tip {
+  font-family: var(--ff); font-size: calc(16px * var(--k));
+  color: var(--ink); text-shadow: var(--sh);
+  max-width: 60%; text-align: center;
+  margin-bottom: calc(var(--u) * 3);
+}
+.ow-loading-bar {
+  font-family: var(--fm); font-size: calc(13px * var(--k));
+  color: var(--amber); text-shadow: var(--sh);
+  letter-spacing: .2em;
+}
 `;
 
 const DEFS = `

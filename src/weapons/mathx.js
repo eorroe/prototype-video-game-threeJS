@@ -60,6 +60,15 @@ export function damp(current, target, rate, dt) {
 }
 
 /**
+ * Frame-rate independent exponential approach. `tau` is the 63 % time constant
+ * in seconds (same signature as the player springs module).
+ */
+export function approach(current, target, tau, dt) {
+  if (tau <= 1e-6) return target;
+  return target + (current - target) * Math.exp(-dt / tau);
+}
+
+/**
  * Critically-ish damped spring on a scalar. `f` is the natural frequency in Hz,
  * `z` the damping ratio (1 = no overshoot, 0.5 = lively, >1 = sluggish).
  * Semi-implicit integration so it stays stable at large dt.

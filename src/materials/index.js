@@ -253,6 +253,8 @@ export class MaterialSystem {
     if (changes.groundY !== undefined) u.owGroundY.value = changes.groundY;
     if (changes.normalStrength !== undefined) u.owNormalAmp.value = changes.normalStrength;
     if (changes.weather !== undefined) u.owWeatherP.value.fromArray(changes.weather);
+    if (changes.formColor !== undefined) u.owFormCol.value.set(changes.formColor);
+    if (changes.formIntensity !== undefined) u.owFormIntensity.value = changes.formIntensity;
     return material;
   }
 

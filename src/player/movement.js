@@ -17,11 +17,14 @@
 import * as THREE from 'three';
 import { STANCE, MOVE, GRAVITY, JUMP_SPEED, FOOTSTEP } from './tuning.js';
 import { LedgeProbe, MantleMotion, LEDGE_NONE, LEDGE_VAULT } from './mantle.js';
+import { WallRunProbe, WallRunMotion, WALL_NONE, WALL_LEFT, WALL_RIGHT } from './wallrun.js';
+import { Stamina } from './stamina.js';
 import { clamp, clamp01, approach, lerp } from './springs.js';
 
 export const STATES = [
   'stand', 'crouch', 'prone', 'sprint', 'tacsprint',
   'slide', 'jump', 'fall', 'mantle', 'vault',
+  'wallrun', 'dash',
 ];
 
 export class Movement {
@@ -42,6 +45,8 @@ export class Movement {
     this.sprinting = false;
     this.tacticalSprint = false;
     this.sliding = false;
+    this.wallrunning = false;
+    this.dashing = false;
     this.grounded = true;
     this.wasGrounded = true;
     this.airTime = 0;
@@ -49,6 +54,31 @@ export class Movement {
     this.speed = 0;
     this.horizontalSpeed = 0;
     this.blocked = false;
+
+    // ---- stamina -------------------------------------------------------
+    this.stamina = new Stamina();
+
+    // ---- wall-run ------------------------------------------------------
+    this.wallRunProbe = new WallRunProbe(null);
+    this.wallRunMotion = new WallRunMotion();
+    this.wallRunSide = WALL_NONE;
+    this.wallRunWallNormal = { x: 0, y: 0, z: 0 };
+    this.wallRunCooldown = 0;
+    this.wallRunJumped = false;
+
+    // ---- dash ----------------------------------------------------------
+    this.dashTime = 0;
+    this.dashCooldown = 0;
+    this.dashDirX = 0;
+    this.dashDirZ = 0;
+
+    // ---- variable jump -------------------------------------------------
+    this._jumpHoldTime = 0;
+    this._lastLandTime = -999;
+
+    // ---- perfect landing -----------------------------------------------
+    this.perfectLandAvailable = false;
+    this.perfectLandSpeed = 0;
 
     // ---- yaw/pitch are owned here so movement and camera never disagree --
     this.yaw = 0;
@@ -67,6 +97,10 @@ export class Movement {
     this.leanOffsetX = 0;
     this.leanOffsetZ = 0;
     this._leanProbeTimer = 0;
+
+    // ---- target lock ----------------------------------------------------
+    this.targetLocked = false;
+    this.lockTarget = null;
 
     // ---- timers --------------------------------------------------------
     this._coyote = 0;
@@ -102,12 +136,13 @@ export class Movement {
       jump: false, jumpHeld: false,
       crouchPressed: false, cronePressed: false, pronePressed: false,
       sprintHeld: false, sprintPressed: false,
+      dashPressed: false, dashHeld: false,
       leanL: false, leanR: false,
       ads: false,
     };
     this._cmdFrame = -1;
     this._prevHeld = {
-      jump: false, crouch: false, prone: false, sprint: false,
+      jump: false, crouch: false, prone: false, sprint: false, dash: false,
     };
 
     // ---- interpolation for the camera ----------------------------------
@@ -205,6 +240,7 @@ export class Movement {
     const crouch = input.action('crouch');
     const prone = input.action('prone');
     const sprint = input.action('sprint') || Math.abs(this.ctx.input.stick.moveY) > 0.92;
+    const dash = input.action('dash');
 
     cmd.jump = jump && !prev.jump;
     cmd.jumpHeld = jump;
@@ -212,6 +248,8 @@ export class Movement {
     cmd.pronePressed = prone && !prev.prone;
     cmd.sprintHeld = sprint;
     cmd.sprintPressed = sprint && !prev.sprint;
+    cmd.dashPressed = dash && !prev.dash;
+    cmd.dashHeld = dash;
     cmd.leanL = input.action('leanLeft');
     cmd.leanR = input.action('leanRight');
     cmd.ads = input.ads;
@@ -220,6 +258,7 @@ export class Movement {
     prev.crouch = crouch;
     prev.prone = prone;
     prev.sprint = sprint;
+    prev.dash = dash;
 
     if (cmd.jump) this._jumpBuffer = MOVE.jumpBuffer;
     if (cmd.sprintPressed) {
@@ -259,6 +298,10 @@ export class Movement {
     this.stateTime += h;
     this._tickTimers(h);
 
+    // Update stamina regeneration
+    const standingStill = this.grounded && this.horizontalSpeed < 0.5;
+    this.stamina.update(h, standingStill, this.horizontalSpeed);
+
     // Basis for this step.
     const sy = Math.sin(this.yaw), cy = Math.cos(this.yaw);
     this._fwd.set(-sy, 0, -cy);
@@ -266,6 +309,20 @@ export class Movement {
 
     if (this.mantleMotion.active) {
       this._stepMantle(h);
+      this._publish();
+      return;
+    }
+
+    // ---- wall-run -------------------------------------------------------
+    if (this.wallrunning && this.wallRunMotion.active) {
+      this._stepWallRun(h, wish, wishLen, cmd);
+      this._publish();
+      return;
+    }
+
+    // ---- dash -----------------------------------------------------------
+    if (this.dashing) {
+      this._stepDash(h);
       this._publish();
       return;
     }
@@ -299,18 +356,54 @@ export class Movement {
     this._updateSlide(cmd, h, wish, wishLen);
     const jumped = this._updateJump(cmd);
 
+    // ---- wall-run kick-off ----------------------------------------------
+    if (cmd.jump && this.wallrunning && this.wallRunMotion.active) {
+      this._wallRunJump(cmd);
+    }
+
+    // ---- dash initiation ------------------------------------------------
+    if (cmd.dashPressed && !this.dashing && this.dashCooldown <= 0 &&
+        (this.state === 'jump' || this.state === 'fall') &&
+        this.stamina.oneShot(MOVE.airDash.staminaCost)) {
+      this._beginDash(cmd, wish, wishLen);
+    }
+
     // ---- integrate velocity ---------------------------------------------
     const v = this.velocity;
-    if (this.sliding) {
+    if (this.wallrunning) {
+      this._accelerateWallRun(h, wish, wishLen);
+    } else if (this.dashing) {
+      // dash velocity is set by _beginDash, just apply gravity
+    } else if (this.sliding) {
       this._accelerateSlide(h, wish, wishLen);
     } else if (c.grounded && !jumped) {
       this._accelerateGround(h, wish, wishLen, rawInput);
     } else {
       this._accelerateAir(h, wish, wishLen);
+      // Variable jump height: cut jump short when button released
+      if (!cmd.jumpHeld && v.y > 0 && this._jumpHoldTime > 0) {
+        const cut = Math.exp(-MOVE.variableJump.cutGravityScale * h);
+        v.y *= cut;
+        this._jumpHoldTime = Math.max(0, this._jumpHoldTime - h);
+      }
     }
 
-    if (c.grounded && !jumped && v.y < 0) v.y = 0;
-    v.y += GRAVITY * h;
+    // Stamina drain for exertion
+    if (this.sprinting || this.tacticalSprint) {
+      const cost = this.tacticalSprint ? MOVE.stamina.costs.tacSprint : MOVE.stamina.costs.sprint;
+      this.stamina.exert(cost);
+    }
+    if (this.wallrunning && this.wallRunMotion.active) {
+      this.stamina.exert(MOVE.wallRun.staminaDrain);
+    }
+
+    if (this.wallrunning) {
+      v.y += GRAVITY * MOVE.wallRun.gravityScale * h;
+    } else if (!this.dashing) {
+      v.y += GRAVITY * h;
+    } else {
+      v.y += GRAVITY * MOVE.airDash.gravityScale * h;
+    }
     if (v.y < -MOVE.terminalSpeed) v.y = -MOVE.terminalSpeed;
 
     // ---- ledge detection (before the move, so we never fight the wall) ---
@@ -332,6 +425,16 @@ export class Movement {
 
     if (c.touchingCeiling && v.y > 0) v.y = 0;
 
+    // ---- wall-run exit check --------------------------------------------
+    if (this.wallrunning) {
+      const stillValid = c.touchingWall && !c.grounded &&
+        Math.abs(c.wallNormal.y) < MOVE.wallRun.wallAngle &&
+        this.wallRunCooldown <= 0;
+      if (!stillValid || this.stamina.depleted) {
+        this._endWallRun();
+      }
+    }
+
     // ---- post-move bookkeeping ------------------------------------------
     this._postMove(h, travelled);
     this._updateLean(h, cmd);
@@ -348,6 +451,8 @@ export class Movement {
     this._footHold = Math.max(0, this._footHold - h);
     this._ledgeProbeTimer = Math.max(0, this._ledgeProbeTimer - h);
     this._leanProbeTimer = Math.max(0, this._leanProbeTimer - h);
+    this.wallRunCooldown = Math.max(0, this.wallRunCooldown - h);
+    this.dashCooldown = Math.max(0, this.dashCooldown - h);
     if (this.grounded) {
       this._coyote = MOVE.coyoteTime;
       this.groundTime += h;
@@ -581,6 +686,8 @@ export class Movement {
 
   _updateJump(cmd) {
     if (this.sliding) return false;
+    if (this.wallrunning) return false;
+    if (this.dashing) return false;
     if (this._jumpBuffer <= 0) return false;
     if (this._jumpCooldown > 0) return false;
     const c = this.character;
@@ -594,20 +701,27 @@ export class Movement {
       this.stance = 'stand';
       this.stanceWant = 'stand';
     }
-    this._doJump();
+
+    // Variable jump height based on input
+    const holdBonus = cmd.jumpHeld ? 1 : 0;
+    const jumpSpeed = lerp(MOVE.variableJump.minSpeed, MOVE.variableJump.maxSpeed, holdBonus);
+    this._doJump(jumpSpeed);
     return true;
   }
 
-  _doJump() {
+  _doJump(speed = JUMP_SPEED) {
     const v = this.velocity;
-    v.y = JUMP_SPEED;
+    v.y = speed;
     this._jumpBuffer = 0;
     this._jumpCooldown = MOVE.jumpCooldown;
     this._coyote = 0;
     this.grounded = false;
     this.character.grounded = false;
     this.jumped = true;
+    this._jumpHoldTime = MOVE.variableJump.holdTime;
     this._setState('jump');
+    // Drain stamina for jump
+    this.stamina.exert(MOVE.stamina.costs.jump);
   }
 
   /* ==================================================================== */
@@ -687,6 +801,16 @@ export class Movement {
     const gain = accel < add ? accel : add;
     v.x += wish.x * gain;
     v.z += wish.z * gain;
+  }
+
+  _accelerateWallRun(h, wish, wishLen) {
+    // Wall-run velocity is handled by WallRunMotion; just update stamina
+    // and ensure we don't drift too far from the wall tangent.
+    const m = this.wallRunMotion;
+    if (!m.active) return;
+    const v = this.velocity;
+    v.x = m.exitVx;
+    v.z = m.exitVz;
   }
 
   /* ==================================================================== */
@@ -803,6 +927,152 @@ export class Movement {
   }
 
   /* ==================================================================== */
+  /* wall-run                                                             */
+  /* ==================================================================== */
+
+  _stepWallRun(h, wish, wishLen) {
+    const c = this.character;
+    const m = this.wallRunMotion;
+    if (!m.active) {
+      this._endWallRun();
+      return;
+    }
+
+    const staminaAvailable = this.stamina.pool;
+    const alive = m.step(h, wishLen, wish.x, wish.z, staminaAvailable);
+
+    const v = this.velocity;
+    v.x = m.exitVx;
+    v.y = m.exitVy;
+    v.z = m.exitVz;
+
+    c.velocity.x = v.x;
+    c.velocity.y = v.y;
+    c.velocity.z = v.z;
+    const travelled = c.move(v.x * h, v.y * h, v.z * h);
+    v.x = c.velocity.x;
+    v.y = c.velocity.y;
+    v.z = c.velocity.z;
+    this.blocked = c.lastMoveBlocked;
+
+    this.wasGrounded = this.grounded;
+    this.grounded = c.grounded;
+    this.position.set(c.position.x, c.position.y, c.position.z);
+
+    if (c.touchingCeiling && v.y > 0) v.y = 0;
+
+    this._postMove(h, travelled);
+    this._updateLean(h, this.cmd);
+    this._resolveState();
+
+    // Drain stamina for wall-run
+    const drained = m.staminaDrained;
+    if (drained > 0) {
+      this.stamina.pool = Math.max(0, this.stamina.pool - drained);
+      m.staminaDrained = 0;
+    }
+  }
+
+  _wallRunJump(cmd) {
+    const m = this.wallRunMotion;
+    if (!m.active) return;
+    const staminaCost = MOVE.wallRun.staminaJumpOff;
+    if (!this.stamina.oneShot(staminaCost)) return;
+    m.jumpOff();
+    const v = this.velocity;
+    v.x = m.exitVx;
+    v.y = m.exitVy;
+    v.z = m.exitVz;
+    this.wallRunJumped = true;
+    this._jumpBuffer = 0;
+    this._jumpCooldown = MOVE.jumpCooldown;
+    this.grounded = false;
+    this.character.grounded = false;
+    this.jumped = true;
+    this._jumpHoldTime = MOVE.variableJump.holdTime;
+    this._endWallRun();
+    this._setState('jump');
+  }
+
+  _endWallRun() {
+    this.wallrunning = false;
+    this.wallRunMotion.end();
+    this.wallRunSide = WALL_NONE;
+    this.wallRunCooldown = 0.25;
+    this.wallRunWallNormal.x = 0;
+    this.wallRunWallNormal.y = 0;
+    this.wallRunWallNormal.z = 0;
+  }
+
+  _canStartWallRun() {
+    const c = this.character;
+    return !this.wallrunning && !this.sliding && !this.mantleMotion.active &&
+      !c.grounded && c.touchingWall &&
+      Math.abs(c.wallNormal.y) < MOVE.wallRun.wallAngle &&
+      this.horizontalSpeed >= MOVE.wallRun.minSpeedToStart &&
+      this.wallRunCooldown <= 0 && this.stamina.available;
+  }
+
+  /* ==================================================================== */
+  /* dash                                                                  */
+  /* ==================================================================== */
+
+  _beginDash(cmd, wish, wishLen) {
+    const v = this.velocity;
+    let dx, dz;
+    if (wishLen > 0.1) {
+      dx = wish.x;
+      dz = wish.z;
+    } else {
+      dx = -Math.sin(this.yaw);
+      dz = -Math.cos(this.yaw);
+    }
+    const l = Math.hypot(dx, dz) || 1;
+    dx /= l; dz /= l;
+
+    const speed = MOVE.airDash.speed;
+    v.x = dx * speed;
+    v.y = 0.5;
+    v.z = dz * speed;
+    this.dashDirX = dx;
+    this.dashDirZ = dz;
+    this.dashTime = 0;
+    this.dashing = true;
+    this._setState('dash');
+    this.stamina.exert(MOVE.airDash.staminaCost);
+  }
+
+  _stepDash(h) {
+    this.dashTime += h;
+    const v = this.velocity;
+    const drag = Math.exp(-6.5 * this.dashTime);
+    v.x = this.dashDirX * MOVE.airDash.speed * drag;
+    v.z = this.dashDirZ * MOVE.airDash.speed * drag;
+
+    const c = this.character;
+    c.velocity.x = v.x; c.velocity.y = v.y; c.velocity.z = v.z;
+    const travelled = c.move(v.x * h, v.y * h, v.z * h);
+    v.x = c.velocity.x; v.y = c.velocity.y; v.z = c.velocity.z;
+    this.blocked = c.lastMoveBlocked;
+
+    this.wasGrounded = this.grounded;
+    this.grounded = c.grounded;
+    this.position.set(c.position.x, c.position.y, c.position.z);
+
+    if (c.touchingCeiling && v.y > 0) v.y = 0;
+
+    if (this.grounded || this.dashTime >= MOVE.airDash.duration || this.stamina.depleted) {
+      this.dashing = false;
+      this.dashCooldown = MOVE.airDash.cooldown;
+      this.dashTime = 0;
+      this._resolveState();
+    }
+
+    this._postMove(h, travelled);
+    this._updateLean(h, this.cmd);
+  }
+
+  /* ==================================================================== */
   /* lean                                                                 */
   /* ==================================================================== */
 
@@ -853,15 +1123,64 @@ export class Movement {
     this.speed = Math.hypot(v.x, v.y, v.z);
     this.horizontalSpeed = Math.hypot(v.x, v.z);
 
+    // ---- wall-run initiation --------------------------------------------
+    if (!this.wallrunning && !this.sliding && !this.mantleMotion.active &&
+        !c.grounded && c.touchingWall && this.horizontalSpeed >= MOVE.wallRun.minSpeedToStart &&
+        Math.abs(c.wallNormal.y) < MOVE.wallRun.wallAngle && this.wallRunCooldown <= 0) {
+      const fwdDot = -(c.wallNormal.x * this._fwd.x + c.wallNormal.z * this._fwd.z);
+      const rightDot = c.wallNormal.x * this._right.x + c.wallNormal.z * this._right.z;
+      const side = rightDot > 0 ? WALL_LEFT : WALL_RIGHT;
+      const nx = c.wallNormal.x;
+      const ny = c.wallNormal.y;
+      const nz = c.wallNormal.z;
+      this.wallRunMotion.begin(side, nx, ny, nz, this.horizontalSpeed, c.groundSurfaceName);
+      this.wallrunning = true;
+      this.wallRunSide = side;
+      this.wallRunWallNormal.x = nx;
+      this.wallRunWallNormal.y = ny;
+      this.wallRunWallNormal.z = nz;
+      this._jumpBuffer = 0;
+      this._coyote = 0;
+      this.grounded = false;
+      c.grounded = false;
+      this._setState('wallrun');
+      const sp = this.stamina.exert(MOVE.wallRun.staminaDrain) ? MOVE.wallRun.staminaDrain : 0;
+      this.wallRunMotion.staminaDrained = sp;
+    }
+
     // ---- landing ---------------------------------------------------------
     if (this.grounded && !this.wasGrounded) {
+      this._lastLandTime = this.stateTime;
       const impact = Math.max(c.landingSpeed, -Math.min(0, this._prevVy));
       this.landEvent.pending = true;
       this.landEvent.speed = impact;
       this.landEvent.surface = c.groundSurfaceName;
       this._footHold = FOOTSTEP.landHold;
       this._stepDistance = 0;
+
+      // Perfect landing check
+      if (impact >= MOVE.perfectLand.minSpeed && !this.wallRunJumped) {
+        this.perfectLandAvailable = true;
+        this.perfectLandSpeed = impact;
+      }
+
       if (this.sliding) this._endSlide(false);
+      // Reset wall-run jump flag on landing
+      this.wallRunJumped = false;
+    }
+
+    // Perfect landing consumption
+    if (this.perfectLandAvailable && this.grounded && this.horizontalSpeed > 1) {
+      const bonus = this.perfectLandSpeed * MOVE.perfectLand.speedBoost;
+      const v = this.velocity;
+      const sp = Math.hypot(v.x, v.z);
+      if (sp > 0.5) {
+        const scale = 1 + bonus / sp;
+        v.x *= scale;
+        v.z *= scale;
+      }
+      this.perfectLandAvailable = false;
+      this.perfectLandSpeed = 0;
     }
 
     // ---- footstep cadence -------------------------------------------------
@@ -920,6 +1239,8 @@ export class Movement {
 
   _resolveState() {
     if (this.mantleMotion.active) return;
+    if (this.wallrunning) { this._setState('wallrun'); return; }
+    if (this.dashing) { this._setState('dash'); return; }
     let next;
     if (this.sliding) next = 'slide';
     else if (!this.grounded) next = this.velocity.y > 0.35 ? 'jump' : 'fall';
@@ -961,6 +1282,9 @@ export class Movement {
     this.sliding = false;
     this.sprinting = false;
     this.tacticalSprint = false;
+    this.wallrunning = false;
+    this.wallRunMotion.end();
+    this.dashing = false;
     this.stance = 'stand';
     this.stanceWant = 'stand';
     this.character.height = STANCE.stand.height;
@@ -981,6 +1305,13 @@ export class Movement {
     this._jumpBuffer = 0;
     this.landEvent.pending = false;
     this.stepEvent.pending = false;
+    this.wallRunCooldown = 0;
+    this.dashCooldown = 0;
+    this.dashTime = 0;
+    this.perfectLandAvailable = false;
+    this._jumpHoldTime = 0;
+    this.stamina.pool = MOVE.stamina.max;
+    this.stamina._depleted = false;
     this._setState('stand');
   }
 

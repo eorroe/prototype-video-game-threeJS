@@ -76,6 +76,8 @@ varying vec3 vOwWNrm;
 #ifdef OW_PARALLAX
   varying vec3 vOwViewDirP;
 #endif
+uniform vec3 owFormCol;
+uniform float owFormIntensity;
 
 uniform sampler2D owDetailNrm;
 uniform sampler2D owDetailTex;   // rgb = micro albedo variation, a = micro height
@@ -619,6 +621,15 @@ const MAIN_FRAGMENT = /* glsl */ `
 
   // ------------------------------------------------------------ tint ----
   alb.rgb *= owTintCol;
+
+  #ifdef OW_FORM_COLOR
+    float fb = clamp(owFormBlend, 0.0, 1.0) * owFormIntensity;
+    if (fb > 0.001) {
+      vec3 fc = owFormCol * (1.0 + 0.3 * (1.0 - fb));
+      alb.rgb = mix(alb.rgb, alb.rgb * fc + fc * 0.12, fb);
+      orm.g = mix(orm.g, orm.g * 0.35, fb * 0.7);
+    }
+  #endif
   // owRoughP.w is a per-surface floor: tile, glass and painted metal must stay
   // glossy enough to actually catch a highlight.
   orm.g = clamp( orm.g * owRoughP.x + owRoughP.y, max( owRoughP.w, 0.015 ), 1.0 );
@@ -845,6 +856,8 @@ export function extendMaterial(material, p, shared) {
     owGroundY: { value: p.groundY },
     owAoAmt: { value: p.aoStrength },
     owMacroRelief: { value: p.macroRelief ?? 0 },
+    owFormCol: { value: new THREE.Color(0, 0, 0) },
+    owFormIntensity: { value: 0.0 },
   };
 
   const defines = {};

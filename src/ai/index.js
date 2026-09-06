@@ -45,6 +45,8 @@ import { NavGrid, CoverMap } from './nav.js';
 import { Agent, STATE } from './agent.js';
 import { Squad } from './squad.js';
 import { GroundShadows } from './grounding.js';
+import { InfectedAgent } from './infected.js';
+import { buildInfected, resolveInfectedMaterials, INFECTED_MATERIAL_SLOTS, INFECTED_VARIANT } from './infected.js';
 
 export class AiSystem {
   static id = 'ai';
@@ -205,7 +207,9 @@ export class AiSystem {
       const mats = [];
       const seen = new Set();
       for (const name in VARIANTS) {
-        for (const m of resolveMaterials(name, MATERIAL_SLOTS, this.materials)) {
+        const slots = name === 'infected' ? INFECTED_MATERIAL_SLOTS : MATERIAL_SLOTS;
+        const resolver = name === 'infected' ? resolveInfectedMaterials : resolveMaterials;
+        for (const m of resolver(name, slots, this.materials)) {
           if (m && !seen.has(m)) { seen.add(m); mats.push(m); }
         }
       }
@@ -323,7 +327,15 @@ export class AiSystem {
       if (!a.alive) return;
       const amount = e.amount * this._falloff(e.point);
       a.applyDamage(amount, e.headshot ? 'head' : e.part ?? 'torso', e.point ?? a.position, e.incident);
-      if (!a.alive) e.killed = true;
+      if (!a.alive) {
+        e.killed = true;
+        if (a.infected) {
+          this.ctx.events.emit('actor:infected_death', {
+            actor: a,
+            mode: a._infectedDeathMode ?? 'collapse',
+          });
+        }
+      }
     });
 
     on('explosion', (e) => {
@@ -374,7 +386,11 @@ export class AiSystem {
     let v = this._variants.get(name);
     if (!v) {
       const t0 = performance.now();
-      v = buildSoldier(name, { rng: this.rng.fork(), materials: this.materials });
+      if (name === 'infected') {
+        v = buildInfected(name, { rng: this.rng.fork(), materials: this.materials });
+      } else {
+        v = buildSoldier(name, { rng: this.rng.fork(), materials: this.materials });
+      }
       this._variants.set(name, v);
       // Hand the new materials to render immediately rather than waiting for its
       // scene walk: they are all MeshStandardMaterial, so the patcher injects the
@@ -469,6 +485,11 @@ export class AiSystem {
   /* ================================================================== */
 
   spawn(variantName, position, yaw = 0, opts = {}) {
+    if (variantName === 'infected') {
+      const a = new InfectedAgent(this, { variant: variantName, position, yaw, ...opts });
+      this.agents.push(a);
+      return a;
+    }
     const a = new Agent(this, { variant: variantName, position, yaw, ...opts });
     this.agents.push(a);
     return a;
@@ -479,12 +500,15 @@ export class AiSystem {
    * spawn points, far enough from the player to be found rather than spawned on
    * top of. This is what the behaviour tree, navigation and perception actually
    * run against in play.
+   *
+   * District-aware: prefers spawn points in the same district as the player.
    */
   populate(opts = {}) {
     const world = this.ctx.peek('world');
     const spawns = world?.spawnPoints ?? [];
     if (!spawns.length || !this.grid) return 0;
     const player = this.playerPosition(this._v3).clone();
+    const districtMgr = world?.districtManager;
     // rank the spawn points by distance from the player, take the far half
     const ranked = spawns
       .map((s, i) => ({ s, i, d: s.position.distanceTo(player) }))
@@ -535,6 +559,13 @@ export class AiSystem {
     }
     console.info(`[ai] garrison: ${made} enemies in ${squads} squads`);
     return made;
+  }
+
+  /**
+   * Spawn a single agent at a position. Used by the SpawnSystem.
+   */
+  spawnAgent(variant, position, yaw = 0, opts = {}) {
+    return this.spawn(variant, position, yaw, opts);
   }
 
   createSquad() {
@@ -635,15 +666,12 @@ export class AiSystem {
     const miss = Math.hypot(px - dir.x * t, py - dir.y * t, pz - dir.z * t);
     const player = this.ctx.peek('player');
     if (miss > 0.42) {
-      if (miss < 1.6) player?.onNearMiss?.(miss); // whip-crack past the ear
+      if (miss < 1.6) player?.onNearMiss?.(miss);
       return;
     }
     const amount = agent.weaponDamage * (miss < 0.16 ? 1.25 : 1);
     this._v2.copy(origin);
-    // Damage is applied *only* through the event below. `player` listens for
-    // `damage:dealt` with itself as the target, so calling applyDamage() here as
-    // well wounded the player twice for every round that connected.
-    this.ctx.events.emit('damage:dealt', {
+    const hitEvent = {
       target: player ?? 'player',
       amount,
       headshot: false,
@@ -651,7 +679,9 @@ export class AiSystem {
       point: p,
       from: this._v2,
       source: agent,
-    });
+      infected: !!agent.infected,
+    };
+    this.ctx.events.emit('damage:dealt', hitEvent);
   }
 
   emitReload(agent) {

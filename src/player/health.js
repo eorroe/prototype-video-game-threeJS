@@ -47,6 +47,7 @@ export class Health {
     this._emitTimer = 0;
     this._lastEmitHealth = HEALTH.max;
     this._beat = { strength: 0, fraction: 1 };
+    this.infectionDraining = false;
   }
 
   get fraction() {
@@ -67,6 +68,7 @@ export class Health {
     this.suppression = 0;
     this.hitFlash = 0;
     this.lastDamageTime = -100;
+    this.infectionDraining = false;
     for (let k = 0; k < this.indicators.length; k++) this.indicators[k].active = false;
   }
 
@@ -121,7 +123,13 @@ export class Health {
     p.critical = this.critical;
     if (from) p.from.copy(from);
     else p.from.set(this.ctx.camera.position.x, this.ctx.camera.position.y, this.ctx.camera.position.z);
-    this.ctx.events.emit('damage:taken', p);
+    if (opts.type !== 'infection' || !this.infectionDraining) {
+      this.infectionDraining = opts.type === 'infection';
+      this.ctx.events.emit('damage:taken', p);
+    } else if (this._emitTimer <= 0) {
+      this._emitTimer = 0.5;
+      this.ctx.events.emit('damage:taken', { ...p });
+    }
 
     if (this.value <= 0) {
       this.dead = true;

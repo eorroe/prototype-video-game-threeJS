@@ -157,11 +157,12 @@ export class Agent {
 
     this.colliders = [];
     if (phys) {
+      const surface = opts.variant === 'infected' ? 'flesh_infected' : 'flesh';
       for (const [part, a, b, r, dmg] of HITBOXES) {
         const c = phys.addCollider({
           shape: 'capsule',
           layer: phys.LAYER.ACTOR,
-          surface: 'flesh',
+          surface,
           owner: this,
           part,
           radius: r * this.scale,

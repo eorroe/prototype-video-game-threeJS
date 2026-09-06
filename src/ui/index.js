@@ -13,6 +13,11 @@ import { WorldMarkers } from './markers.js';
 import { Prompt, Banner } from './prompts.js';
 import { PauseMenu } from './menu.js';
 import { CombatDemo } from './demo.js';
+import { MeleeHud } from './melee.js';
+import { MapUI } from './map.js';
+import { LoadingScreen } from './loading.js';
+import { MissionPanel } from '../mission/ui.js';
+import { SkillTreePanel } from '../progression/ui.js';
 
 const MAX_BLIPS = 48;
 
@@ -91,6 +96,11 @@ export class UiSystem {
     this.prompt = new Prompt(this.chromeLayer);
     this.banner = new Banner(this.chromeLayer);
     this.menu = new PauseMenu(this.root, ctx);
+    this.melee = new MeleeHud(this.chromeLayer);
+    this.map = new MapUI(this.root, this.rng.fork());
+    this.loading = new LoadingScreen(this.root);
+    this.missionPanel = new MissionPanel(this.chromeLayer, this.rng.fork());
+    this.skillTree = null;
 
     this.health.onBeat = (i) => this.sfx('heartbeat', 0.35 + i * 0.5);
 
@@ -240,8 +250,84 @@ export class UiSystem {
       if (e.stance !== undefined) s.crouch = e.stance === 'crouch' || e.stance === 'prone';
     });
 
+    on('melee:hit', (e) => {
+      if (!e) return;
+      const kind = e.killed ? 'kill' : e.headshot ? 'head' : 'hit';
+      this.hitmarker(kind);
+      if (e.point) {
+        this.damageNumber(e.point, e.amount ?? 0, e.killed ? 'kill' : e.headshot ? 'hs' : 'hit');
+      }
+      if (e.comboCount >= 3) {
+        this.banner.show(`COMBO x${e.comboCount}`, e.comboCount >= 5 ? 'MASSACRE' : 'BRUTAL', 1.2);
+      }
+      if (e.limb?.severed) {
+        this.melee?.showDismemberment?.(e.limb.name);
+      }
+    });
+
+    on('melee:dismember', (e) => {
+      if (!e) return;
+      this.melee?.showDismemberment?.(e.limb);
+    });
+
+    on('melee:perfect_parry', (e) => {
+      this.melee?.showParry?.();
+      this.crosshair.onHit();
+    });
+
+    on('mission:start', (e) => {
+      if (!e) return;
+      this.missionPanel.showBrief(e.title, e.description, 6);
+      this.banner.show(e.title, e.type === 'main' ? 'MISSION STARTED' : 'OBJECTIVE AVAILABLE', 4);
+    });
+
+    on('mission:complete', (e) => {
+      if (!e) return;
+      this.missionPanel.showRewards('MISSION COMPLETE', e.rewards);
+      this.banner.show(e.title, 'COMPLETED', 3.5);
+    });
+
+    on('mission:fail', (e) => {
+      if (!e) return;
+      this.banner.show('MISSION FAILED', e.reason ?? '', 4);
+    });
+
+    on('mission:dialogue', (e) => {
+      if (!e) return;
+      this.missionPanel.showDialogue(e.speaker, e.lines[e.index] ?? '', 'PRESS F');
+    });
+
+    on('mission:dialogue:hide', () => {
+      this.missionPanel.hideDialogue();
+    });
+
+    on('mission:choice', (e) => {
+      if (!e?.options?.length) return;
+      this.missionPanel.showChoices(e.options);
+      this.prompt.set({ key: '1-2', text: 'CHOOSE', sub: 'Press 1 or 2' });
+    });
+
+    on('mission:complete', (e) => {
+      if (!e) return;
+      this.banner.show(e.label, 'COMPLETED', 2.5);
+    });
+
+    on('mission:reward', (e) => {
+      if (!e?.xp) return;
+      this.state.scoreUs += (e.xp / 100) | 0;
+    });
+
+    on('progression:state', () => this._syncSkillTree());
+
     this.resize(ctx.canvas.clientWidth || innerWidth, ctx.canvas.clientHeight || innerHeight, ctx);
     this._prevPos.copy(this._playerPos());
+  }
+
+  _ensureSkillTree() {
+    if (!this.skillTree) {
+      this.skillTree = new SkillTreePanel(this.root, this.ctx);
+    }
+    return this.skillTree;
   }
 
   /* ------------------------------------------------------------- helpers -- */
@@ -408,6 +494,13 @@ export class UiSystem {
     // ---- pause -----------------------------------------------------------
     if (ctx.input.enabled && !ctx.input.frozen) {
       if (ctx.input.actionPressed('pause')) this.menu.toggle();
+      if (ctx.input.pressed('KeyK')) {
+        const st = this._ensureSkillTree();
+        st.toggle();
+      }
+      if (ctx.input.pressed('KeyM')) {
+        this.map.toggle();
+      }
       // Losing pointer lock mid-match is the same intent as pressing Escape.
       if (ctx.input.pointerLocked) this._hadPointerLock = true;
       else if (this._hadPointerLock && !this.menu.open) {
@@ -479,6 +572,30 @@ export class UiSystem {
     // ---- demo timeline ---------------------------------------------------
     if (this.demo?.active) this.demo.update(this, dt);
 
+    // ---- fast travel -----------------------------------------------------
+    const ft = ctx.peek('fasttravel');
+    if (ft) {
+      if (ft.isTraveling()) {
+        this.loading.show(ft.getCurrentTip());
+        this.loading.setProgress(ft.getProgress());
+        this.map.hide();
+      } else {
+        this.loading.hide();
+        // Show prompt near safe houses
+        const nearby = ft.discoverNearby(pos.x, pos.z);
+        if (nearby && !ft.isUnlocked(nearby.id)) {
+          this.setPrompt({ key: 'interact', text: `Discover ${nearby.label}`, sub: 'Press E' });
+        } else if (ft.getAvailable().length > 1) {
+          this.setPrompt({ key: 'map', text: 'Fast Travel', sub: 'Press M for map' });
+        }
+      }
+    }
+
+    // ---- map --------------------------------------------------------------
+    if (this.map._visible) {
+      this.map.draw(this._mmState);
+    }
+
     // ---- ai blips --------------------------------------------------------
     this._collectBlips();
 
@@ -512,6 +629,10 @@ export class UiSystem {
     this.matchBar.update(s);
     this.prompt.update(dt);
     this.banner.update(dt);
+    this.missionPanel.update(dt, this);
+    this.missionPanel.setObjectives(this._objectives);
+    if (this.skillTree?.open) this.skillTree.update(dt, ctx);
+    this.melee?.update?.(dt, s);
 
     this._buildCompassObjectives(pos);
     this.compass.update(heading, this._compassObjs);
@@ -581,6 +702,10 @@ export class UiSystem {
     return out;
   }
 
+  _syncSkillTree() {
+    this.skillTree?._sync();
+  }
+
   resize(w, h, ctx) {
     this.vw = w;
     this.vh = h;
@@ -589,6 +714,7 @@ export class UiSystem {
     this.crosshair.setScale(this.k);
     this.compass.setScale(this.k);
     this.minimap.resize(this.k);
+    this.missionPanel?.resize?.(w, h);
   }
 
   dispose() {
@@ -607,6 +733,8 @@ export class UiSystem {
     this.prompt.dispose();
     this.banner.dispose();
     this.menu.dispose();
+    this.map.dispose();
+    this.loading.dispose();
     this.root.remove();
     removeStyles();
   }

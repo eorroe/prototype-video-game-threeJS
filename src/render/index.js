@@ -1380,6 +1380,10 @@ export class RenderSystem {
     // describing the world alone, which is what TAA, motion blur, the ADS DOF
     // and the volumetric fog all need it to be.
     this._viewVisible = viewScene.children.length > this._viewRigChildren;
+    if (this._viewVisible && this.ctx.config.thirdPerson) {
+      const player = this.ctx.peek('player');
+      this._viewVisible = this._adsT > 0.01 || (player?.targetLocked ?? false);
+    }
     if (this._viewVisible) {
       // The viewmodel is only in the cascades if its camera shares the world
       // camera's position; otherwise the world-space lookup would be nonsense.

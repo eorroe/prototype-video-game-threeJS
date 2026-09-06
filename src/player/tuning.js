@@ -150,6 +150,61 @@ export const MOVE = {
     crouchStand: 0.072,
     prone: 0.16,
   },
+
+  stamina: {
+    max: 100,
+    regenRate: 18,
+    regenRateStanding: 28,
+    regenDelay: 0.55,
+    costs: {
+      sprint: 7,
+      tacSprint: 15,
+      wallRun: 16,
+      wallJump: 22,
+      airDash: 32,
+      slide: 4,
+      jump: 2,
+    },
+  },
+
+  wallRun: {
+    gravityScale: 0.26,
+    maxSpeed: 6.8,
+    accel: 55,
+    maxDuration: 2.4,
+    minSpeedToStart: 3.8,
+    wallAngle: 0.55,
+    jumpOffSpeed: 5.8,
+    jumpOffBurst: 3.4,
+    staminaDrain: 16,
+    staminaJumpOff: 22,
+    cameraRoll: 7.5 * DEG,
+    cameraTilt: 0.1,
+    minHeight: 0.9,
+    maxHeight: 2.8,
+    sideReach: 0.55,
+  },
+
+  airDash: {
+    speed: 9.8,
+    duration: 0.2,
+    staminaCost: 32,
+    cooldown: 0.65,
+    gravityScale: 0.12,
+  },
+
+  variableJump: {
+    cutGravityScale: 2.6,
+    holdTime: 0.32,
+    minSpeed: 3.8,
+    maxSpeed: 7.0,
+  },
+
+  perfectLand: {
+    speedBoost: 0.18,
+    minSpeed: 4.5,
+    window: 0.18,
+  },
 };
 
 export const CAMERA = {
@@ -298,4 +353,21 @@ export const FOOTSTEP = {
   runSpeed: 5.4,
   /** Landing suppresses the next step so you do not get a double transient. */
   landHold: 0.12,
+};
+
+export const MORPH = {
+  /** Maximum evolution energy in the pool. */
+  energyMax: 100,
+  /** Passive energy regen per second when no form is active. */
+  energyRegen: 8,
+  /** Reduced regen rate while a form is draining. */
+  energyRegenDraining: 2.4,
+  /** Transform transition duration (seconds to 63 %). */
+  transitionTau: 0.14,
+  /** Blade-specific tuning. */
+  blade: { trailRate: 0.04, trailLife: 0.55, trailMax: 60 },
+  /** Tail-specific tuning. */
+  tail: { whipRange: 5, whipArc: Math.PI * 0.7 },
+  /** Disguise: how long the copied geometry stays valid (s). */
+  disguiseTtl: 120,
 };
