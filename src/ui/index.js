@@ -77,6 +77,18 @@ export class UiSystem {
     const host = document.getElementById('ui') ?? document.body;
     this.root = el('div', 'ow-hud', host);
 
+    // Hide the start blocker on first interaction
+    const blocker = document.getElementById('blocker');
+    if (blocker) {
+      const hideBlocker = () => {
+        blocker.classList.add('hidden');
+        document.removeEventListener('mousedown', hideBlocker);
+        document.removeEventListener('keydown', hideBlocker);
+      };
+      document.addEventListener('mousedown', hideBlocker, { once: true });
+      document.addEventListener('keydown', hideBlocker, { once: true });
+    }
+
     // Stacking order: hurt overlays sit under the HUD, the menu over everything.
     this.hurtLayer = el('div', 'ow-layer', this.root);
     this.worldLayer = el('div', 'ow-layer', this.root);

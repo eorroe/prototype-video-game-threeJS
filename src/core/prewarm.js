@@ -152,20 +152,18 @@ export async function prewarm(engine, { onProgress = () => {}, transients = fals
   const prevMip = renderer.getActiveMipmapLevel?.() ?? 0;
 
   const compile = async () => {
-    // compileAsync is non-blocking where KHR_parallel_shader_compile exists.
     renderer.setRenderTarget(scratchRt);
     try {
-      await renderer.compileAsync(engine.scene, engine.camera);
-      await renderer.compileAsync(engine.viewScene, engine.viewCamera);
+      await Promise.race([
+        renderer.compileAsync(engine.scene, engine.camera),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('compileAsync timeout')), 5000))
+      ]);
     } catch {
-      // Older three or a driver without the extension — fall back to sync.
       try {
         renderer.compile(engine.scene, engine.camera);
-        renderer.compile(engine.viewScene, engine.viewCamera);
       } catch { /* nothing more we can do; boot must still proceed */ }
-    } finally {
-      renderer.setRenderTarget(prevRt, prevFace, prevMip);
     }
+    renderer.setRenderTarget(prevRt, prevFace, prevMip);
   };
 
   const yieldFrame = () => new Promise((r) => requestAnimationFrame(r));
