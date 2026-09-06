@@ -4,7 +4,7 @@ import { saveProgression, loadProgression, clearProgression } from './storage.js
 
 export class ProgressionSystem {
   static id = 'progression';
-  static deps = ['events'];
+  static deps = [];
 
   constructor() {
     this.level = 1;

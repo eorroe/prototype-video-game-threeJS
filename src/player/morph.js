@@ -86,7 +86,7 @@ const TAIL_COLOR = new THREE.Color(0.1, 0.55, 0.12);
 
 export class MorphSystem {
   static id = 'morph';
-  static deps = ['events'];
+  static deps = [];
 
   constructor() {
     this.form = 'none';
