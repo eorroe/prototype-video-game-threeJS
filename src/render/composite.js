@@ -20,7 +20,7 @@ ${TONEMAP}
 uniform sampler2D tColor;
 uniform sampler2D tBloom;
 uniform sampler2D tExposure;
-uniform sampler3D tLut;
+// uniform sampler3D tLut;
 
 uniform vec2 uTexel;
 uniform vec2 uResolution;
@@ -30,9 +30,8 @@ uniform vec4 uLook;      // x agx slope, y agx power, z agx sat, w exposureBias
 varying vec2 vUv;
 
 vec3 sampleLut( vec3 c ) {
-  float n = uGrade.w;
-  vec3 uvw = clamp( c, 0.0, 1.0 ) * ( ( n - 1.0 ) / n ) + ( 0.5 / n );
-  return texture( tLut, uvw ).rgb;
+  // LUT disabled for WebGL2 compatibility
+  return c;
 }
 
 void main() {

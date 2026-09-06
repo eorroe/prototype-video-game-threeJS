@@ -1,5 +1,10 @@
+import * as THREE from 'three';
 import { Engine } from './core/engine.js';
 import { createConfig } from './core/config.js';
+
+if (THREE.ShaderChunk && !THREE.ShaderChunk['morphinstance_vertex']) {
+  THREE.ShaderChunk['morphinstance_vertex'] = '// morphinstance_vertex: no-op in r160';
+}
 
 import { RenderSystem } from './render/index.js';
 import { MaterialSystem } from './materials/index.js';

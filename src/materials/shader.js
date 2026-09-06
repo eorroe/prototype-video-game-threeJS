@@ -629,6 +629,9 @@ const MAIN_FRAGMENT = /* glsl */ `
 }
 
 diffuseColor.rgb *= owAlbedo.rgb;
+#ifdef OW_VCOL_MASKS
+  diffuseColor.rgb *= mix( vec3( 1.0 ), vec3( 1.5, 1.2, 0.8 ), vColor.rgb );
+#endif
 #ifdef OW_ALPHA_MASK
   diffuseColor.a *= owAlbedo.a;
 #endif
@@ -854,7 +857,9 @@ export function extendMaterial(material, p, shared) {
   if ((p.patch?.[0] ?? 0) > 0) defines.OW_PATCH = '';
   if ((p.cloth?.[0] ?? 0) > 0 || (p.cloth?.[1] ?? 1) < 1) defines.OW_CLOTH = '';
   if ((p.macroRelief ?? 0) > 0) defines.OW_MACRO_RELIEF = '';
-  if (p.vertexMasks) defines.OW_VCOL_MASKS = '';
+  if (p.vertexMasks) {
+    defines.OW_VCOL_MASKS = '';
+  }
   if (p.alphaMask) defines.OW_ALPHA_MASK = '';
   if (p.noGrad) defines.OW_NOGRAD = '';
 

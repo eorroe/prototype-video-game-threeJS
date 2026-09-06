@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Accum, trs } from './util.js';
 import { PALETTE } from './palette.js';
+import { bakeMasks } from '../materials/masks.js';
 
 /**
  * WORLD — the assembler.
@@ -130,6 +131,9 @@ export class Assembler {
   // --------------------------------------------------------- static batch --
   /** Merge a transformed geometry into the batch for `key`. */
   add(key, geo, matrix = null, opts = null) {
+    if (!geo.getAttribute('color')) {
+      bakeMasks(geo, { wear: 0.5, grime: 0.3, ao: 0.5 });
+    }
     let a = this._static.get(key);
     if (!a) {
       a = new Accum(`world:${key}`);

@@ -124,7 +124,7 @@ try {
     );
 
     mkdirSync(dirname(OUT), { recursive: true });
-    await page.screenshot({ path: OUT, type: 'png' });
+    await page.screenshot({ path: OUT, type: 'png', timeout: 120000 });
 
     const info = await page.evaluate('window.__RENDER_INFO__ ?? null', null, { timeout: TIMEOUT });
     console.log(JSON.stringify({ ok: true, out: OUT, shot: SHOT, w: W, h: H, info }, null, 2));

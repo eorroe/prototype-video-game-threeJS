@@ -146,8 +146,7 @@ export class GBuffer {
     this.height = h;
     if (this.rt) this.rt.dispose();
 
-    const rt = new THREE.WebGLRenderTarget(w, h, {
-      count: 3,
+    const rt = new THREE.WebGLMultipleRenderTargets(w, h, 3, {
       type: THREE.HalfFloatType,
       format: THREE.RGBAFormat,
       minFilter: THREE.NearestFilter,
@@ -156,17 +155,16 @@ export class GBuffer {
       stencilBuffer: false,
       generateMipmaps: false,
     });
-    rt.textures[0].name = 'gb-normal';
+    rt.texture[0].name = 'gb-normal';
+    rt.texture[1].format = THREE.RGFormat;
+    rt.texture[1].type = THREE.HalfFloatType;
+    rt.texture[1].name = 'gb-velocity';
+    rt.texture[2].format = THREE.RedFormat;
+    rt.texture[2].type = THREE.FloatType;
+    rt.texture[2].name = 'gb-depth';
 
-    rt.textures[1].format = THREE.RGFormat;
-    rt.textures[1].type = THREE.HalfFloatType;
-    rt.textures[1].name = 'gb-velocity';
-
-    rt.textures[2].format = THREE.RedFormat;
-    rt.textures[2].type = THREE.FloatType;
-    rt.textures[2].name = 'gb-depth';
-
-    for (const t of rt.textures) {
+    for (let i = 0; i < rt.texture.length; i++) {
+      const t = rt.texture[i];
       t.minFilter = THREE.NearestFilter;
       t.magFilter = THREE.NearestFilter;
       t.generateMipmaps = false;
@@ -176,13 +174,13 @@ export class GBuffer {
   }
 
   get normalTexture() {
-    return this.rt.textures[0];
+    return this.rt.texture[0];
   }
   get velocityTexture() {
-    return this.rt.textures[1];
+    return this.rt.texture[1];
   }
   get depthTexture() {
-    return this.rt.textures[2];
+    return this.rt.texture[2];
   }
 
   /**
