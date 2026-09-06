@@ -22,6 +22,7 @@ import { FastTravelSystem } from './world/fasttravel.js';
 import { CollectiblesSystem } from './world/collectibles.js';
 import { DynamicEvents } from './world/dynamicevents.js';
 import { SpawnSystem } from './world/spawning.js';
+import { ProgressionSystem } from './progression/index.js';
 
 import { installShotApi } from './dev/shots.js';
 import { prewarm } from './core/prewarm.js';
@@ -60,7 +61,8 @@ engine
   .add(CollectiblesSystem)
   .add(DynamicEvents)
   .add(SpawnSystem)
-  .add(MissionSystem);
+  .add(MissionSystem)
+  .add(ProgressionSystem);
 
 try {
   await engine.init();

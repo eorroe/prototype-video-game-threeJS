@@ -85,6 +85,7 @@ import { Movement } from './movement.js';
 import { CameraRig } from './camera.js';
 import { Health } from './health.js';
 import { LowHealthPass } from './lowhealth.js';
+import { MorphSystem } from './morph.js';
 import { STANCE, MOVE, CAMERA, HEALTH, FOOTSTEP, JUMP_SPEED } from './tuning.js';
 import { clamp, clamp01, lerp, approach, DEG } from './springs.js';
 import { WALL_LEFT, WALL_RIGHT } from './wallrun.js';
