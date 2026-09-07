@@ -114,8 +114,21 @@ if (params.get('prewarm') === '0') {
 // matter how long boot (or pre-warm) took in wall-clock terms.
 const BOOT_FRAMES = 3;
 if (lockstep) {
+  await engine.whenReady();
   await shotApi.pump(BOOT_FRAMES);
   window.__READY__ = true;
+} else if (capture) {
+  await engine.whenReady();
+  if (warmupPromise) await warmupPromise;
+  let warm = 0;
+  const readyProbe = () => {
+    if (++warm >= BOOT_FRAMES) {
+      window.__READY__ = true;
+      return;
+    }
+    requestAnimationFrame(readyProbe);
+  };
+  requestAnimationFrame(readyProbe);
 } else {
   let warm = 0;
   const readyProbe = () => {

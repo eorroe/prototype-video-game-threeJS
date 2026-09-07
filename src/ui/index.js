@@ -84,6 +84,7 @@ export class UiSystem {
         blocker.classList.add('hidden');
         document.removeEventListener('mousedown', hideBlocker);
         document.removeEventListener('keydown', hideBlocker);
+        setTimeout(() => this.setHudVisible(true), 400);
       };
       document.addEventListener('mousedown', hideBlocker, { once: true });
       document.addEventListener('keydown', hideBlocker, { once: true });
@@ -150,9 +151,11 @@ export class UiSystem {
     this.k = 1;
     this.vw = 1920;
     this.vh = 1080;
-    this.hudVisible = 1;
-    this.hudTarget = 1;
-    this._lastRaw = ctx.time.raw;
+    this.hudVisible = 0;
+    this.hudTarget = 0;
+    this._hudRevealTimer = null;
+
+    this.loading = new LoadingScreen(this.root);
     this._lastKillAt = -10;
     this._regenTimer = 0;
     this._hadPointerLock = false;

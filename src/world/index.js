@@ -132,14 +132,20 @@ export class WorldSystem {
           z: spec.z + rng.range(-2, 2),
         });
       }
+      await new Promise((r) => setTimeout(r, 0));
     }
     this.buildings = infos;
 
     buildGate(A, rng);
+    await new Promise((r) => setTimeout(r, 0));
     buildPerimeter(A, rng);
+    await new Promise((r) => setTimeout(r, 0));
     dressStreet(A, rng);
+    await new Promise((r) => setTimeout(r, 0));
     dressBuildings(A, rng, infos);
+    await new Promise((r) => setTimeout(r, 0));
     scatterDebris(A, rng);
+    await new Promise((r) => setTimeout(r, 0));
 
     this._addLights(A);
 
