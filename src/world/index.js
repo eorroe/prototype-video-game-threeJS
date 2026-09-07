@@ -117,83 +117,57 @@ export class WorldSystem {
     this.root.matrixAutoUpdate = false;
     ctx.scene.add(this.root);
 
-    // Weathering in the shared materials keys off the ground plane.
     materials.setGroundLevel?.(0);
 
-    // ---- open-world district streaming ----
     this.districtManager = new ChunkStreamer(ctx);
     await this.districtManager.init();
 
-    // ---- legacy single-level build (retained as fallback / capture mode) ----
-    const t0 = performance.now();
     const A = new Assembler({ materials, rng, render });
     this.A = A;
     A.setTransform(LEVEL_YAW, LEVEL_TX, LEVEL_TZ);
 
-    // 1. prototypes first: the level references them by id while it builds
     registerProps(A, rng);
     registerDressingProps(A, rng);
 
-    // 2. ground, then the shells, then what people put in and on them
-    buildGround(A, rng);
+    this._placeholder = this._createPlaceholder(physics);
+    this.root.add(this._placeholder.ground);
 
-    const yield_ = () =>
-      new Promise((r) =>
-        typeof requestIdleCallback === 'function'
-          ? requestIdleCallback(r, { timeout: 200 })
-          : setTimeout(r, 0)
-      );
+    this._buildPhase = 'pending';
+    this._buildA = A;
+    this._buildRng = rng;
+    this._buildInfos = [];
+    this._buildIdx = 0;
+    this._buildT0 = performance.now();
+  }
 
-    const infos = [];
-    for (const spec of BUILDINGS) {
-      const info = buildBuilding(A, rng, spec);
-      infos.push(info);
-      if (spec.collapse) {
-        collapseRoof(A, rng, spec, info, {
-          x: spec.x + rng.range(-2, 2),
-          z: spec.z + rng.range(-2, 2),
-        });
-      }
-      await yield_();
-    }
-    this.buildings = infos;
-
-    buildGate(A, rng);
-    await yield_();
-    buildPerimeter(A, rng);
-    await yield_();
-    dressStreet(A, rng);
-    await yield_();
-    dressBuildings(A, rng, infos);
-    await yield_();
-    scatterDebris(A, rng);
-    await yield_();
-
-    this._addLights(A);
-
-    A.finalize(this.root, physics);
-    A.releaseCache();
-
-    // -------------------------------------------------------------- queries --
-    this._v = new THREE.Vector3();
-    this._inv = new THREE.Matrix4().copy(A.xform).invert();
-    this.spawnPoints = SPAWNS.map(([x, z, yaw, tag]) => ({
-      position: A.toWorld(x, 0, z),
-      yaw: yaw + LEVEL_YAW,
-      tag,
-    }));
-    this.bounds = new THREE.Box3(
-      new THREE.Vector3(-62, -2, -62),
-      new THREE.Vector3(62, 26, 62)
-    ).applyMatrix4(A.xform);
-    this.stats = A.stats;
-
-    const ms = performance.now() - t0;
-    console.info(
-      `[world] built in ${ms.toFixed(0)}ms — ${(A.stats.staticTris / 1000).toFixed(0)}k static tris, ` +
-        `${(A.stats.instTris / 1000).toFixed(0)}k instanced tris in ${A.stats.instances} instances, ` +
-        `${A.stats.drawCalls} draw calls, ${(A.stats.collideTris / 1000).toFixed(1)}k collision tris`
+  _createPlaceholder(physics) {
+    const g = new THREE.PlaneGeometry(180, 180);
+    g.rotateX(-Math.PI / 2);
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0xb8a88a, roughness: 1 }));
+    m.matrixAutoUpdate = false;
+    m.updateMatrix();
+    const collider = new THREE.Mesh(
+      new THREE.BoxGeometry(180, 0.5, 180),
+      new THREE.MeshBasicMaterial({ visible: false })
     );
+    collider.position.y = -0.25;
+    collider.matrixAutoUpdate = false;
+    collider.updateMatrix();
+    const handle = physics ? physics.addStatic(collider, 'sand') : -1;
+    if (physics) physics.rebuildStatic();
+    return { ground: m, collider, handle };
+  }
+
+  _removePlaceholder() {
+    const p = this._placeholder;
+    if (!p) return;
+    this.root.remove(p.ground);
+    p.ground.geometry?.dispose();
+    p.ground.material?.dispose();
+    p.collider.geometry?.dispose();
+    p.collider.material?.dispose();
+    if (p.handle >= 0) this.ctx.peek('physics')?.removeStatic(p.handle);
+    this._placeholder = null;
   }
 
   // ----------------------------------------------------------------- lights --
@@ -345,6 +319,64 @@ export class WorldSystem {
 
   // ---------------------------------------------------------------- runtime --
   update(dt, ctx) {
+    if (this._buildPhase === 'building') {
+      const A = this._buildA;
+      const rng = this._buildRng;
+      const BATCH = 3;
+
+      for (let b = 0; b < BATCH; b++) {
+        const idx = this._buildIdx;
+        if (idx >= BUILDINGS.length) {
+          buildGate(A, rng);
+          buildPerimeter(A, rng);
+          dressStreet(A, rng);
+          dressBuildings(A, rng, this._buildInfos);
+          scatterDebris(A, rng);
+
+          this._addLights(A);
+          this._removePlaceholder();
+          A.finalize(this.root, ctx.peek('physics'));
+          A.releaseCache();
+
+          this._v = new THREE.Vector3();
+          this._inv = new THREE.Matrix4().copy(A.xform).invert();
+          this.spawnPoints = SPAWNS.map(([x, z, yaw, tag]) => ({
+            position: A.toWorld(x, 0, z),
+            yaw: yaw + LEVEL_YAW,
+            tag,
+          }));
+          this.bounds = new THREE.Box3(
+            new THREE.Vector3(-62, -2, -62),
+            new THREE.Vector3(62, 26, 62)
+          ).applyMatrix4(A.xform);
+          this.stats = A.stats;
+
+          const ms = performance.now() - this._buildT0;
+          console.info(
+            `[world] streamed in ${ms.toFixed(0)}ms — ${(A.stats.staticTris / 1000).toFixed(0)}k static tris, ` +
+              `${(A.stats.instTris / 1000).toFixed(0)}k instanced tris in ${A.stats.instances} instances, ` +
+              `${A.stats.drawCalls} draw calls, ${(A.stats.collideTris / 1000).toFixed(1)}k collision tris`
+          );
+          this._buildPhase = 'done';
+          break;
+        }
+
+        const spec = BUILDINGS[idx];
+        const info = buildBuilding(A, rng, spec);
+        this._buildInfos.push(info);
+        if (spec.collapse) {
+          collapseRoof(A, rng, spec, info, {
+            x: spec.x + rng.range(-2, 2),
+            z: spec.z + rng.range(-2, 2),
+          });
+        }
+        this._buildIdx++;
+      }
+    } else if (this._buildPhase === 'pending') {
+      this._buildPhase = 'building';
+      buildGround(this._buildA, this._buildRng);
+    }
+
     // Distance LOD for the scatter clouds: one bounding-sphere test per batch.
     this.A?.updateLod(ctx.camera);
 
@@ -450,6 +482,7 @@ export class WorldSystem {
   }
 
   worldToLevel(x, y, z, out = new THREE.Vector3()) {
+    if (!this._inv) return out.set(x, y, z);
     return out.set(x, y, z).applyMatrix4(this._inv);
   }
 
@@ -466,6 +499,7 @@ export class WorldSystem {
   }
 
   dispose() {
+    this._removePlaceholder();
     this.districtManager?.dispose();
     this.A?.dispose();
     this.root?.parent?.remove(this.root);

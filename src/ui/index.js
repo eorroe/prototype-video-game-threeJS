@@ -116,7 +116,7 @@ export class UiSystem {
     this.compass = new Compass(this.chromeLayer);
     this.matchBar = new MatchBar(this.chromeLayer);
     this.killfeed = new Killfeed(this.chromeLayer);
-    this.ammo = new AmmoPanel(this.chromeLayer);
+    this.ammo = null;
     this.prompt = new Prompt(this.chromeLayer);
     this.banner = new Banner(this.chromeLayer);
     this.menu = new PauseMenu(this.root, ctx);
@@ -497,6 +497,10 @@ export class UiSystem {
       this.hit.clear();
       this.markers.clear();
       this.clearPrompt();
+      if (this.ammo) {
+        this.ammo.dispose();
+        this.ammo = null;
+      }
       return { state: 'clean' };
     }
     if (name === 'menu') {
@@ -542,7 +546,12 @@ export class UiSystem {
     // the live weapon/player state through would fight it every frame.
     const ws = s.simulate ? null : this._weaponState();
     s.hasWeapon = s.simulate ? true : !!ws && !!ws.name;
-    if (this.ammo) this.ammo.setVisible(s.hasWeapon);
+    if (s.hasWeapon) {
+      if (!this.ammo) this.ammo = new AmmoPanel(this.chromeLayer);
+    } else if (this.ammo) {
+      this.ammo.dispose();
+      this.ammo = null;
+    }
     if (ws) {
       if (ws.name) s.weaponName = ws.name;
       if (ws.mode) s.fireMode = ws.mode;
@@ -653,7 +662,7 @@ export class UiSystem {
     this.hit.update(dt);
     this.arcs.update(dt, rx, rz, fx, fz);
     this.health.update(dt, s);
-    this.ammo.update(dt, s);
+    if (this.ammo) this.ammo.update(dt, s);
     this.killfeed.update(dt);
     this.matchBar.update(s);
     this.prompt.update(dt);
@@ -753,7 +762,7 @@ export class UiSystem {
     this.hit.dispose();
     this.arcs.dispose();
     this.health.dispose();
-    this.ammo.dispose();
+    if (this.ammo) this.ammo.dispose();
     this.killfeed.dispose();
     this.compass.dispose();
     this.matchBar.dispose();
