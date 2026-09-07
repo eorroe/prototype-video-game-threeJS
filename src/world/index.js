@@ -53,6 +53,21 @@ import { ChunkStreamer } from './chunkstream.js';
  *                             produce, before the frame loop starts. Awaitable.
  *   world.levelToWorld(x,y,z,out) / world.worldToLevel(x,y,z,out)
  *   world.districtManager     ChunkStreamer instance for open-world districts
+ *
+ * ---------------------------------------------------------------------------
+ * WHAT MUST STAY ON THE MAIN THREAD (cannot be moved to a Worker)
+ * ---------------------------------------------------------------------------
+ *   - All Three.js object creation (BufferGeometry, Mesh, InstancedMesh,
+ *     Material, Light, Group). Three.js is not thread-safe and must run on
+ *     the main thread because it owns the WebGL context.
+ *   - All scene graph mutations (add/remove children, matrix updates).
+ *   - All physics collision proxy registration (physics.addStatic).
+ *   - The `A.finalize()` merge step which calls `root.add(mesh)` for every
+ *     draw call and `render.addLight()` for each punctual light.
+ *
+ * The `init()` method is async only so it can `await yield_()` between
+ * build phases and keep the browser responsive. The actual geometry work
+ * between yields is synchronous by necessity.
  */
 
 /**
@@ -122,6 +137,13 @@ export class WorldSystem {
     // 2. ground, then the shells, then what people put in and on them
     buildGround(A, rng);
 
+    const yield_ = () =>
+      new Promise((r) =>
+        typeof requestIdleCallback === 'function'
+          ? requestIdleCallback(r, { timeout: 200 })
+          : setTimeout(r, 0)
+      );
+
     const infos = [];
     for (const spec of BUILDINGS) {
       const info = buildBuilding(A, rng, spec);
@@ -132,20 +154,20 @@ export class WorldSystem {
           z: spec.z + rng.range(-2, 2),
         });
       }
-      await new Promise((r) => setTimeout(r, 0));
+      await yield_();
     }
     this.buildings = infos;
 
     buildGate(A, rng);
-    await new Promise((r) => setTimeout(r, 0));
+    await yield_();
     buildPerimeter(A, rng);
-    await new Promise((r) => setTimeout(r, 0));
+    await yield_();
     dressStreet(A, rng);
-    await new Promise((r) => setTimeout(r, 0));
+    await yield_();
     dressBuildings(A, rng, infos);
-    await new Promise((r) => setTimeout(r, 0));
+    await yield_();
     scatterDebris(A, rng);
-    await new Promise((r) => setTimeout(r, 0));
+    await yield_();
 
     this._addLights(A);
 

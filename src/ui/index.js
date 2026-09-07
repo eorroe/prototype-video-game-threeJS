@@ -64,6 +64,17 @@ const MAX_BLIPS = 48;
  * Events consumed: weapon:fire, weapon:reload, damage:dealt, damage:taken,
  * actor:death, player:state, explosion, resize.
  * Events emitted:  ui:pause, ui:quality, ui:sensitivity, ui:fov, ui:setting.
+ *
+ * ---------------------------------------------------------------------------
+ * WHAT MUST STAY ON THE MAIN THREAD (cannot be moved to a Worker)
+ * ---------------------------------------------------------------------------
+ *   - All DOM mutations (element creation, classList, style updates). DOM is
+ *     strictly main-thread only.
+ *   - All Canvas2D operations (minimap, markers, damage numbers). Canvas2D
+ *     is not available in Web Workers without OffscreenCanvas, which requires
+ *     a complete DOM rewrite to transfer control.
+ *   - `lateUpdate()` must be synchronous: it is called every frame from the
+ *     main loop and must finish before the next frame's `render()`.
  */
 export class UiSystem {
   static id = 'ui';
@@ -145,6 +156,7 @@ export class UiSystem {
       mode: 'TDM',
       /** true when no player/weapons subsystem is driving us (stub-safe demo) */
       simulate: false,
+      hasWeapon: false,
       time: 0,
     };
 
@@ -529,6 +541,8 @@ export class UiSystem {
     // `simulate` means a scripted debug timeline owns the HUD numbers; letting
     // the live weapon/player state through would fight it every frame.
     const ws = s.simulate ? null : this._weaponState();
+    s.hasWeapon = s.simulate ? true : !!ws && !!ws.name;
+    if (this.ammo) this.ammo.setVisible(s.hasWeapon);
     if (ws) {
       if (ws.name) s.weaponName = ws.name;
       if (ws.mode) s.fireMode = ws.mode;

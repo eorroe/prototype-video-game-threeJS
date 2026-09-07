@@ -93,6 +93,10 @@ export class AmmoPanel {
     setStyle(this.reloadBar, 'display', 'none');
   }
 
+  setVisible(v) {
+    setStyle(this.root, 'display', v ? '' : 'none');
+  }
+
   /**
    * @param {object} s { name, mode, ammo, reserve, magSize, reloading,
    *                     reloadProgress, lethal, lethalCount, tacticalCount }

@@ -52,8 +52,8 @@ export class FxSystem {
 
     const t0 = performance.now();
     const atlasSize = big ? 1024 : 512;
-    const particleAtlas = buildParticleAtlas(this.rng.fork(), atlasSize);
-    const decalAtlas = buildDecalAtlas(this.rng.fork(), atlasSize);
+    const particleAtlas = await buildParticleAtlas(this.rng.fork(), atlasSize);
+    const decalAtlas = await buildDecalAtlas(this.rng.fork(), atlasSize);
     this._atlas = particleAtlas;
     this._decalAtlas = decalAtlas;
     const bakeMs = performance.now() - t0;

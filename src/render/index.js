@@ -120,6 +120,20 @@ const REF_DAYLIGHT = 4.6;
  *   userData.owNoShadow  = true   do not cast into the cascades
  *   userData.owMatId     = 0..1   written to the gbuffer alpha for custom fx
  * Transparent materials are excluded from the prepass and shadows automatically.
+ *
+ * ---------------------------------------------------------------------------
+ * WHAT MUST STAY ON THE MAIN THREAD (cannot be moved to a Worker)
+ * ---------------------------------------------------------------------------
+ *   - The entire `render()` method must be synchronous: it is the frame
+ *     renderer called from `engine.step()` every frame. Making it async would
+ *     break the frame loop contract.
+ *   - All WebGL state mutations (render target binding, overrideMaterial,
+ *     clear color, autoClear) happen inside `render()` and must be synchronous.
+ *   - `readRenderTargetPixels()` is a synchronous GPU-CPU barrier. It is only
+ *     used during one-time minimap bake, not per-frame, so the stall is
+ *     acceptable.
+ *   - `scene.traverseVisible()` and `scene.traverse()` must be sync: they
+ *     feed the draw/hide lists consumed by the same frame's render calls.
  */
 export class RenderSystem {
   static id = 'render';

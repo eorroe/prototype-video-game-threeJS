@@ -785,7 +785,7 @@ function makeTexture(data, size, { srgb, mips = true, name }) {
  * Bake the particle sprite atlas.
  * @returns {{texture:THREE.DataTexture, cols:number, size:number}}
  */
-export function buildParticleAtlas(rng, size = 1024) {
+export async function buildParticleAtlas(rng, size = 1024) {
   const n = new Noise(rng);
   const tile = size / ATLAS_COLS;
   const data = new Uint8Array(size * size * 4);
@@ -811,15 +811,24 @@ export function buildParticleAtlas(rng, size = 1024) {
         data[i + 3] = clamp01(out[3]) * 255 * gutter;
       }
     }
+    if (t % 4 === 3) await yield_();
   }
   return { texture: makeTexture(data, size, { srgb: true, name: 'fx-particles' }), cols: ATLAS_COLS, size };
+}
+
+function yield_() {
+  return new Promise((r) =>
+    typeof requestIdleCallback === 'function'
+      ? requestIdleCallback(r, { timeout: 100 })
+      : setTimeout(r, 0)
+  );
 }
 
 /**
  * Bake the decal atlas: albedo+alpha, a normal map derived from the painted
  * height field, and packed ORM.
  */
-export function buildDecalAtlas(rng, size = 1024) {
+export async function buildDecalAtlas(rng, size = 1024) {
   const n = new Noise(rng);
   const tile = size / ATLAS_COLS;
   const albedo = new Uint8Array(size * size * 4);
@@ -858,6 +867,7 @@ export function buildDecalAtlas(rng, size = 1024) {
         height[idx] = out[4];
       }
     }
+    if (t % 4 === 3) await yield_();
   }
 
   // Height -> tangent-space normal, sampled inside the tile only.
@@ -886,6 +896,7 @@ export function buildDecalAtlas(rng, size = 1024) {
         normal[i + 3] = 255;
       }
     }
+    if (t % 4 === 3) await yield_();
   }
 
   return {
