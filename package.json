@@ -9,6 +9,7 @@
     "capture": "node tools/capture.mjs"
   },
   "dependencies": {
+    "puppeteer": "^25.10.0",
     "three": "^0.160.0"
   },
   "devDependencies": {
