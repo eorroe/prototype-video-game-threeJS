@@ -65,6 +65,8 @@ export class Engine {
     this._last = 0;
     this._running = false;
     this._onResize = () => this.resize();
+    this._initializedSystems = new Set();
+    this._readyPromise = null;
   }
 
   add(SystemClass, opts) {
@@ -72,17 +74,68 @@ export class Engine {
     return this;
   }
 
-  async init() {
+  async init({ progressive = false } = {}) {
     const order = this.registry.resolve();
-    for (const sys of order) {
+
+    // Fast first paint optimization:
+    // Initialize RenderSystem first so the canvas gets painted on frame 0
+    const renderSys = order.find((s) => s.constructor.id === 'render');
+    if (renderSys) {
       const t0 = performance.now();
-      await sys.init?.(this.ctx);
+      await renderSys.init?.(this.ctx);
+      this._initializedSystems.add(renderSys);
       const ms = performance.now() - t0;
-      if (ms > 50) console.info(`[engine] ${sys.constructor.id} init ${ms.toFixed(0)}ms`);
+      if (ms > 50) console.info(`[engine] render init ${ms.toFixed(0)}ms`);
+      if (typeof renderSys.paintInitialFrame === 'function') {
+        renderSys.paintInitialFrame();
+      }
     }
+
     this.input.attach();
     addEventListener('resize', this._onResize);
     this.resize();
+
+    if (progressive) {
+      this._readyPromise = (async () => {
+        for (const sys of order) {
+          if (sys === renderSys) continue;
+          const t0 = performance.now();
+          await sys.init?.(this.ctx);
+          this._initializedSystems.add(sys);
+          const w = Math.max(1, this.canvas.clientWidth || innerWidth);
+          const h = Math.max(1, this.canvas.clientHeight || innerHeight);
+          if (typeof sys.resize === 'function') {
+            try {
+              sys.resize(w, h, this.ctx);
+            } catch (err) {
+              console.warn(`[engine] resize error on ${sys.constructor.id}:`, err);
+            }
+          }
+          const ms = performance.now() - t0;
+          if (ms > 50) console.info(`[engine] ${sys.constructor.id} init ${ms.toFixed(0)}ms`);
+          await new Promise((r) => setTimeout(r, 0));
+        }
+        this.events.emit('engine:ready');
+        return this;
+      })();
+      return this;
+    }
+
+    for (const sys of order) {
+      if (sys === renderSys) continue;
+      const t0 = performance.now();
+      await sys.init?.(this.ctx);
+      this._initializedSystems.add(sys);
+      const ms = performance.now() - t0;
+      if (ms > 50) console.info(`[engine] ${sys.constructor.id} init ${ms.toFixed(0)}ms`);
+    }
+    return this;
+  }
+
+  async whenReady() {
+    if (this._readyPromise) {
+      await this._readyPromise;
+    }
     return this;
   }
 
@@ -93,7 +146,15 @@ export class Engine {
     this.camera.updateProjectionMatrix();
     this.viewCamera.aspect = w / h;
     this.viewCamera.updateProjectionMatrix();
-    for (const sys of this.registry.with('resize')) sys.resize(w, h, this.ctx);
+    for (const sys of this._initializedSystems) {
+      if (typeof sys.resize === 'function') {
+        try {
+          sys.resize(w, h, this.ctx);
+        } catch (err) {
+          console.warn(`[engine] resize error on ${sys.constructor.id}:`, err);
+        }
+      }
+    }
     this.events.emit('resize', { width: w, height: h });
   }
 

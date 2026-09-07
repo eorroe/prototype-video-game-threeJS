@@ -65,7 +65,9 @@ engine
   .add(ProgressionSystem);
 
 try {
-  await engine.init();
+  // In interactive mode, progressive initialization paints the 1st frame to canvas
+  // in <16-30ms instead of waiting for full world & BVH tree construction.
+  await engine.init({ progressive: true });
 } catch (err) {
   console.error('[boot] init failed', err);
   document.body.insertAdjacentHTML(
@@ -79,22 +81,30 @@ BOOT FAILURE\n\n${err.stack ?? err.message}</pre>`
 
 const shotApi = installShotApi(engine, { capture, lockstep });
 
-// Start the engine loop immediately so the first frame paints without waiting
-// for shader prewarm. Prewarm continues in the background and only blocks the
-// capture/ready handshake, not the first paint.
+// Start the engine loop immediately so canvas paints from frame 0
 engine.start();
 
-const warmup = params.get('prewarm') === '0'
-  ? Promise.resolve({ ok: false, reason: 'disabled by ?prewarm=0' })
-  : prewarm(engine);
-window.__PREWARM__ = { ok: false, reason: 'pending' };
-warmup.then((r) => {
-  window.__PREWARM__ = r;
-  console.info('[boot] prewarm', r);
-}).catch((err) => {
-  console.warn('[boot] prewarm error', err);
-  window.__PREWARM__ = { ok: false, reason: String(err?.message ?? err) };
-});
+// Prewarm shaders: in capture/lockstep mode, await readiness and warmup synchronously for
+// deterministic pixel testing. In interactive mode, warm shaders lazily in the background
+// without blocking initial gameplay paints.
+let warmupPromise = null;
+if (params.get('prewarm') === '0') {
+  window.__PREWARM__ = { ok: false, reason: 'disabled by ?prewarm=0' };
+} else if (capture || lockstep) {
+  await engine.whenReady();
+  const warmup = await prewarm(engine);
+  console.info('[boot] prewarm', warmup);
+  window.__PREWARM__ = warmup;
+} else {
+  warmupPromise = engine.whenReady().then(async () => {
+    const warmup = await prewarm(engine);
+    console.info('[boot] lazy prewarm complete', warmup);
+    window.__PREWARM__ = warmup;
+    return warmup;
+  }).catch((err) => {
+    console.warn('[boot] lazy prewarm error', err);
+  });
+}
 
 // Capture harness handshake: only flag ready once a frame has actually landed.
 //

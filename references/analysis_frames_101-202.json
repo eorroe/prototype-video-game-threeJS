@@ -1,0 +1,6530 @@
+[
+  {
+    "frame": 101,
+    "filename": "prototype_0101.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 32.7,
+    "temp_ratio": 0.75,
+    "avg_saturation": 0.32,
+    "file_size_kb": 31.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          15,
+          17
+        ],
+        "hex": "#0e0f11",
+        "count": 7522,
+        "pct": 75.2
+      },
+      {
+        "rgb": [
+          47,
+          55,
+          70
+        ],
+        "hex": "#2f3746",
+        "count": 945,
+        "pct": 9.4
+      },
+      {
+        "rgb": [
+          78,
+          84,
+          100
+        ],
+        "hex": "#4e5464",
+        "count": 700,
+        "pct": 7.0
+      },
+      {
+        "rgb": [
+          101,
+          115,
+          140
+        ],
+        "hex": "#65738c",
+        "count": 427,
+        "pct": 4.3
+      },
+      {
+        "rgb": [
+          58,
+          67,
+          84
+        ],
+        "hex": "#3a4354",
+        "count": 267,
+        "pct": 2.7
+      }
+    ]
+  },
+  {
+    "frame": 102,
+    "filename": "prototype_0102.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 38.2,
+    "temp_ratio": 0.67,
+    "avg_saturation": 0.463,
+    "file_size_kb": 45.2,
+    "dominant_colors": [
+      {
+        "rgb": [
+          8,
+          10,
+          13
+        ],
+        "hex": "#080a0d",
+        "count": 7023,
+        "pct": 70.2
+      },
+      {
+        "rgb": [
+          93,
+          108,
+          138
+        ],
+        "hex": "#5d6c8a",
+        "count": 1454,
+        "pct": 14.5
+      },
+      {
+        "rgb": [
+          77,
+          88,
+          109
+        ],
+        "hex": "#4d586d",
+        "count": 902,
+        "pct": 9.0
+      },
+      {
+        "rgb": [
+          58,
+          69,
+          89
+        ],
+        "hex": "#3a4559",
+        "count": 244,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          48,
+          57,
+          73
+        ],
+        "hex": "#303949",
+        "count": 237,
+        "pct": 2.4
+      }
+    ]
+  },
+  {
+    "frame": 103,
+    "filename": "prototype_0103.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 34.7,
+    "temp_ratio": 0.8,
+    "avg_saturation": 0.307,
+    "file_size_kb": 40.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          14,
+          15
+        ],
+        "hex": "#0f0e0f",
+        "count": 7519,
+        "pct": 75.2
+      },
+      {
+        "rgb": [
+          78,
+          87,
+          105
+        ],
+        "hex": "#4e5769",
+        "count": 881,
+        "pct": 8.8
+      },
+      {
+        "rgb": [
+          48,
+          56,
+          71
+        ],
+        "hex": "#303847",
+        "count": 703,
+        "pct": 7.0
+      },
+      {
+        "rgb": [
+          58,
+          68,
+          87
+        ],
+        "hex": "#3a4457",
+        "count": 304,
+        "pct": 3.0
+      },
+      {
+        "rgb": [
+          99,
+          112,
+          137
+        ],
+        "hex": "#637089",
+        "count": 257,
+        "pct": 2.6
+      }
+    ]
+  },
+  {
+    "frame": 104,
+    "filename": "prototype_0104.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 30.1,
+    "temp_ratio": 0.77,
+    "avg_saturation": 0.251,
+    "file_size_kb": 39.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          16,
+          18
+        ],
+        "hex": "#0f1012",
+        "count": 8112,
+        "pct": 81.1
+      },
+      {
+        "rgb": [
+          82,
+          88,
+          98
+        ],
+        "hex": "#525862",
+        "count": 1106,
+        "pct": 11.1
+      },
+      {
+        "rgb": [
+          57,
+          72,
+          91
+        ],
+        "hex": "#39485b",
+        "count": 294,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          47,
+          56,
+          71
+        ],
+        "hex": "#2f3847",
+        "count": 244,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          93,
+          111,
+          135
+        ],
+        "hex": "#5d6f87",
+        "count": 162,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 105,
+    "filename": "prototype_0105.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 27.7,
+    "temp_ratio": 0.74,
+    "avg_saturation": 0.33,
+    "file_size_kb": 48.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          15,
+          16
+        ],
+        "hex": "#0e0f10",
+        "count": 8282,
+        "pct": 82.8
+      },
+      {
+        "rgb": [
+          77,
+          89,
+          106
+        ],
+        "hex": "#4d596a",
+        "count": 739,
+        "pct": 7.4
+      },
+      {
+        "rgb": [
+          57,
+          72,
+          90
+        ],
+        "hex": "#39485a",
+        "count": 395,
+        "pct": 4.0
+      },
+      {
+        "rgb": [
+          47,
+          57,
+          71
+        ],
+        "hex": "#2f3947",
+        "count": 285,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          88,
+          109,
+          135
+        ],
+        "hex": "#586d87",
+        "count": 228,
+        "pct": 2.3
+      }
+    ]
+  },
+  {
+    "frame": 106,
+    "filename": "prototype_0106.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 26.7,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.299,
+    "file_size_kb": 33.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          17,
+          21
+        ],
+        "hex": "#0f1115",
+        "count": 8578,
+        "pct": 85.8
+      },
+      {
+        "rgb": [
+          48,
+          55,
+          71
+        ],
+        "hex": "#303747",
+        "count": 608,
+        "pct": 6.1
+      },
+      {
+        "rgb": [
+          75,
+          86,
+          106
+        ],
+        "hex": "#4b566a",
+        "count": 498,
+        "pct": 5.0
+      },
+      {
+        "rgb": [
+          58,
+          68,
+          85
+        ],
+        "hex": "#3a4455",
+        "count": 223,
+        "pct": 2.2
+      },
+      {
+        "rgb": [
+          96,
+          112,
+          135
+        ],
+        "hex": "#607087",
+        "count": 50,
+        "pct": 0.5
+      }
+    ]
+  },
+  {
+    "frame": 107,
+    "filename": "prototype_0107.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 31.7,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.296,
+    "file_size_kb": 35.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          16,
+          17,
+          21
+        ],
+        "hex": "#101115",
+        "count": 8148,
+        "pct": 81.5
+      },
+      {
+        "rgb": [
+          76,
+          84,
+          101
+        ],
+        "hex": "#4c5465",
+        "count": 541,
+        "pct": 5.4
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          71
+        ],
+        "hex": "#313847",
+        "count": 512,
+        "pct": 5.1
+      },
+      {
+        "rgb": [
+          97,
+          114,
+          144
+        ],
+        "hex": "#617290",
+        "count": 367,
+        "pct": 3.7
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          85
+        ],
+        "hex": "#3b4355",
+        "count": 251,
+        "pct": 2.5
+      }
+    ]
+  },
+  {
+    "frame": 108,
+    "filename": "prototype_0108.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 15.5,
+    "temp_ratio": 0.91,
+    "avg_saturation": 0.286,
+    "file_size_kb": 22.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          14,
+          14
+        ],
+        "hex": "#0e0e0e",
+        "count": 9813,
+        "pct": 98.1
+      },
+      {
+        "rgb": [
+          78,
+          84,
+          93
+        ],
+        "hex": "#4e545d",
+        "count": 94,
+        "pct": 0.9
+      },
+      {
+        "rgb": [
+          53,
+          59,
+          68
+        ],
+        "hex": "#353b44",
+        "count": 43,
+        "pct": 0.4
+      },
+      {
+        "rgb": [
+          60,
+          67,
+          77
+        ],
+        "hex": "#3c434d",
+        "count": 30,
+        "pct": 0.3
+      },
+      {
+        "rgb": [
+          111,
+          120,
+          133
+        ],
+        "hex": "#6f7885",
+        "count": 7,
+        "pct": 0.1
+      }
+    ]
+  },
+  {
+    "frame": 109,
+    "filename": "prototype_0109.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 25.4,
+    "temp_ratio": 0.62,
+    "avg_saturation": 0.371,
+    "file_size_kb": 31.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          15,
+          19
+        ],
+        "hex": "#0c0f13",
+        "count": 8907,
+        "pct": 89.1
+      },
+      {
+        "rgb": [
+          85,
+          105,
+          146
+        ],
+        "hex": "#556992",
+        "count": 497,
+        "pct": 5.0
+      },
+      {
+        "rgb": [
+          74,
+          87,
+          111
+        ],
+        "hex": "#4a576f",
+        "count": 209,
+        "pct": 2.1
+      },
+      {
+        "rgb": [
+          47,
+          55,
+          71
+        ],
+        "hex": "#2f3747",
+        "count": 185,
+        "pct": 1.8
+      },
+      {
+        "rgb": [
+          58,
+          70,
+          91
+        ],
+        "hex": "#3a465b",
+        "count": 85,
+        "pct": 0.9
+      }
+    ]
+  },
+  {
+    "frame": 110,
+    "filename": "prototype_0110.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 46.5,
+    "temp_ratio": 0.94,
+    "avg_saturation": 0.194,
+    "file_size_kb": 43.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          19,
+          19,
+          21
+        ],
+        "hex": "#131315",
+        "count": 6869,
+        "pct": 68.7
+      },
+      {
+        "rgb": [
+          87,
+          86,
+          90
+        ],
+        "hex": "#57565a",
+        "count": 1881,
+        "pct": 18.8
+      },
+      {
+        "rgb": [
+          55,
+          58,
+          68
+        ],
+        "hex": "#373a44",
+        "count": 385,
+        "pct": 3.9
+      },
+      {
+        "rgb": [
+          156,
+          154,
+          152
+        ],
+        "hex": "#9c9a98",
+        "count": 384,
+        "pct": 3.8
+      },
+      {
+        "rgb": [
+          66,
+          59,
+          54
+        ],
+        "hex": "#423b36",
+        "count": 159,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 111,
+    "filename": "prototype_0111.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 38.0,
+    "temp_ratio": 0.86,
+    "avg_saturation": 0.262,
+    "file_size_kb": 35.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          17,
+          19,
+          22
+        ],
+        "hex": "#111316",
+        "count": 7849,
+        "pct": 78.5
+      },
+      {
+        "rgb": [
+          84,
+          88,
+          90
+        ],
+        "hex": "#54585a",
+        "count": 1325,
+        "pct": 13.2
+      },
+      {
+        "rgb": [
+          59,
+          66,
+          71
+        ],
+        "hex": "#3b4247",
+        "count": 237,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          154,
+          159,
+          152
+        ],
+        "hex": "#9a9f98",
+        "count": 178,
+        "pct": 1.8
+      },
+      {
+        "rgb": [
+          53,
+          59,
+          66
+        ],
+        "hex": "#353b42",
+        "count": 177,
+        "pct": 1.8
+      }
+    ]
+  },
+  {
+    "frame": 112,
+    "filename": "prototype_0112.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 30.1,
+    "temp_ratio": 0.79,
+    "avg_saturation": 0.279,
+    "file_size_kb": 26.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          20,
+          23,
+          27
+        ],
+        "hex": "#14171b",
+        "count": 8629,
+        "pct": 86.3
+      },
+      {
+        "rgb": [
+          48,
+          55,
+          68
+        ],
+        "hex": "#303744",
+        "count": 548,
+        "pct": 5.5
+      },
+      {
+        "rgb": [
+          91,
+          84,
+          80
+        ],
+        "hex": "#5b5450",
+        "count": 441,
+        "pct": 4.4
+      },
+      {
+        "rgb": [
+          59,
+          66,
+          78
+        ],
+        "hex": "#3b424e",
+        "count": 148,
+        "pct": 1.5
+      },
+      {
+        "rgb": [
+          67,
+          59,
+          55
+        ],
+        "hex": "#433b37",
+        "count": 117,
+        "pct": 1.2
+      }
+    ]
+  },
+  {
+    "frame": 113,
+    "filename": "prototype_0113.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 33.5,
+    "temp_ratio": 0.73,
+    "avg_saturation": 0.284,
+    "file_size_kb": 27.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          22,
+          25,
+          30
+        ],
+        "hex": "#16191e",
+        "count": 8304,
+        "pct": 83.0
+      },
+      {
+        "rgb": [
+          52,
+          57,
+          67
+        ],
+        "hex": "#343943",
+        "count": 932,
+        "pct": 9.3
+      },
+      {
+        "rgb": [
+          77,
+          81,
+          92
+        ],
+        "hex": "#4d515c",
+        "count": 507,
+        "pct": 5.1
+      },
+      {
+        "rgb": [
+          59,
+          66,
+          78
+        ],
+        "hex": "#3b424e",
+        "count": 209,
+        "pct": 2.1
+      },
+      {
+        "rgb": [
+          99,
+          111,
+          134
+        ],
+        "hex": "#636f86",
+        "count": 19,
+        "pct": 0.2
+      }
+    ]
+  },
+  {
+    "frame": 114,
+    "filename": "prototype_0114.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 32.8,
+    "temp_ratio": 0.7,
+    "avg_saturation": 0.313,
+    "file_size_kb": 29.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          17,
+          20,
+          25
+        ],
+        "hex": "#111419",
+        "count": 8229,
+        "pct": 82.3
+      },
+      {
+        "rgb": [
+          80,
+          91,
+          104
+        ],
+        "hex": "#505b68",
+        "count": 830,
+        "pct": 8.3
+      },
+      {
+        "rgb": [
+          50,
+          58,
+          68
+        ],
+        "hex": "#323a44",
+        "count": 335,
+        "pct": 3.4
+      },
+      {
+        "rgb": [
+          58,
+          67,
+          78
+        ],
+        "hex": "#3a434e",
+        "count": 325,
+        "pct": 3.2
+      },
+      {
+        "rgb": [
+          101,
+          117,
+          136
+        ],
+        "hex": "#657588",
+        "count": 189,
+        "pct": 1.9
+      }
+    ]
+  },
+  {
+    "frame": 115,
+    "filename": "prototype_0115.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 29.1,
+    "temp_ratio": 0.77,
+    "avg_saturation": 0.288,
+    "file_size_kb": 38.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          8,
+          9,
+          11
+        ],
+        "hex": "#08090b",
+        "count": 7818,
+        "pct": 78.2
+      },
+      {
+        "rgb": [
+          80,
+          86,
+          100
+        ],
+        "hex": "#505664",
+        "count": 902,
+        "pct": 9.0
+      },
+      {
+        "rgb": [
+          51,
+          57,
+          70
+        ],
+        "hex": "#333946",
+        "count": 540,
+        "pct": 5.4
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          82
+        ],
+        "hex": "#3b4352",
+        "count": 223,
+        "pct": 2.2
+      },
+      {
+        "rgb": [
+          147,
+          156,
+          167
+        ],
+        "hex": "#939ca7",
+        "count": 219,
+        "pct": 2.2
+      }
+    ]
+  },
+  {
+    "frame": 116,
+    "filename": "prototype_0116.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 24.9,
+    "temp_ratio": 0.74,
+    "avg_saturation": 0.28,
+    "file_size_kb": 33.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          14,
+          16
+        ],
+        "hex": "#0c0e10",
+        "count": 8740,
+        "pct": 87.4
+      },
+      {
+        "rgb": [
+          76,
+          84,
+          101
+        ],
+        "hex": "#4c5465",
+        "count": 461,
+        "pct": 4.6
+      },
+      {
+        "rgb": [
+          51,
+          57,
+          69
+        ],
+        "hex": "#333945",
+        "count": 335,
+        "pct": 3.4
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          81
+        ],
+        "hex": "#3b4351",
+        "count": 142,
+        "pct": 1.4
+      },
+      {
+        "rgb": [
+          101,
+          115,
+          140
+        ],
+        "hex": "#65738c",
+        "count": 131,
+        "pct": 1.3
+      }
+    ]
+  },
+  {
+    "frame": 117,
+    "filename": "prototype_0117.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 26.6,
+    "temp_ratio": 0.72,
+    "avg_saturation": 0.287,
+    "file_size_kb": 32.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          15,
+          19
+        ],
+        "hex": "#0e0f13",
+        "count": 8687,
+        "pct": 86.9
+      },
+      {
+        "rgb": [
+          77,
+          86,
+          104
+        ],
+        "hex": "#4d5668",
+        "count": 440,
+        "pct": 4.4
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          70
+        ],
+        "hex": "#313846",
+        "count": 384,
+        "pct": 3.8
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          82
+        ],
+        "hex": "#3b4352",
+        "count": 152,
+        "pct": 1.5
+      },
+      {
+        "rgb": [
+          99,
+          113,
+          139
+        ],
+        "hex": "#63718b",
+        "count": 151,
+        "pct": 1.5
+      }
+    ]
+  },
+  {
+    "frame": 118,
+    "filename": "prototype_0118.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.9,
+    "temp_ratio": 0.76,
+    "avg_saturation": 0.278,
+    "file_size_kb": 33.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          15,
+          18
+        ],
+        "hex": "#0d0f12",
+        "count": 8541,
+        "pct": 85.4
+      },
+      {
+        "rgb": [
+          82,
+          87,
+          101
+        ],
+        "hex": "#525765",
+        "count": 582,
+        "pct": 5.8
+      },
+      {
+        "rgb": [
+          50,
+          57,
+          69
+        ],
+        "hex": "#323945",
+        "count": 352,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          149,
+          155,
+          164
+        ],
+        "hex": "#959ba4",
+        "count": 148,
+        "pct": 1.5
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          80
+        ],
+        "hex": "#3b4350",
+        "count": 136,
+        "pct": 1.4
+      }
+    ]
+  },
+  {
+    "frame": 119,
+    "filename": "prototype_0119.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 31.2,
+    "temp_ratio": 0.75,
+    "avg_saturation": 0.281,
+    "file_size_kb": 35.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          16,
+          19
+        ],
+        "hex": "#0e1013",
+        "count": 8365,
+        "pct": 83.7
+      },
+      {
+        "rgb": [
+          81,
+          88,
+          100
+        ],
+        "hex": "#515864",
+        "count": 664,
+        "pct": 6.6
+      },
+      {
+        "rgb": [
+          51,
+          57,
+          69
+        ],
+        "hex": "#333945",
+        "count": 348,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          59,
+          68,
+          82
+        ],
+        "hex": "#3b4452",
+        "count": 172,
+        "pct": 1.7
+      },
+      {
+        "rgb": [
+          148,
+          156,
+          166
+        ],
+        "hex": "#949ca6",
+        "count": 167,
+        "pct": 1.7
+      }
+    ]
+  },
+  {
+    "frame": 120,
+    "filename": "prototype_0120.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 34.6,
+    "temp_ratio": 0.74,
+    "avg_saturation": 0.288,
+    "file_size_kb": 36.2,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          17,
+          21
+        ],
+        "hex": "#0f1115",
+        "count": 7887,
+        "pct": 78.9
+      },
+      {
+        "rgb": [
+          79,
+          86,
+          100
+        ],
+        "hex": "#4f5664",
+        "count": 794,
+        "pct": 7.9
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          70
+        ],
+        "hex": "#313846",
+        "count": 562,
+        "pct": 5.6
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          80
+        ],
+        "hex": "#3b4350",
+        "count": 315,
+        "pct": 3.1
+      },
+      {
+        "rgb": [
+          101,
+          114,
+          138
+        ],
+        "hex": "#65728a",
+        "count": 155,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 121,
+    "filename": "prototype_0121.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 38.5,
+    "temp_ratio": 0.74,
+    "avg_saturation": 0.289,
+    "file_size_kb": 35.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          16,
+          18,
+          22
+        ],
+        "hex": "#101216",
+        "count": 7452,
+        "pct": 74.5
+      },
+      {
+        "rgb": [
+          79,
+          86,
+          100
+        ],
+        "hex": "#4f5664",
+        "count": 918,
+        "pct": 9.2
+      },
+      {
+        "rgb": [
+          49,
+          57,
+          69
+        ],
+        "hex": "#313945",
+        "count": 706,
+        "pct": 7.1
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          81
+        ],
+        "hex": "#3b4351",
+        "count": 377,
+        "pct": 3.8
+      },
+      {
+        "rgb": [
+          101,
+          115,
+          137
+        ],
+        "hex": "#657389",
+        "count": 203,
+        "pct": 2.0
+      }
+    ]
+  },
+  {
+    "frame": 122,
+    "filename": "prototype_0122.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 38.5,
+    "temp_ratio": 0.73,
+    "avg_saturation": 0.301,
+    "file_size_kb": 36.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          18,
+          22
+        ],
+        "hex": "#0f1216",
+        "count": 7456,
+        "pct": 74.6
+      },
+      {
+        "rgb": [
+          79,
+          87,
+          102
+        ],
+        "hex": "#4f5766",
+        "count": 922,
+        "pct": 9.2
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          70
+        ],
+        "hex": "#313846",
+        "count": 603,
+        "pct": 6.0
+      },
+      {
+        "rgb": [
+          59,
+          66,
+          80
+        ],
+        "hex": "#3b4250",
+        "count": 390,
+        "pct": 3.9
+      },
+      {
+        "rgb": [
+          101,
+          114,
+          139
+        ],
+        "hex": "#65728b",
+        "count": 249,
+        "pct": 2.5
+      }
+    ]
+  },
+  {
+    "frame": 123,
+    "filename": "prototype_0123.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 33.6,
+    "temp_ratio": 0.72,
+    "avg_saturation": 0.317,
+    "file_size_kb": 40.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          18,
+          22
+        ],
+        "hex": "#0f1216",
+        "count": 7937,
+        "pct": 79.4
+      },
+      {
+        "rgb": [
+          77,
+          85,
+          101
+        ],
+        "hex": "#4d5565",
+        "count": 742,
+        "pct": 7.4
+      },
+      {
+        "rgb": [
+          50,
+          57,
+          70
+        ],
+        "hex": "#323946",
+        "count": 613,
+        "pct": 6.1
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          80
+        ],
+        "hex": "#3b4350",
+        "count": 348,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          100,
+          114,
+          137
+        ],
+        "hex": "#647289",
+        "count": 153,
+        "pct": 1.5
+      }
+    ]
+  },
+  {
+    "frame": 124,
+    "filename": "prototype_0124.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.5,
+    "temp_ratio": 0.73,
+    "avg_saturation": 0.316,
+    "file_size_kb": 32.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          20
+        ],
+        "hex": "#0e1114",
+        "count": 8334,
+        "pct": 83.3
+      },
+      {
+        "rgb": [
+          79,
+          85,
+          98
+        ],
+        "hex": "#4f5562",
+        "count": 683,
+        "pct": 6.8
+      },
+      {
+        "rgb": [
+          51,
+          58,
+          69
+        ],
+        "hex": "#333a45",
+        "count": 501,
+        "pct": 5.0
+      },
+      {
+        "rgb": [
+          59,
+          66,
+          77
+        ],
+        "hex": "#3b424d",
+        "count": 308,
+        "pct": 3.1
+      },
+      {
+        "rgb": [
+          145,
+          150,
+          159
+        ],
+        "hex": "#91969f",
+        "count": 71,
+        "pct": 0.7
+      }
+    ]
+  },
+  {
+    "frame": 125,
+    "filename": "prototype_0125.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 34.5,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.341,
+    "file_size_kb": 34.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          15,
+          21
+        ],
+        "hex": "#0f0f15",
+        "count": 7618,
+        "pct": 76.2
+      },
+      {
+        "rgb": [
+          48,
+          53,
+          75
+        ],
+        "hex": "#30354b",
+        "count": 1095,
+        "pct": 10.9
+      },
+      {
+        "rgb": [
+          76,
+          81,
+          100
+        ],
+        "hex": "#4c5164",
+        "count": 517,
+        "pct": 5.2
+      },
+      {
+        "rgb": [
+          58,
+          68,
+          94
+        ],
+        "hex": "#3a445e",
+        "count": 420,
+        "pct": 4.2
+      },
+      {
+        "rgb": [
+          98,
+          109,
+          138
+        ],
+        "hex": "#626d8a",
+        "count": 111,
+        "pct": 1.1
+      }
+    ]
+  },
+  {
+    "frame": 126,
+    "filename": "prototype_0126.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 31.4,
+    "temp_ratio": 0.68,
+    "avg_saturation": 0.335,
+    "file_size_kb": 32.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          14,
+          18
+        ],
+        "hex": "#0e0e12",
+        "count": 7866,
+        "pct": 78.7
+      },
+      {
+        "rgb": [
+          46,
+          54,
+          77
+        ],
+        "hex": "#2e364d",
+        "count": 810,
+        "pct": 8.1
+      },
+      {
+        "rgb": [
+          57,
+          71,
+          101
+        ],
+        "hex": "#394765",
+        "count": 526,
+        "pct": 5.3
+      },
+      {
+        "rgb": [
+          73,
+          80,
+          102
+        ],
+        "hex": "#495066",
+        "count": 471,
+        "pct": 4.7
+      },
+      {
+        "rgb": [
+          85,
+          102,
+          138
+        ],
+        "hex": "#55668a",
+        "count": 148,
+        "pct": 1.5
+      }
+    ]
+  },
+  {
+    "frame": 127,
+    "filename": "prototype_0127.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 31.6,
+    "temp_ratio": 0.68,
+    "avg_saturation": 0.359,
+    "file_size_kb": 33.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          13,
+          18
+        ],
+        "hex": "#0d0d12",
+        "count": 7932,
+        "pct": 79.3
+      },
+      {
+        "rgb": [
+          47,
+          54,
+          76
+        ],
+        "hex": "#2f364c",
+        "count": 671,
+        "pct": 6.7
+      },
+      {
+        "rgb": [
+          58,
+          69,
+          96
+        ],
+        "hex": "#3a4560",
+        "count": 536,
+        "pct": 5.4
+      },
+      {
+        "rgb": [
+          76,
+          82,
+          104
+        ],
+        "hex": "#4c5268",
+        "count": 415,
+        "pct": 4.2
+      },
+      {
+        "rgb": [
+          81,
+          101,
+          140
+        ],
+        "hex": "#51658c",
+        "count": 266,
+        "pct": 2.7
+      }
+    ]
+  },
+  {
+    "frame": 128,
+    "filename": "prototype_0128.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 34.3,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.338,
+    "file_size_kb": 31.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          21
+        ],
+        "hex": "#0e1115",
+        "count": 7969,
+        "pct": 79.7
+      },
+      {
+        "rgb": [
+          50,
+          55,
+          71
+        ],
+        "hex": "#323747",
+        "count": 649,
+        "pct": 6.5
+      },
+      {
+        "rgb": [
+          75,
+          82,
+          100
+        ],
+        "hex": "#4b5264",
+        "count": 643,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          84
+        ],
+        "hex": "#3b4354",
+        "count": 292,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          99,
+          114,
+          141
+        ],
+        "hex": "#63728d",
+        "count": 164,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 129,
+    "filename": "prototype_0129.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 35.3,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.334,
+    "file_size_kb": 32.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          21
+        ],
+        "hex": "#0e1115",
+        "count": 7942,
+        "pct": 79.4
+      },
+      {
+        "rgb": [
+          76,
+          83,
+          100
+        ],
+        "hex": "#4c5364",
+        "count": 708,
+        "pct": 7.1
+      },
+      {
+        "rgb": [
+          50,
+          56,
+          70
+        ],
+        "hex": "#323846",
+        "count": 530,
+        "pct": 5.3
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          84
+        ],
+        "hex": "#3b4354",
+        "count": 321,
+        "pct": 3.2
+      },
+      {
+        "rgb": [
+          98,
+          113,
+          140
+        ],
+        "hex": "#62718c",
+        "count": 192,
+        "pct": 1.9
+      }
+    ]
+  },
+  {
+    "frame": 130,
+    "filename": "prototype_0130.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 34.0,
+    "temp_ratio": 0.7,
+    "avg_saturation": 0.336,
+    "file_size_kb": 32.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          18,
+          23
+        ],
+        "hex": "#0f1217",
+        "count": 8223,
+        "pct": 82.2
+      },
+      {
+        "rgb": [
+          76,
+          84,
+          102
+        ],
+        "hex": "#4c5466",
+        "count": 577,
+        "pct": 5.8
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          69
+        ],
+        "hex": "#313845",
+        "count": 524,
+        "pct": 5.2
+      },
+      {
+        "rgb": [
+          59,
+          67,
+          84
+        ],
+        "hex": "#3b4354",
+        "count": 210,
+        "pct": 2.1
+      },
+      {
+        "rgb": [
+          99,
+          114,
+          141
+        ],
+        "hex": "#63728d",
+        "count": 184,
+        "pct": 1.8
+      }
+    ]
+  },
+  {
+    "frame": 131,
+    "filename": "prototype_0131.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 33.1,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.329,
+    "file_size_kb": 41.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          16,
+          20
+        ],
+        "hex": "#0f1014",
+        "count": 8087,
+        "pct": 80.9
+      },
+      {
+        "rgb": [
+          55,
+          70,
+          93
+        ],
+        "hex": "#37465d",
+        "count": 560,
+        "pct": 5.6
+      },
+      {
+        "rgb": [
+          45,
+          55,
+          73
+        ],
+        "hex": "#2d3749",
+        "count": 545,
+        "pct": 5.5
+      },
+      {
+        "rgb": [
+          88,
+          87,
+          97
+        ],
+        "hex": "#585761",
+        "count": 445,
+        "pct": 4.5
+      },
+      {
+        "rgb": [
+          153,
+          148,
+          159
+        ],
+        "hex": "#99949f",
+        "count": 136,
+        "pct": 1.4
+      }
+    ]
+  },
+  {
+    "frame": 132,
+    "filename": "prototype_0132.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 37.2,
+    "temp_ratio": 0.69,
+    "avg_saturation": 0.339,
+    "file_size_kb": 43.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          16,
+          17,
+          22
+        ],
+        "hex": "#101116",
+        "count": 7306,
+        "pct": 73.1
+      },
+      {
+        "rgb": [
+          79,
+          82,
+          97
+        ],
+        "hex": "#4f5261",
+        "count": 670,
+        "pct": 6.7
+      },
+      {
+        "rgb": [
+          45,
+          55,
+          73
+        ],
+        "hex": "#2d3749",
+        "count": 650,
+        "pct": 6.5
+      },
+      {
+        "rgb": [
+          55,
+          71,
+          94
+        ],
+        "hex": "#37475e",
+        "count": 589,
+        "pct": 5.9
+      },
+      {
+        "rgb": [
+          84,
+          105,
+          140
+        ],
+        "hex": "#54698c",
+        "count": 547,
+        "pct": 5.5
+      }
+    ]
+  },
+  {
+    "frame": 133,
+    "filename": "prototype_0133.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 29.6,
+    "temp_ratio": 0.6,
+    "avg_saturation": 0.405,
+    "file_size_kb": 37.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          16,
+          20
+        ],
+        "hex": "#0d1014",
+        "count": 8014,
+        "pct": 80.1
+      },
+      {
+        "rgb": [
+          45,
+          53,
+          77
+        ],
+        "hex": "#2d354d",
+        "count": 714,
+        "pct": 7.1
+      },
+      {
+        "rgb": [
+          82,
+          100,
+          149
+        ],
+        "hex": "#526495",
+        "count": 520,
+        "pct": 5.2
+      },
+      {
+        "rgb": [
+          56,
+          69,
+          103
+        ],
+        "hex": "#384567",
+        "count": 395,
+        "pct": 4.0
+      },
+      {
+        "rgb": [
+          73,
+          81,
+          109
+        ],
+        "hex": "#49516d",
+        "count": 296,
+        "pct": 3.0
+      }
+    ]
+  },
+  {
+    "frame": 134,
+    "filename": "prototype_0134.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.1,
+    "temp_ratio": 0.55,
+    "avg_saturation": 0.44,
+    "file_size_kb": 36.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          14,
+          19
+        ],
+        "hex": "#0b0e13",
+        "count": 8148,
+        "pct": 81.5
+      },
+      {
+        "rgb": [
+          42,
+          51,
+          77
+        ],
+        "hex": "#2a334d",
+        "count": 831,
+        "pct": 8.3
+      },
+      {
+        "rgb": [
+          81,
+          101,
+          152
+        ],
+        "hex": "#516598",
+        "count": 433,
+        "pct": 4.3
+      },
+      {
+        "rgb": [
+          55,
+          70,
+          111
+        ],
+        "hex": "#37466f",
+        "count": 356,
+        "pct": 3.6
+      },
+      {
+        "rgb": [
+          70,
+          81,
+          112
+        ],
+        "hex": "#465170",
+        "count": 98,
+        "pct": 1.0
+      }
+    ]
+  },
+  {
+    "frame": 135,
+    "filename": "prototype_0135.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.0,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.47,
+    "file_size_kb": 35.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          9,
+          12,
+          18
+        ],
+        "hex": "#090c12",
+        "count": 7933,
+        "pct": 79.3
+      },
+      {
+        "rgb": [
+          42,
+          51,
+          78
+        ],
+        "hex": "#2a334e",
+        "count": 851,
+        "pct": 8.5
+      },
+      {
+        "rgb": [
+          56,
+          70,
+          109
+        ],
+        "hex": "#38466d",
+        "count": 486,
+        "pct": 4.9
+      },
+      {
+        "rgb": [
+          79,
+          99,
+          149
+        ],
+        "hex": "#4f6395",
+        "count": 432,
+        "pct": 4.3
+      },
+      {
+        "rgb": [
+          70,
+          81,
+          112
+        ],
+        "hex": "#465170",
+        "count": 182,
+        "pct": 1.8
+      }
+    ]
+  },
+  {
+    "frame": 136,
+    "filename": "prototype_0136.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 32.0,
+    "temp_ratio": 0.56,
+    "avg_saturation": 0.488,
+    "file_size_kb": 39.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          14,
+          22
+        ],
+        "hex": "#0b0e16",
+        "count": 7837,
+        "pct": 78.4
+      },
+      {
+        "rgb": [
+          42,
+          50,
+          76
+        ],
+        "hex": "#2a324c",
+        "count": 1126,
+        "pct": 11.3
+      },
+      {
+        "rgb": [
+          57,
+          69,
+          101
+        ],
+        "hex": "#394565",
+        "count": 349,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          75,
+          85,
+          110
+        ],
+        "hex": "#4b556e",
+        "count": 287,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          88,
+          106,
+          148
+        ],
+        "hex": "#586a94",
+        "count": 260,
+        "pct": 2.6
+      }
+    ]
+  },
+  {
+    "frame": 137,
+    "filename": "prototype_0137.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 26.0,
+    "temp_ratio": 0.59,
+    "avg_saturation": 0.433,
+    "file_size_kb": 31.2,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          16,
+          22
+        ],
+        "hex": "#0d1016",
+        "count": 8367,
+        "pct": 83.7
+      },
+      {
+        "rgb": [
+          43,
+          53,
+          73
+        ],
+        "hex": "#2b3549",
+        "count": 1035,
+        "pct": 10.3
+      },
+      {
+        "rgb": [
+          56,
+          68,
+          92
+        ],
+        "hex": "#38445c",
+        "count": 284,
+        "pct": 2.8
+      },
+      {
+        "rgb": [
+          79,
+          81,
+          106
+        ],
+        "hex": "#4f516a",
+        "count": 168,
+        "pct": 1.7
+      },
+      {
+        "rgb": [
+          91,
+          103,
+          142
+        ],
+        "hex": "#5b678e",
+        "count": 78,
+        "pct": 0.8
+      }
+    ]
+  },
+  {
+    "frame": 138,
+    "filename": "prototype_0138.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.5,
+    "temp_ratio": 0.62,
+    "avg_saturation": 0.391,
+    "file_size_kb": 29.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          15,
+          21
+        ],
+        "hex": "#0c0f15",
+        "count": 7927,
+        "pct": 79.3
+      },
+      {
+        "rgb": [
+          45,
+          54,
+          72
+        ],
+        "hex": "#2d3648",
+        "count": 982,
+        "pct": 9.8
+      },
+      {
+        "rgb": [
+          74,
+          84,
+          99
+        ],
+        "hex": "#4a5463",
+        "count": 720,
+        "pct": 7.2
+      },
+      {
+        "rgb": [
+          57,
+          68,
+          88
+        ],
+        "hex": "#394458",
+        "count": 245,
+        "pct": 2.5
+      },
+      {
+        "rgb": [
+          85,
+          107,
+          148
+        ],
+        "hex": "#556b94",
+        "count": 89,
+        "pct": 0.9
+      }
+    ]
+  },
+  {
+    "frame": 139,
+    "filename": "prototype_0139.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 32.1,
+    "temp_ratio": 0.64,
+    "avg_saturation": 0.394,
+    "file_size_kb": 32.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          16,
+          22
+        ],
+        "hex": "#0e1016",
+        "count": 7476,
+        "pct": 74.8
+      },
+      {
+        "rgb": [
+          46,
+          54,
+          73
+        ],
+        "hex": "#2e3649",
+        "count": 1186,
+        "pct": 11.9
+      },
+      {
+        "rgb": [
+          75,
+          84,
+          101
+        ],
+        "hex": "#4b5465",
+        "count": 821,
+        "pct": 8.2
+      },
+      {
+        "rgb": [
+          57,
+          68,
+          89
+        ],
+        "hex": "#394459",
+        "count": 380,
+        "pct": 3.8
+      },
+      {
+        "rgb": [
+          87,
+          108,
+          149
+        ],
+        "hex": "#576c95",
+        "count": 94,
+        "pct": 0.9
+      }
+    ]
+  },
+  {
+    "frame": 140,
+    "filename": "prototype_0140.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.1,
+    "temp_ratio": 0.62,
+    "avg_saturation": 0.424,
+    "file_size_kb": 30.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          14,
+          19
+        ],
+        "hex": "#0b0e13",
+        "count": 7701,
+        "pct": 77.0
+      },
+      {
+        "rgb": [
+          44,
+          54,
+          74
+        ],
+        "hex": "#2c364a",
+        "count": 1035,
+        "pct": 10.3
+      },
+      {
+        "rgb": [
+          76,
+          85,
+          101
+        ],
+        "hex": "#4c5565",
+        "count": 740,
+        "pct": 7.4
+      },
+      {
+        "rgb": [
+          56,
+          68,
+          90
+        ],
+        "hex": "#38445a",
+        "count": 464,
+        "pct": 4.6
+      },
+      {
+        "rgb": [
+          91,
+          110,
+          140
+        ],
+        "hex": "#5b6e8c",
+        "count": 42,
+        "pct": 0.4
+      }
+    ]
+  },
+  {
+    "frame": 141,
+    "filename": "prototype_0141.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 11.5,
+    "temp_ratio": 0.67,
+    "avg_saturation": 0.46,
+    "file_size_kb": 38.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          7,
+          7,
+          10
+        ],
+        "hex": "#07070a",
+        "count": 9661,
+        "pct": 96.6
+      },
+      {
+        "rgb": [
+          83,
+          85,
+          95
+        ],
+        "hex": "#53555f",
+        "count": 175,
+        "pct": 1.8
+      },
+      {
+        "rgb": [
+          53,
+          57,
+          69
+        ],
+        "hex": "#353945",
+        "count": 72,
+        "pct": 0.7
+      },
+      {
+        "rgb": [
+          60,
+          66,
+          75
+        ],
+        "hex": "#3c424b",
+        "count": 33,
+        "pct": 0.3
+      },
+      {
+        "rgb": [
+          142,
+          150,
+          162
+        ],
+        "hex": "#8e96a2",
+        "count": 28,
+        "pct": 0.3
+      }
+    ]
+  },
+  {
+    "frame": 142,
+    "filename": "prototype_0142.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 24.8,
+    "temp_ratio": 0.7,
+    "avg_saturation": 0.428,
+    "file_size_kb": 36.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          16,
+          18,
+          24
+        ],
+        "hex": "#101218",
+        "count": 9284,
+        "pct": 92.8
+      },
+      {
+        "rgb": [
+          85,
+          80,
+          84
+        ],
+        "hex": "#555054",
+        "count": 278,
+        "pct": 2.8
+      },
+      {
+        "rgb": [
+          51,
+          56,
+          69
+        ],
+        "hex": "#333845",
+        "count": 277,
+        "pct": 2.8
+      },
+      {
+        "rgb": [
+          66,
+          61,
+          69
+        ],
+        "hex": "#423d45",
+        "count": 50,
+        "pct": 0.5
+      },
+      {
+        "rgb": [
+          58,
+          67,
+          86
+        ],
+        "hex": "#3a4356",
+        "count": 48,
+        "pct": 0.5
+      }
+    ]
+  },
+  {
+    "frame": 143,
+    "filename": "prototype_0143.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 40.9,
+    "temp_ratio": 0.67,
+    "avg_saturation": 0.338,
+    "file_size_kb": 71.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          13,
+          17
+        ],
+        "hex": "#0c0d11",
+        "count": 6044,
+        "pct": 60.4
+      },
+      {
+        "rgb": [
+          73,
+          83,
+          103
+        ],
+        "hex": "#495367",
+        "count": 1694,
+        "pct": 16.9
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          72
+        ],
+        "hex": "#313848",
+        "count": 917,
+        "pct": 9.2
+      },
+      {
+        "rgb": [
+          59,
+          68,
+          87
+        ],
+        "hex": "#3b4457",
+        "count": 852,
+        "pct": 8.5
+      },
+      {
+        "rgb": [
+          90,
+          107,
+          138
+        ],
+        "hex": "#5a6b8a",
+        "count": 419,
+        "pct": 4.2
+      }
+    ]
+  },
+  {
+    "frame": 144,
+    "filename": "prototype_0144.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 34.1,
+    "temp_ratio": 0.67,
+    "avg_saturation": 0.366,
+    "file_size_kb": 71.2,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          12,
+          16
+        ],
+        "hex": "#0b0c10",
+        "count": 6943,
+        "pct": 69.4
+      },
+      {
+        "rgb": [
+          73,
+          83,
+          104
+        ],
+        "hex": "#495368",
+        "count": 1253,
+        "pct": 12.5
+      },
+      {
+        "rgb": [
+          49,
+          56,
+          72
+        ],
+        "hex": "#313848",
+        "count": 797,
+        "pct": 8.0
+      },
+      {
+        "rgb": [
+          59,
+          68,
+          88
+        ],
+        "hex": "#3b4458",
+        "count": 625,
+        "pct": 6.2
+      },
+      {
+        "rgb": [
+          89,
+          106,
+          137
+        ],
+        "hex": "#596a89",
+        "count": 296,
+        "pct": 3.0
+      }
+    ]
+  },
+  {
+    "frame": 145,
+    "filename": "prototype_0145.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 25.0,
+    "temp_ratio": 0.63,
+    "avg_saturation": 0.443,
+    "file_size_kb": 42.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          13,
+          18
+        ],
+        "hex": "#0b0d12",
+        "count": 8320,
+        "pct": 83.2
+      },
+      {
+        "rgb": [
+          44,
+          51,
+          72
+        ],
+        "hex": "#2c3348",
+        "count": 986,
+        "pct": 9.9
+      },
+      {
+        "rgb": [
+          76,
+          83,
+          101
+        ],
+        "hex": "#4c5365",
+        "count": 327,
+        "pct": 3.3
+      },
+      {
+        "rgb": [
+          58,
+          67,
+          87
+        ],
+        "hex": "#3a4357",
+        "count": 151,
+        "pct": 1.5
+      },
+      {
+        "rgb": [
+          137,
+          157,
+          171
+        ],
+        "hex": "#899dab",
+        "count": 78,
+        "pct": 0.8
+      }
+    ]
+  },
+  {
+    "frame": 146,
+    "filename": "prototype_0146.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 22.6,
+    "temp_ratio": 0.58,
+    "avg_saturation": 0.45,
+    "file_size_kb": 37.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          14,
+          20
+        ],
+        "hex": "#0b0e14",
+        "count": 8852,
+        "pct": 88.5
+      },
+      {
+        "rgb": [
+          44,
+          52,
+          72
+        ],
+        "hex": "#2c3448",
+        "count": 525,
+        "pct": 5.2
+      },
+      {
+        "rgb": [
+          75,
+          81,
+          103
+        ],
+        "hex": "#4b5167",
+        "count": 247,
+        "pct": 2.5
+      },
+      {
+        "rgb": [
+          59,
+          68,
+          91
+        ],
+        "hex": "#3b445b",
+        "count": 172,
+        "pct": 1.7
+      },
+      {
+        "rgb": [
+          96,
+          108,
+          145
+        ],
+        "hex": "#606c91",
+        "count": 152,
+        "pct": 1.5
+      }
+    ]
+  },
+  {
+    "frame": 147,
+    "filename": "prototype_0147.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 26.8,
+    "temp_ratio": 0.62,
+    "avg_saturation": 0.398,
+    "file_size_kb": 46.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          14,
+          20
+        ],
+        "hex": "#0c0e14",
+        "count": 8615,
+        "pct": 86.2
+      },
+      {
+        "rgb": [
+          46,
+          51,
+          74
+        ],
+        "hex": "#2e334a",
+        "count": 531,
+        "pct": 5.3
+      },
+      {
+        "rgb": [
+          93,
+          108,
+          149
+        ],
+        "hex": "#5d6c95",
+        "count": 314,
+        "pct": 3.1
+      },
+      {
+        "rgb": [
+          76,
+          82,
+          107
+        ],
+        "hex": "#4c526b",
+        "count": 251,
+        "pct": 2.5
+      },
+      {
+        "rgb": [
+          58,
+          69,
+          95
+        ],
+        "hex": "#3a455f",
+        "count": 173,
+        "pct": 1.7
+      }
+    ]
+  },
+  {
+    "frame": 148,
+    "filename": "prototype_0148.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 41.4,
+    "temp_ratio": 0.64,
+    "avg_saturation": 0.372,
+    "file_size_kb": 51.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          12,
+          17
+        ],
+        "hex": "#0b0c11",
+        "count": 7459,
+        "pct": 74.6
+      },
+      {
+        "rgb": [
+          86,
+          103,
+          145
+        ],
+        "hex": "#566791",
+        "count": 797,
+        "pct": 8.0
+      },
+      {
+        "rgb": [
+          46,
+          53,
+          75
+        ],
+        "hex": "#2e354b",
+        "count": 566,
+        "pct": 5.7
+      },
+      {
+        "rgb": [
+          72,
+          83,
+          111
+        ],
+        "hex": "#48536f",
+        "count": 404,
+        "pct": 4.0
+      },
+      {
+        "rgb": [
+          59,
+          70,
+          100
+        ],
+        "hex": "#3b4664",
+        "count": 272,
+        "pct": 2.7
+      }
+    ]
+  },
+  {
+    "frame": 149,
+    "filename": "prototype_0149.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 51.4,
+    "temp_ratio": 0.59,
+    "avg_saturation": 0.421,
+    "file_size_kb": 56.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          14,
+          19
+        ],
+        "hex": "#0b0e13",
+        "count": 5675,
+        "pct": 56.8
+      },
+      {
+        "rgb": [
+          80,
+          99,
+          144
+        ],
+        "hex": "#506390",
+        "count": 1190,
+        "pct": 11.9
+      },
+      {
+        "rgb": [
+          72,
+          82,
+          113
+        ],
+        "hex": "#485271",
+        "count": 991,
+        "pct": 9.9
+      },
+      {
+        "rgb": [
+          45,
+          53,
+          80
+        ],
+        "hex": "#2d3550",
+        "count": 957,
+        "pct": 9.6
+      },
+      {
+        "rgb": [
+          58,
+          70,
+          104
+        ],
+        "hex": "#3a4668",
+        "count": 773,
+        "pct": 7.7
+      }
+    ]
+  },
+  {
+    "frame": 150,
+    "filename": "prototype_0150.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 41.0,
+    "temp_ratio": 0.6,
+    "avg_saturation": 0.418,
+    "file_size_kb": 55.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          13,
+          19
+        ],
+        "hex": "#0b0d13",
+        "count": 7371,
+        "pct": 73.7
+      },
+      {
+        "rgb": [
+          44,
+          52,
+          77
+        ],
+        "hex": "#2c344d",
+        "count": 725,
+        "pct": 7.2
+      },
+      {
+        "rgb": [
+          83,
+          100,
+          146
+        ],
+        "hex": "#536492",
+        "count": 643,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          73,
+          83,
+          112
+        ],
+        "hex": "#495370",
+        "count": 418,
+        "pct": 4.2
+      },
+      {
+        "rgb": [
+          57,
+          70,
+          104
+        ],
+        "hex": "#394668",
+        "count": 418,
+        "pct": 4.2
+      }
+    ]
+  },
+  {
+    "frame": 151,
+    "filename": "prototype_0151.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 42.7,
+    "temp_ratio": 1.02,
+    "avg_saturation": 0.2,
+    "file_size_kb": 40.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          22,
+          21,
+          23
+        ],
+        "hex": "#161517",
+        "count": 6880,
+        "pct": 68.8
+      },
+      {
+        "rgb": [
+          87,
+          79,
+          81
+        ],
+        "hex": "#574f51",
+        "count": 2063,
+        "pct": 20.6
+      },
+      {
+        "rgb": [
+          69,
+          57,
+          57
+        ],
+        "hex": "#453939",
+        "count": 279,
+        "pct": 2.8
+      },
+      {
+        "rgb": [
+          67,
+          61,
+          66
+        ],
+        "hex": "#433d42",
+        "count": 243,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          59,
+          59,
+          66
+        ],
+        "hex": "#3b3b42",
+        "count": 208,
+        "pct": 2.1
+      }
+    ]
+  },
+  {
+    "frame": 152,
+    "filename": "prototype_0152.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 16.1,
+    "temp_ratio": 0.59,
+    "avg_saturation": 0.423,
+    "file_size_kb": 23.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          2,
+          3,
+          4
+        ],
+        "hex": "#020304",
+        "count": 3775,
+        "pct": 37.8
+      },
+      {
+        "rgb": [
+          21,
+          26,
+          32
+        ],
+        "hex": "#151a20",
+        "count": 2918,
+        "pct": 29.2
+      },
+      {
+        "rgb": [
+          17,
+          22,
+          28
+        ],
+        "hex": "#11161c",
+        "count": 1802,
+        "pct": 18.0
+      },
+      {
+        "rgb": [
+          13,
+          18,
+          23
+        ],
+        "hex": "#0d1217",
+        "count": 1475,
+        "pct": 14.8
+      },
+      {
+        "rgb": [
+          51,
+          56,
+          66
+        ],
+        "hex": "#333842",
+        "count": 21,
+        "pct": 0.2
+      }
+    ]
+  },
+  {
+    "frame": 153,
+    "filename": "prototype_0153.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 18.2,
+    "temp_ratio": 0.61,
+    "avg_saturation": 0.406,
+    "file_size_kb": 11.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          1,
+          2,
+          2
+        ],
+        "hex": "#010202",
+        "count": 3253,
+        "pct": 32.5
+      },
+      {
+        "rgb": [
+          23,
+          28,
+          34
+        ],
+        "hex": "#171c22",
+        "count": 2252,
+        "pct": 22.5
+      },
+      {
+        "rgb": [
+          18,
+          23,
+          29
+        ],
+        "hex": "#12171d",
+        "count": 1868,
+        "pct": 18.7
+      },
+      {
+        "rgb": [
+          13,
+          18,
+          23
+        ],
+        "hex": "#0d1217",
+        "count": 1027,
+        "pct": 10.3
+      },
+      {
+        "rgb": [
+          28,
+          33,
+          41
+        ],
+        "hex": "#1c2129",
+        "count": 708,
+        "pct": 7.1
+      }
+    ]
+  },
+  {
+    "frame": 154,
+    "filename": "prototype_0154.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 40.8,
+    "temp_ratio": 0.61,
+    "avg_saturation": 0.443,
+    "file_size_kb": 40.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          8,
+          10,
+          14
+        ],
+        "hex": "#080a0e",
+        "count": 6901,
+        "pct": 69.0
+      },
+      {
+        "rgb": [
+          89,
+          107,
+          150
+        ],
+        "hex": "#596b96",
+        "count": 950,
+        "pct": 9.5
+      },
+      {
+        "rgb": [
+          44,
+          51,
+          81
+        ],
+        "hex": "#2c3351",
+        "count": 730,
+        "pct": 7.3
+      },
+      {
+        "rgb": [
+          76,
+          84,
+          106
+        ],
+        "hex": "#4c546a",
+        "count": 687,
+        "pct": 6.9
+      },
+      {
+        "rgb": [
+          58,
+          69,
+          98
+        ],
+        "hex": "#3a4562",
+        "count": 284,
+        "pct": 2.8
+      }
+    ]
+  },
+  {
+    "frame": 155,
+    "filename": "prototype_0155.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 38.2,
+    "temp_ratio": 0.64,
+    "avg_saturation": 0.385,
+    "file_size_kb": 44.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          12,
+          16
+        ],
+        "hex": "#0b0c10",
+        "count": 7276,
+        "pct": 72.8
+      },
+      {
+        "rgb": [
+          76,
+          85,
+          105
+        ],
+        "hex": "#4c5569",
+        "count": 660,
+        "pct": 6.6
+      },
+      {
+        "rgb": [
+          86,
+          105,
+          147
+        ],
+        "hex": "#566993",
+        "count": 653,
+        "pct": 6.5
+      },
+      {
+        "rgb": [
+          45,
+          53,
+          76
+        ],
+        "hex": "#2d354c",
+        "count": 543,
+        "pct": 5.4
+      },
+      {
+        "rgb": [
+          58,
+          69,
+          97
+        ],
+        "hex": "#3a4561",
+        "count": 417,
+        "pct": 4.2
+      }
+    ]
+  },
+  {
+    "frame": 156,
+    "filename": "prototype_0156.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 46.4,
+    "temp_ratio": 0.71,
+    "avg_saturation": 0.348,
+    "file_size_kb": 63.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          15,
+          20
+        ],
+        "hex": "#0e0f14",
+        "count": 6555,
+        "pct": 65.5
+      },
+      {
+        "rgb": [
+          82,
+          85,
+          100
+        ],
+        "hex": "#525564",
+        "count": 1197,
+        "pct": 12.0
+      },
+      {
+        "rgb": [
+          44,
+          52,
+          77
+        ],
+        "hex": "#2c344d",
+        "count": 799,
+        "pct": 8.0
+      },
+      {
+        "rgb": [
+          92,
+          107,
+          145
+        ],
+        "hex": "#5c6b91",
+        "count": 726,
+        "pct": 7.3
+      },
+      {
+        "rgb": [
+          57,
+          70,
+          100
+        ],
+        "hex": "#394664",
+        "count": 386,
+        "pct": 3.9
+      }
+    ]
+  },
+  {
+    "frame": 157,
+    "filename": "prototype_0157.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 47.1,
+    "temp_ratio": 0.69,
+    "avg_saturation": 0.343,
+    "file_size_kb": 64.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          15,
+          20
+        ],
+        "hex": "#0e0f14",
+        "count": 6573,
+        "pct": 65.7
+      },
+      {
+        "rgb": [
+          80,
+          85,
+          100
+        ],
+        "hex": "#505564",
+        "count": 1035,
+        "pct": 10.3
+      },
+      {
+        "rgb": [
+          44,
+          52,
+          78
+        ],
+        "hex": "#2c344e",
+        "count": 925,
+        "pct": 9.2
+      },
+      {
+        "rgb": [
+          91,
+          107,
+          145
+        ],
+        "hex": "#5b6b91",
+        "count": 674,
+        "pct": 6.7
+      },
+      {
+        "rgb": [
+          57,
+          69,
+          100
+        ],
+        "hex": "#394564",
+        "count": 358,
+        "pct": 3.6
+      }
+    ]
+  },
+  {
+    "frame": 158,
+    "filename": "prototype_0158.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 39.0,
+    "temp_ratio": 0.68,
+    "avg_saturation": 0.348,
+    "file_size_kb": 53.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          20
+        ],
+        "hex": "#0e1114",
+        "count": 7413,
+        "pct": 74.1
+      },
+      {
+        "rgb": [
+          79,
+          90,
+          104
+        ],
+        "hex": "#4f5a68",
+        "count": 848,
+        "pct": 8.5
+      },
+      {
+        "rgb": [
+          47,
+          56,
+          72
+        ],
+        "hex": "#2f3848",
+        "count": 699,
+        "pct": 7.0
+      },
+      {
+        "rgb": [
+          57,
+          69,
+          87
+        ],
+        "hex": "#394557",
+        "count": 426,
+        "pct": 4.3
+      },
+      {
+        "rgb": [
+          92,
+          110,
+          145
+        ],
+        "hex": "#5c6e91",
+        "count": 276,
+        "pct": 2.8
+      }
+    ]
+  },
+  {
+    "frame": 159,
+    "filename": "prototype_0159.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 26.7,
+    "temp_ratio": 0.69,
+    "avg_saturation": 0.347,
+    "file_size_kb": 34.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          16,
+          20
+        ],
+        "hex": "#0e1014",
+        "count": 8702,
+        "pct": 87.0
+      },
+      {
+        "rgb": [
+          77,
+          86,
+          102
+        ],
+        "hex": "#4d5666",
+        "count": 460,
+        "pct": 4.6
+      },
+      {
+        "rgb": [
+          47,
+          55,
+          72
+        ],
+        "hex": "#2f3748",
+        "count": 364,
+        "pct": 3.6
+      },
+      {
+        "rgb": [
+          58,
+          68,
+          87
+        ],
+        "hex": "#3a4457",
+        "count": 221,
+        "pct": 2.2
+      },
+      {
+        "rgb": [
+          92,
+          110,
+          141
+        ],
+        "hex": "#5c6e8d",
+        "count": 153,
+        "pct": 1.5
+      }
+    ]
+  },
+  {
+    "frame": 160,
+    "filename": "prototype_0160.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 25.0,
+    "temp_ratio": 0.61,
+    "avg_saturation": 0.401,
+    "file_size_kb": 39.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          21
+        ],
+        "hex": "#0e1115",
+        "count": 9060,
+        "pct": 90.6
+      },
+      {
+        "rgb": [
+          43,
+          51,
+          76
+        ],
+        "hex": "#2b334c",
+        "count": 431,
+        "pct": 4.3
+      },
+      {
+        "rgb": [
+          82,
+          103,
+          154
+        ],
+        "hex": "#52679a",
+        "count": 176,
+        "pct": 1.8
+      },
+      {
+        "rgb": [
+          57,
+          71,
+          107
+        ],
+        "hex": "#39476b",
+        "count": 138,
+        "pct": 1.4
+      },
+      {
+        "rgb": [
+          116,
+          150,
+          206
+        ],
+        "hex": "#7496ce",
+        "count": 59,
+        "pct": 0.6
+      }
+    ]
+  },
+  {
+    "frame": 161,
+    "filename": "prototype_0161.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 33.9,
+    "temp_ratio": 0.58,
+    "avg_saturation": 0.413,
+    "file_size_kb": 42.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          22
+        ],
+        "hex": "#0e1116",
+        "count": 8226,
+        "pct": 82.3
+      },
+      {
+        "rgb": [
+          41,
+          51,
+          78
+        ],
+        "hex": "#29334e",
+        "count": 659,
+        "pct": 6.6
+      },
+      {
+        "rgb": [
+          81,
+          102,
+          151
+        ],
+        "hex": "#516697",
+        "count": 382,
+        "pct": 3.8
+      },
+      {
+        "rgb": [
+          56,
+          71,
+          105
+        ],
+        "hex": "#384769",
+        "count": 284,
+        "pct": 2.8
+      },
+      {
+        "rgb": [
+          116,
+          153,
+          207
+        ],
+        "hex": "#7499cf",
+        "count": 162,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 162,
+    "filename": "prototype_0162.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 42.0,
+    "temp_ratio": 0.55,
+    "avg_saturation": 0.446,
+    "file_size_kb": 41.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          14,
+          20
+        ],
+        "hex": "#0c0e14",
+        "count": 6548,
+        "pct": 65.5
+      },
+      {
+        "rgb": [
+          42,
+          53,
+          80
+        ],
+        "hex": "#2a3550",
+        "count": 1174,
+        "pct": 11.7
+      },
+      {
+        "rgb": [
+          55,
+          71,
+          106
+        ],
+        "hex": "#37476a",
+        "count": 969,
+        "pct": 9.7
+      },
+      {
+        "rgb": [
+          76,
+          97,
+          145
+        ],
+        "hex": "#4c6191",
+        "count": 849,
+        "pct": 8.5
+      },
+      {
+        "rgb": [
+          67,
+          83,
+          120
+        ],
+        "hex": "#435378",
+        "count": 165,
+        "pct": 1.7
+      }
+    ]
+  },
+  {
+    "frame": 163,
+    "filename": "prototype_0163.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 45.8,
+    "temp_ratio": 0.57,
+    "avg_saturation": 0.425,
+    "file_size_kb": 47.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          22
+        ],
+        "hex": "#0e1116",
+        "count": 6713,
+        "pct": 67.1
+      },
+      {
+        "rgb": [
+          79,
+          101,
+          149
+        ],
+        "hex": "#4f6595",
+        "count": 1028,
+        "pct": 10.3
+      },
+      {
+        "rgb": [
+          42,
+          52,
+          78
+        ],
+        "hex": "#2a344e",
+        "count": 961,
+        "pct": 9.6
+      },
+      {
+        "rgb": [
+          56,
+          72,
+          106
+        ],
+        "hex": "#38486a",
+        "count": 615,
+        "pct": 6.2
+      },
+      {
+        "rgb": [
+          114,
+          151,
+          203
+        ],
+        "hex": "#7297cb",
+        "count": 261,
+        "pct": 2.6
+      }
+    ]
+  },
+  {
+    "frame": 164,
+    "filename": "prototype_0164.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 50.9,
+    "temp_ratio": 0.57,
+    "avg_saturation": 0.42,
+    "file_size_kb": 50.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          16,
+          21
+        ],
+        "hex": "#0d1015",
+        "count": 6398,
+        "pct": 64.0
+      },
+      {
+        "rgb": [
+          83,
+          106,
+          154
+        ],
+        "hex": "#536a9a",
+        "count": 1145,
+        "pct": 11.5
+      },
+      {
+        "rgb": [
+          43,
+          53,
+          78
+        ],
+        "hex": "#2b354e",
+        "count": 860,
+        "pct": 8.6
+      },
+      {
+        "rgb": [
+          57,
+          72,
+          106
+        ],
+        "hex": "#39486a",
+        "count": 552,
+        "pct": 5.5
+      },
+      {
+        "rgb": [
+          116,
+          153,
+          203
+        ],
+        "hex": "#7499cb",
+        "count": 368,
+        "pct": 3.7
+      }
+    ]
+  },
+  {
+    "frame": 165,
+    "filename": "prototype_0165.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 45.0,
+    "temp_ratio": 0.57,
+    "avg_saturation": 0.423,
+    "file_size_kb": 47.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          16,
+          22
+        ],
+        "hex": "#0d1016",
+        "count": 6376,
+        "pct": 63.8
+      },
+      {
+        "rgb": [
+          43,
+          53,
+          76
+        ],
+        "hex": "#2b354c",
+        "count": 1232,
+        "pct": 12.3
+      },
+      {
+        "rgb": [
+          81,
+          103,
+          151
+        ],
+        "hex": "#516797",
+        "count": 983,
+        "pct": 9.8
+      },
+      {
+        "rgb": [
+          56,
+          71,
+          103
+        ],
+        "hex": "#384767",
+        "count": 748,
+        "pct": 7.5
+      },
+      {
+        "rgb": [
+          68,
+          83,
+          118
+        ],
+        "hex": "#445376",
+        "count": 340,
+        "pct": 3.4
+      }
+    ]
+  },
+  {
+    "frame": 166,
+    "filename": "prototype_0166.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 31.7,
+    "temp_ratio": 0.48,
+    "avg_saturation": 0.536,
+    "file_size_kb": 23.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          16,
+          24,
+          36
+        ],
+        "hex": "#101824",
+        "count": 8085,
+        "pct": 80.8
+      },
+      {
+        "rgb": [
+          39,
+          51,
+          71
+        ],
+        "hex": "#273347",
+        "count": 1684,
+        "pct": 16.8
+      },
+      {
+        "rgb": [
+          55,
+          68,
+          91
+        ],
+        "hex": "#37445b",
+        "count": 102,
+        "pct": 1.0
+      },
+      {
+        "rgb": [
+          71,
+          82,
+          104
+        ],
+        "hex": "#475268",
+        "count": 96,
+        "pct": 1.0
+      },
+      {
+        "rgb": [
+          104,
+          115,
+          135
+        ],
+        "hex": "#687387",
+        "count": 16,
+        "pct": 0.2
+      }
+    ]
+  },
+  {
+    "frame": 167,
+    "filename": "prototype_0167.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 36.6,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.484,
+    "file_size_kb": 24.2,
+    "dominant_colors": [
+      {
+        "rgb": [
+          26,
+          36,
+          53
+        ],
+        "hex": "#1a2435",
+        "count": 3954,
+        "pct": 39.5
+      },
+      {
+        "rgb": [
+          41,
+          52,
+          71
+        ],
+        "hex": "#293447",
+        "count": 3157,
+        "pct": 31.6
+      },
+      {
+        "rgb": [
+          0,
+          0,
+          0
+        ],
+        "hex": "#000000",
+        "count": 2407,
+        "pct": 24.1
+      },
+      {
+        "rgb": [
+          53,
+          67,
+          89
+        ],
+        "hex": "#354359",
+        "count": 271,
+        "pct": 2.7
+      },
+      {
+        "rgb": [
+          73,
+          84,
+          106
+        ],
+        "hex": "#49546a",
+        "count": 171,
+        "pct": 1.7
+      }
+    ]
+  },
+  {
+    "frame": 168,
+    "filename": "prototype_0168.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 42.0,
+    "temp_ratio": 0.54,
+    "avg_saturation": 0.471,
+    "file_size_kb": 30.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          10,
+          13,
+          19
+        ],
+        "hex": "#0a0d13",
+        "count": 5533,
+        "pct": 55.3
+      },
+      {
+        "rgb": [
+          42,
+          52,
+          79
+        ],
+        "hex": "#2a344f",
+        "count": 2186,
+        "pct": 21.9
+      },
+      {
+        "rgb": [
+          56,
+          71,
+          108
+        ],
+        "hex": "#38476c",
+        "count": 1082,
+        "pct": 10.8
+      },
+      {
+        "rgb": [
+          78,
+          97,
+          147
+        ],
+        "hex": "#4e6193",
+        "count": 694,
+        "pct": 6.9
+      },
+      {
+        "rgb": [
+          69,
+          82,
+          117
+        ],
+        "hex": "#455275",
+        "count": 422,
+        "pct": 4.2
+      }
+    ]
+  },
+  {
+    "frame": 169,
+    "filename": "prototype_0169.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 44.7,
+    "temp_ratio": 0.56,
+    "avg_saturation": 0.463,
+    "file_size_kb": 35.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          10,
+          12,
+          17
+        ],
+        "hex": "#0a0c11",
+        "count": 5412,
+        "pct": 54.1
+      },
+      {
+        "rgb": [
+          45,
+          54,
+          80
+        ],
+        "hex": "#2d3650",
+        "count": 1781,
+        "pct": 17.8
+      },
+      {
+        "rgb": [
+          57,
+          70,
+          104
+        ],
+        "hex": "#394668",
+        "count": 1213,
+        "pct": 12.1
+      },
+      {
+        "rgb": [
+          81,
+          100,
+          147
+        ],
+        "hex": "#516493",
+        "count": 960,
+        "pct": 9.6
+      },
+      {
+        "rgb": [
+          68,
+          82,
+          118
+        ],
+        "hex": "#445276",
+        "count": 503,
+        "pct": 5.0
+      }
+    ]
+  },
+  {
+    "frame": 170,
+    "filename": "prototype_0170.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 41.3,
+    "temp_ratio": 0.55,
+    "avg_saturation": 0.47,
+    "file_size_kb": 33.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          9,
+          11,
+          16
+        ],
+        "hex": "#090b10",
+        "count": 5631,
+        "pct": 56.3
+      },
+      {
+        "rgb": [
+          43,
+          52,
+          78
+        ],
+        "hex": "#2b344e",
+        "count": 2014,
+        "pct": 20.1
+      },
+      {
+        "rgb": [
+          57,
+          71,
+          106
+        ],
+        "hex": "#39476a",
+        "count": 1046,
+        "pct": 10.5
+      },
+      {
+        "rgb": [
+          82,
+          100,
+          147
+        ],
+        "hex": "#526493",
+        "count": 669,
+        "pct": 6.7
+      },
+      {
+        "rgb": [
+          68,
+          82,
+          118
+        ],
+        "hex": "#445276",
+        "count": 490,
+        "pct": 4.9
+      }
+    ]
+  },
+  {
+    "frame": 171,
+    "filename": "prototype_0171.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 32.2,
+    "temp_ratio": 0.43,
+    "avg_saturation": 0.689,
+    "file_size_kb": 55.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          5,
+          10,
+          21
+        ],
+        "hex": "#050a15",
+        "count": 7504,
+        "pct": 75.0
+      },
+      {
+        "rgb": [
+          35,
+          49,
+          77
+        ],
+        "hex": "#23314d",
+        "count": 1056,
+        "pct": 10.6
+      },
+      {
+        "rgb": [
+          80,
+          103,
+          149
+        ],
+        "hex": "#506795",
+        "count": 564,
+        "pct": 5.6
+      },
+      {
+        "rgb": [
+          55,
+          73,
+          109
+        ],
+        "hex": "#37496d",
+        "count": 469,
+        "pct": 4.7
+      },
+      {
+        "rgb": [
+          67,
+          85,
+          121
+        ],
+        "hex": "#435579",
+        "count": 156,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 172,
+    "filename": "prototype_0172.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 38.6,
+    "temp_ratio": 0.49,
+    "avg_saturation": 0.593,
+    "file_size_kb": 53.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          9,
+          14,
+          24
+        ],
+        "hex": "#090e18",
+        "count": 7345,
+        "pct": 73.5
+      },
+      {
+        "rgb": [
+          39,
+          51,
+          76
+        ],
+        "hex": "#27334c",
+        "count": 1038,
+        "pct": 10.4
+      },
+      {
+        "rgb": [
+          55,
+          72,
+          105
+        ],
+        "hex": "#374869",
+        "count": 563,
+        "pct": 5.6
+      },
+      {
+        "rgb": [
+          81,
+          102,
+          147
+        ],
+        "hex": "#516693",
+        "count": 386,
+        "pct": 3.9
+      },
+      {
+        "rgb": [
+          116,
+          147,
+          208
+        ],
+        "hex": "#7493d0",
+        "count": 193,
+        "pct": 1.9
+      }
+    ]
+  },
+  {
+    "frame": 173,
+    "filename": "prototype_0173.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 33.8,
+    "temp_ratio": 0.45,
+    "avg_saturation": 0.67,
+    "file_size_kb": 49.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          7,
+          12,
+          22
+        ],
+        "hex": "#070c16",
+        "count": 7841,
+        "pct": 78.4
+      },
+      {
+        "rgb": [
+          80,
+          103,
+          150
+        ],
+        "hex": "#506796",
+        "count": 596,
+        "pct": 6.0
+      },
+      {
+        "rgb": [
+          37,
+          51,
+          79
+        ],
+        "hex": "#25334f",
+        "count": 577,
+        "pct": 5.8
+      },
+      {
+        "rgb": [
+          54,
+          72,
+          108
+        ],
+        "hex": "#36486c",
+        "count": 542,
+        "pct": 5.4
+      },
+      {
+        "rgb": [
+          114,
+          150,
+          209
+        ],
+        "hex": "#7296d1",
+        "count": 131,
+        "pct": 1.3
+      }
+    ]
+  },
+  {
+    "frame": 174,
+    "filename": "prototype_0174.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 25.3,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.568,
+    "file_size_kb": 34.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          6,
+          9,
+          13
+        ],
+        "hex": "#06090d",
+        "count": 7687,
+        "pct": 76.9
+      },
+      {
+        "rgb": [
+          41,
+          52,
+          77
+        ],
+        "hex": "#29344d",
+        "count": 1037,
+        "pct": 10.4
+      },
+      {
+        "rgb": [
+          56,
+          71,
+          98
+        ],
+        "hex": "#384762",
+        "count": 644,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          72,
+          86,
+          112
+        ],
+        "hex": "#485670",
+        "count": 395,
+        "pct": 4.0
+      },
+      {
+        "rgb": [
+          90,
+          108,
+          142
+        ],
+        "hex": "#5a6c8e",
+        "count": 133,
+        "pct": 1.3
+      }
+    ]
+  },
+  {
+    "frame": 175,
+    "filename": "prototype_0175.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 22.7,
+    "temp_ratio": 0.54,
+    "avg_saturation": 0.563,
+    "file_size_kb": 37.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          7,
+          10,
+          15
+        ],
+        "hex": "#070a0f",
+        "count": 8565,
+        "pct": 85.7
+      },
+      {
+        "rgb": [
+          42,
+          52,
+          74
+        ],
+        "hex": "#2a344a",
+        "count": 434,
+        "pct": 4.3
+      },
+      {
+        "rgb": [
+          56,
+          73,
+          102
+        ],
+        "hex": "#384966",
+        "count": 362,
+        "pct": 3.6
+      },
+      {
+        "rgb": [
+          71,
+          86,
+          113
+        ],
+        "hex": "#475671",
+        "count": 294,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          84,
+          106,
+          142
+        ],
+        "hex": "#546a8e",
+        "count": 216,
+        "pct": 2.2
+      }
+    ]
+  },
+  {
+    "frame": 176,
+    "filename": "prototype_0176.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 27.3,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.538,
+    "file_size_kb": 38.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          8,
+          12,
+          17
+        ],
+        "hex": "#080c11",
+        "count": 7860,
+        "pct": 78.6
+      },
+      {
+        "rgb": [
+          40,
+          51,
+          74
+        ],
+        "hex": "#28334a",
+        "count": 1057,
+        "pct": 10.6
+      },
+      {
+        "rgb": [
+          56,
+          71,
+          101
+        ],
+        "hex": "#384765",
+        "count": 517,
+        "pct": 5.2
+      },
+      {
+        "rgb": [
+          72,
+          85,
+          110
+        ],
+        "hex": "#48556e",
+        "count": 248,
+        "pct": 2.5
+      },
+      {
+        "rgb": [
+          84,
+          105,
+          147
+        ],
+        "hex": "#546993",
+        "count": 139,
+        "pct": 1.4
+      }
+    ]
+  },
+  {
+    "frame": 177,
+    "filename": "prototype_0177.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 29.1,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.551,
+    "file_size_kb": 38.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          7,
+          11,
+          16
+        ],
+        "hex": "#070b10",
+        "count": 7517,
+        "pct": 75.2
+      },
+      {
+        "rgb": [
+          39,
+          51,
+          76
+        ],
+        "hex": "#27334c",
+        "count": 1338,
+        "pct": 13.4
+      },
+      {
+        "rgb": [
+          55,
+          70,
+          102
+        ],
+        "hex": "#374666",
+        "count": 493,
+        "pct": 4.9
+      },
+      {
+        "rgb": [
+          70,
+          83,
+          111
+        ],
+        "hex": "#46536f",
+        "count": 274,
+        "pct": 2.7
+      },
+      {
+        "rgb": [
+          80,
+          99,
+          141
+        ],
+        "hex": "#50638d",
+        "count": 185,
+        "pct": 1.8
+      }
+    ]
+  },
+  {
+    "frame": 178,
+    "filename": "prototype_0178.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 24.7,
+    "temp_ratio": 0.54,
+    "avg_saturation": 0.518,
+    "file_size_kb": 40.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          8,
+          11,
+          16
+        ],
+        "hex": "#080b10",
+        "count": 7963,
+        "pct": 79.6
+      },
+      {
+        "rgb": [
+          41,
+          52,
+          75
+        ],
+        "hex": "#29344b",
+        "count": 1208,
+        "pct": 12.1
+      },
+      {
+        "rgb": [
+          56,
+          70,
+          97
+        ],
+        "hex": "#384661",
+        "count": 307,
+        "pct": 3.1
+      },
+      {
+        "rgb": [
+          75,
+          86,
+          109
+        ],
+        "hex": "#4b566d",
+        "count": 288,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          87,
+          105,
+          143
+        ],
+        "hex": "#57698f",
+        "count": 161,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 179,
+    "filename": "prototype_0179.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 24.5,
+    "temp_ratio": 0.52,
+    "avg_saturation": 0.597,
+    "file_size_kb": 30.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          4,
+          6,
+          11
+        ],
+        "hex": "#04060b",
+        "count": 8352,
+        "pct": 83.5
+      },
+      {
+        "rgb": [
+          40,
+          48,
+          81
+        ],
+        "hex": "#283051",
+        "count": 607,
+        "pct": 6.1
+      },
+      {
+        "rgb": [
+          81,
+          100,
+          155
+        ],
+        "hex": "#51649b",
+        "count": 398,
+        "pct": 4.0
+      },
+      {
+        "rgb": [
+          56,
+          70,
+          112
+        ],
+        "hex": "#384670",
+        "count": 255,
+        "pct": 2.5
+      },
+      {
+        "rgb": [
+          115,
+          145,
+          206
+        ],
+        "hex": "#7391ce",
+        "count": 133,
+        "pct": 1.3
+      }
+    ]
+  },
+  {
+    "frame": 180,
+    "filename": "prototype_0180.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 25.2,
+    "temp_ratio": 0.52,
+    "avg_saturation": 0.604,
+    "file_size_kb": 32.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          4,
+          6,
+          11
+        ],
+        "hex": "#04060b",
+        "count": 8324,
+        "pct": 83.2
+      },
+      {
+        "rgb": [
+          39,
+          48,
+          81
+        ],
+        "hex": "#273051",
+        "count": 622,
+        "pct": 6.2
+      },
+      {
+        "rgb": [
+          81,
+          99,
+          154
+        ],
+        "hex": "#51639a",
+        "count": 398,
+        "pct": 4.0
+      },
+      {
+        "rgb": [
+          56,
+          70,
+          112
+        ],
+        "hex": "#384670",
+        "count": 249,
+        "pct": 2.5
+      },
+      {
+        "rgb": [
+          141,
+          172,
+          222
+        ],
+        "hex": "#8dacde",
+        "count": 120,
+        "pct": 1.2
+      }
+    ]
+  },
+  {
+    "frame": 181,
+    "filename": "prototype_0181.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 46.0,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.479,
+    "file_size_kb": 53.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          15,
+          22
+        ],
+        "hex": "#0c0f16",
+        "count": 5523,
+        "pct": 55.2
+      },
+      {
+        "rgb": [
+          41,
+          53,
+          83
+        ],
+        "hex": "#293553",
+        "count": 2558,
+        "pct": 25.6
+      },
+      {
+        "rgb": [
+          54,
+          69,
+          106
+        ],
+        "hex": "#36456a",
+        "count": 872,
+        "pct": 8.7
+      },
+      {
+        "rgb": [
+          85,
+          106,
+          149
+        ],
+        "hex": "#556a95",
+        "count": 475,
+        "pct": 4.8
+      },
+      {
+        "rgb": [
+          70,
+          84,
+          115
+        ],
+        "hex": "#465473",
+        "count": 252,
+        "pct": 2.5
+      }
+    ]
+  },
+  {
+    "frame": 182,
+    "filename": "prototype_0182.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 43.8,
+    "temp_ratio": 0.53,
+    "avg_saturation": 0.483,
+    "file_size_kb": 51.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          16,
+          24
+        ],
+        "hex": "#0c1018",
+        "count": 5910,
+        "pct": 59.1
+      },
+      {
+        "rgb": [
+          40,
+          51,
+          80
+        ],
+        "hex": "#283350",
+        "count": 2265,
+        "pct": 22.7
+      },
+      {
+        "rgb": [
+          54,
+          69,
+          107
+        ],
+        "hex": "#36456b",
+        "count": 900,
+        "pct": 9.0
+      },
+      {
+        "rgb": [
+          83,
+          105,
+          149
+        ],
+        "hex": "#536995",
+        "count": 418,
+        "pct": 4.2
+      },
+      {
+        "rgb": [
+          69,
+          83,
+          116
+        ],
+        "hex": "#455374",
+        "count": 174,
+        "pct": 1.7
+      }
+    ]
+  },
+  {
+    "frame": 183,
+    "filename": "prototype_0183.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 49.4,
+    "temp_ratio": 0.52,
+    "avg_saturation": 0.496,
+    "file_size_kb": 48.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          15,
+          23
+        ],
+        "hex": "#0c0f17",
+        "count": 5241,
+        "pct": 52.4
+      },
+      {
+        "rgb": [
+          40,
+          51,
+          82
+        ],
+        "hex": "#283352",
+        "count": 2217,
+        "pct": 22.2
+      },
+      {
+        "rgb": [
+          54,
+          70,
+          112
+        ],
+        "hex": "#364670",
+        "count": 1216,
+        "pct": 12.2
+      },
+      {
+        "rgb": [
+          77,
+          97,
+          146
+        ],
+        "hex": "#4d6192",
+        "count": 644,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          60,
+          79,
+          132
+        ],
+        "hex": "#3c4f84",
+        "count": 286,
+        "pct": 2.9
+      }
+    ]
+  },
+  {
+    "frame": 184,
+    "filename": "prototype_0184.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 45.5,
+    "temp_ratio": 0.52,
+    "avg_saturation": 0.485,
+    "file_size_kb": 47.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          16,
+          23
+        ],
+        "hex": "#0c1017",
+        "count": 5900,
+        "pct": 59.0
+      },
+      {
+        "rgb": [
+          40,
+          52,
+          82
+        ],
+        "hex": "#283452",
+        "count": 1701,
+        "pct": 17.0
+      },
+      {
+        "rgb": [
+          54,
+          70,
+          112
+        ],
+        "hex": "#364670",
+        "count": 1060,
+        "pct": 10.6
+      },
+      {
+        "rgb": [
+          76,
+          95,
+          145
+        ],
+        "hex": "#4c5f91",
+        "count": 763,
+        "pct": 7.6
+      },
+      {
+        "rgb": [
+          60,
+          80,
+          133
+        ],
+        "hex": "#3c5085",
+        "count": 271,
+        "pct": 2.7
+      }
+    ]
+  },
+  {
+    "frame": 185,
+    "filename": "prototype_0185.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 36.9,
+    "temp_ratio": 0.56,
+    "avg_saturation": 0.447,
+    "file_size_kb": 41.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          16,
+          23
+        ],
+        "hex": "#0e1017",
+        "count": 6943,
+        "pct": 69.4
+      },
+      {
+        "rgb": [
+          44,
+          52,
+          82
+        ],
+        "hex": "#2c3452",
+        "count": 1663,
+        "pct": 16.6
+      },
+      {
+        "rgb": [
+          55,
+          69,
+          109
+        ],
+        "hex": "#37456d",
+        "count": 639,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          80,
+          97,
+          146
+        ],
+        "hex": "#506192",
+        "count": 348,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          73,
+          79,
+          110
+        ],
+        "hex": "#494f6e",
+        "count": 223,
+        "pct": 2.2
+      }
+    ]
+  },
+  {
+    "frame": 186,
+    "filename": "prototype_0186.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 32.4,
+    "temp_ratio": 0.58,
+    "avg_saturation": 0.42,
+    "file_size_kb": 44.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          24
+        ],
+        "hex": "#0e1118",
+        "count": 7575,
+        "pct": 75.8
+      },
+      {
+        "rgb": [
+          41,
+          50,
+          77
+        ],
+        "hex": "#29324d",
+        "count": 1520,
+        "pct": 15.2
+      },
+      {
+        "rgb": [
+          55,
+          69,
+          107
+        ],
+        "hex": "#37456b",
+        "count": 413,
+        "pct": 4.1
+      },
+      {
+        "rgb": [
+          81,
+          98,
+          144
+        ],
+        "hex": "#516290",
+        "count": 243,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          76,
+          84,
+          105
+        ],
+        "hex": "#4c5469",
+        "count": 162,
+        "pct": 1.6
+      }
+    ]
+  },
+  {
+    "frame": 187,
+    "filename": "prototype_0187.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 28.1,
+    "temp_ratio": 0.6,
+    "avg_saturation": 0.412,
+    "file_size_kb": 36.8,
+    "dominant_colors": [
+      {
+        "rgb": [
+          14,
+          17,
+          23
+        ],
+        "hex": "#0e1117",
+        "count": 8568,
+        "pct": 85.7
+      },
+      {
+        "rgb": [
+          42,
+          51,
+          75
+        ],
+        "hex": "#2a334b",
+        "count": 807,
+        "pct": 8.1
+      },
+      {
+        "rgb": [
+          56,
+          68,
+          99
+        ],
+        "hex": "#384463",
+        "count": 167,
+        "pct": 1.7
+      },
+      {
+        "rgb": [
+          77,
+          83,
+          105
+        ],
+        "hex": "#4d5369",
+        "count": 154,
+        "pct": 1.5
+      },
+      {
+        "rgb": [
+          93,
+          108,
+          149
+        ],
+        "hex": "#5d6c95",
+        "count": 135,
+        "pct": 1.4
+      }
+    ]
+  },
+  {
+    "frame": 188,
+    "filename": "prototype_0188.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 20.3,
+    "temp_ratio": 0.57,
+    "avg_saturation": 0.429,
+    "file_size_kb": 24.7,
+    "dominant_colors": [
+      {
+        "rgb": [
+          11,
+          14,
+          19
+        ],
+        "hex": "#0b0e13",
+        "count": 9085,
+        "pct": 90.8
+      },
+      {
+        "rgb": [
+          41,
+          51,
+          79
+        ],
+        "hex": "#29334f",
+        "count": 552,
+        "pct": 5.5
+      },
+      {
+        "rgb": [
+          55,
+          70,
+          108
+        ],
+        "hex": "#37466c",
+        "count": 242,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          76,
+          83,
+          99
+        ],
+        "hex": "#4c5363",
+        "count": 74,
+        "pct": 0.7
+      },
+      {
+        "rgb": [
+          74,
+          90,
+          134
+        ],
+        "hex": "#4a5a86",
+        "count": 34,
+        "pct": 0.3
+      }
+    ]
+  },
+  {
+    "frame": 189,
+    "filename": "prototype_0189.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 27.2,
+    "temp_ratio": 0.61,
+    "avg_saturation": 0.376,
+    "file_size_kb": 37.6,
+    "dominant_colors": [
+      {
+        "rgb": [
+          15,
+          19,
+          24
+        ],
+        "hex": "#0f1318",
+        "count": 8714,
+        "pct": 87.1
+      },
+      {
+        "rgb": [
+          43,
+          53,
+          77
+        ],
+        "hex": "#2b354d",
+        "count": 648,
+        "pct": 6.5
+      },
+      {
+        "rgb": [
+          56,
+          70,
+          106
+        ],
+        "hex": "#38466a",
+        "count": 293,
+        "pct": 2.9
+      },
+      {
+        "rgb": [
+          79,
+          83,
+          94
+        ],
+        "hex": "#4f535e",
+        "count": 173,
+        "pct": 1.7
+      },
+      {
+        "rgb": [
+          73,
+          91,
+          139
+        ],
+        "hex": "#495b8b",
+        "count": 123,
+        "pct": 1.2
+      }
+    ]
+  },
+  {
+    "frame": 190,
+    "filename": "prototype_0190.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 18.5,
+    "temp_ratio": 0.58,
+    "avg_saturation": 0.41,
+    "file_size_kb": 34.5,
+    "dominant_colors": [
+      {
+        "rgb": [
+          12,
+          16,
+          20
+        ],
+        "hex": "#0c1014",
+        "count": 9622,
+        "pct": 96.2
+      },
+      {
+        "rgb": [
+          39,
+          48,
+          72
+        ],
+        "hex": "#273048",
+        "count": 262,
+        "pct": 2.6
+      },
+      {
+        "rgb": [
+          73,
+          80,
+          91
+        ],
+        "hex": "#49505b",
+        "count": 43,
+        "pct": 0.4
+      },
+      {
+        "rgb": [
+          58,
+          67,
+          85
+        ],
+        "hex": "#3a4355",
+        "count": 35,
+        "pct": 0.4
+      },
+      {
+        "rgb": [
+          89,
+          116,
+          150
+        ],
+        "hex": "#597496",
+        "count": 22,
+        "pct": 0.2
+      }
+    ]
+  },
+  {
+    "frame": 191,
+    "filename": "prototype_0191.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 6.8,
+    "temp_ratio": 0.73,
+    "avg_saturation": 0.381,
+    "file_size_kb": 31.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          3,
+          4,
+          5
+        ],
+        "hex": "#030405",
+        "count": 8597,
+        "pct": 86.0
+      },
+      {
+        "rgb": [
+          20,
+          21,
+          24
+        ],
+        "hex": "#141518",
+        "count": 639,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          12,
+          14,
+          16
+        ],
+        "hex": "#0c0e10",
+        "count": 240,
+        "pct": 2.4
+      },
+      {
+        "rgb": [
+          37,
+          25,
+          22
+        ],
+        "hex": "#251916",
+        "count": 209,
+        "pct": 2.1
+      },
+      {
+        "rgb": [
+          21,
+          6,
+          6
+        ],
+        "hex": "#150606",
+        "count": 124,
+        "pct": 1.2
+      }
+    ]
+  },
+  {
+    "frame": 192,
+    "filename": "prototype_0192.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 5.5,
+    "temp_ratio": 2.31,
+    "avg_saturation": 0.736,
+    "file_size_kb": 40.3,
+    "dominant_colors": [
+      {
+        "rgb": [
+          6,
+          4,
+          2
+        ],
+        "hex": "#060402",
+        "count": 9787,
+        "pct": 97.9
+      },
+      {
+        "rgb": [
+          84,
+          47,
+          19
+        ],
+        "hex": "#542f13",
+        "count": 113,
+        "pct": 1.1
+      },
+      {
+        "rgb": [
+          99,
+          68,
+          35
+        ],
+        "hex": "#634423",
+        "count": 57,
+        "pct": 0.6
+      },
+      {
+        "rgb": [
+          151,
+          81,
+          11
+        ],
+        "hex": "#97510b",
+        "count": 29,
+        "pct": 0.3
+      },
+      {
+        "rgb": [
+          95,
+          77,
+          68
+        ],
+        "hex": "#5f4d44",
+        "count": 8,
+        "pct": 0.1
+      }
+    ]
+  },
+  {
+    "frame": 193,
+    "filename": "prototype_0193.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 16.5,
+    "temp_ratio": 3.06,
+    "avg_saturation": 0.799,
+    "file_size_kb": 66.4,
+    "dominant_colors": [
+      {
+        "rgb": [
+          13,
+          6,
+          2
+        ],
+        "hex": "#0d0602",
+        "count": 8653,
+        "pct": 86.5
+      },
+      {
+        "rgb": [
+          82,
+          47,
+          21
+        ],
+        "hex": "#522f15",
+        "count": 642,
+        "pct": 6.4
+      },
+      {
+        "rgb": [
+          112,
+          74,
+          43
+        ],
+        "hex": "#704a2b",
+        "count": 340,
+        "pct": 3.4
+      },
+      {
+        "rgb": [
+          141,
+          91,
+          36
+        ],
+        "hex": "#8d5b24",
+        "count": 210,
+        "pct": 2.1
+      },
+      {
+        "rgb": [
+          143,
+          110,
+          80
+        ],
+        "hex": "#8f6e50",
+        "count": 54,
+        "pct": 0.5
+      }
+    ]
+  },
+  {
+    "frame": 194,
+    "filename": "prototype_0194.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 5.5,
+    "temp_ratio": 2.41,
+    "avg_saturation": 0.827,
+    "file_size_kb": 29.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          3,
+          2,
+          0
+        ],
+        "hex": "#030200",
+        "count": 8157,
+        "pct": 81.6
+      },
+      {
+        "rgb": [
+          19,
+          12,
+          5
+        ],
+        "hex": "#130c05",
+        "count": 715,
+        "pct": 7.1
+      },
+      {
+        "rgb": [
+          26,
+          18,
+          10
+        ],
+        "hex": "#1a120a",
+        "count": 352,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          37,
+          23,
+          9
+        ],
+        "hex": "#251709",
+        "count": 351,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          37,
+          28,
+          17
+        ],
+        "hex": "#251c11",
+        "count": 219,
+        "pct": 2.2
+      }
+    ]
+  },
+  {
+    "frame": 195,
+    "filename": "prototype_0195.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 20.9,
+    "temp_ratio": 3.64,
+    "avg_saturation": 0.946,
+    "file_size_kb": 28.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          26,
+          0,
+          0
+        ],
+        "hex": "#1a0000",
+        "count": 8206,
+        "pct": 82.1
+      },
+      {
+        "rgb": [
+          83,
+          7,
+          14
+        ],
+        "hex": "#53070e",
+        "count": 1246,
+        "pct": 12.5
+      },
+      {
+        "rgb": [
+          148,
+          100,
+          102
+        ],
+        "hex": "#946466",
+        "count": 172,
+        "pct": 1.7
+      },
+      {
+        "rgb": [
+          235,
+          217,
+          214
+        ],
+        "hex": "#ebd9d6",
+        "count": 140,
+        "pct": 1.4
+      },
+      {
+        "rgb": [
+          205,
+          175,
+          174
+        ],
+        "hex": "#cdafae",
+        "count": 89,
+        "pct": 0.9
+      }
+    ]
+  },
+  {
+    "frame": 196,
+    "filename": "prototype_0196.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 13.2,
+    "temp_ratio": 2.97,
+    "avg_saturation": 0.937,
+    "file_size_kb": 33.2,
+    "dominant_colors": [
+      {
+        "rgb": [
+          18,
+          1,
+          1
+        ],
+        "hex": "#120101",
+        "count": 9561,
+        "pct": 95.6
+      },
+      {
+        "rgb": [
+          83,
+          25,
+          24
+        ],
+        "hex": "#531918",
+        "count": 139,
+        "pct": 1.4
+      },
+      {
+        "rgb": [
+          244,
+          229,
+          222
+        ],
+        "hex": "#f4e5de",
+        "count": 117,
+        "pct": 1.2
+      },
+      {
+        "rgb": [
+          209,
+          170,
+          161
+        ],
+        "hex": "#d1aaa1",
+        "count": 77,
+        "pct": 0.8
+      },
+      {
+        "rgb": [
+          156,
+          103,
+          97
+        ],
+        "hex": "#9c6761",
+        "count": 61,
+        "pct": 0.6
+      }
+    ]
+  },
+  {
+    "frame": 197,
+    "filename": "prototype_0197.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 12.2,
+    "temp_ratio": 3.51,
+    "avg_saturation": 0.943,
+    "file_size_kb": 37.1,
+    "dominant_colors": [
+      {
+        "rgb": [
+          18,
+          1,
+          1
+        ],
+        "hex": "#120101",
+        "count": 9565,
+        "pct": 95.7
+      },
+      {
+        "rgb": [
+          86,
+          22,
+          20
+        ],
+        "hex": "#561614",
+        "count": 158,
+        "pct": 1.6
+      },
+      {
+        "rgb": [
+          165,
+          97,
+          88
+        ],
+        "hex": "#a56158",
+        "count": 98,
+        "pct": 1.0
+      },
+      {
+        "rgb": [
+          218,
+          166,
+          151
+        ],
+        "hex": "#daa697",
+        "count": 89,
+        "pct": 0.9
+      },
+      {
+        "rgb": [
+          241,
+          217,
+          207
+        ],
+        "hex": "#f1d9cf",
+        "count": 33,
+        "pct": 0.3
+      }
+    ]
+  },
+  {
+    "frame": 198,
+    "filename": "prototype_0198.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 7.3,
+    "temp_ratio": 5.62,
+    "avg_saturation": 0.955,
+    "file_size_kb": 24.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          7,
+          0,
+          0
+        ],
+        "hex": "#070000",
+        "count": 5578,
+        "pct": 55.8
+      },
+      {
+        "rgb": [
+          22,
+          2,
+          2
+        ],
+        "hex": "#160202",
+        "count": 2574,
+        "pct": 25.7
+      },
+      {
+        "rgb": [
+          38,
+          3,
+          6
+        ],
+        "hex": "#260306",
+        "count": 1338,
+        "pct": 13.4
+      },
+      {
+        "rgb": [
+          52,
+          5,
+          8
+        ],
+        "hex": "#340508",
+        "count": 472,
+        "pct": 4.7
+      },
+      {
+        "rgb": [
+          56,
+          10,
+          18
+        ],
+        "hex": "#380a12",
+        "count": 22,
+        "pct": 0.2
+      }
+    ]
+  },
+  {
+    "frame": 199,
+    "filename": "prototype_0199.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 0.9,
+    "temp_ratio": 0.46,
+    "avg_saturation": 0.015,
+    "file_size_kb": 16.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          0,
+          0,
+          0
+        ],
+        "hex": "#000000",
+        "count": 9902,
+        "pct": 99.0
+      },
+      {
+        "rgb": [
+          18,
+          18,
+          18
+        ],
+        "hex": "#121212",
+        "count": 94,
+        "pct": 0.9
+      },
+      {
+        "rgb": [
+          18,
+          15,
+          16
+        ],
+        "hex": "#120f10",
+        "count": 2,
+        "pct": 0.0
+      },
+      {
+        "rgb": [
+          15,
+          16,
+          13
+        ],
+        "hex": "#0f100d",
+        "count": 1,
+        "pct": 0.0
+      },
+      {
+        "rgb": [
+          16,
+          13,
+          14
+        ],
+        "hex": "#100d0e",
+        "count": 1,
+        "pct": 0.0
+      }
+    ]
+  },
+  {
+    "frame": 200,
+    "filename": "prototype_0200.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 8.6,
+    "temp_ratio": 0.94,
+    "avg_saturation": 0.091,
+    "file_size_kb": 56.9,
+    "dominant_colors": [
+      {
+        "rgb": [
+          1,
+          1,
+          1
+        ],
+        "hex": "#010101",
+        "count": 9403,
+        "pct": 94.0
+      },
+      {
+        "rgb": [
+          93,
+          92,
+          89
+        ],
+        "hex": "#5d5c59",
+        "count": 359,
+        "pct": 3.6
+      },
+      {
+        "rgb": [
+          156,
+          156,
+          151
+        ],
+        "hex": "#9c9c97",
+        "count": 135,
+        "pct": 1.4
+      },
+      {
+        "rgb": [
+          218,
+          218,
+          218
+        ],
+        "hex": "#dadada",
+        "count": 33,
+        "pct": 0.3
+      },
+      {
+        "rgb": [
+          70,
+          69,
+          56
+        ],
+        "hex": "#464538",
+        "count": 27,
+        "pct": 0.3
+      }
+    ]
+  },
+  {
+    "frame": 201,
+    "filename": "prototype_0201.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 8.6,
+    "temp_ratio": 0.94,
+    "avg_saturation": 0.094,
+    "file_size_kb": 57.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          1,
+          1,
+          1
+        ],
+        "hex": "#010101",
+        "count": 9403,
+        "pct": 94.0
+      },
+      {
+        "rgb": [
+          93,
+          92,
+          89
+        ],
+        "hex": "#5d5c59",
+        "count": 355,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          157,
+          156,
+          152
+        ],
+        "hex": "#9d9c98",
+        "count": 134,
+        "pct": 1.3
+      },
+      {
+        "rgb": [
+          218,
+          218,
+          218
+        ],
+        "hex": "#dadada",
+        "count": 33,
+        "pct": 0.3
+      },
+      {
+        "rgb": [
+          71,
+          69,
+          56
+        ],
+        "hex": "#474538",
+        "count": 28,
+        "pct": 0.3
+      }
+    ]
+  },
+  {
+    "frame": 202,
+    "filename": "prototype_0202.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "avg_brightness": 8.6,
+    "temp_ratio": 0.94,
+    "avg_saturation": 0.094,
+    "file_size_kb": 57.0,
+    "dominant_colors": [
+      {
+        "rgb": [
+          1,
+          1,
+          1
+        ],
+        "hex": "#010101",
+        "count": 9403,
+        "pct": 94.0
+      },
+      {
+        "rgb": [
+          93,
+          92,
+          89
+        ],
+        "hex": "#5d5c59",
+        "count": 355,
+        "pct": 3.5
+      },
+      {
+        "rgb": [
+          157,
+          156,
+          152
+        ],
+        "hex": "#9d9c98",
+        "count": 134,
+        "pct": 1.3
+      },
+      {
+        "rgb": [
+          218,
+          218,
+          218
+        ],
+        "hex": "#dadada",
+        "count": 33,
+        "pct": 0.3
+      },
+      {
+        "rgb": [
+          71,
+          69,
+          56
+        ],
+        "hex": "#474538",
+        "count": 28,
+        "pct": 0.3
+      }
+    ]
+  }
+]

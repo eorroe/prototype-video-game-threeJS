@@ -338,9 +338,9 @@ export class RenderSystem {
     this.exposureTexture = this.exposure.texture;
 
     this.settings = {
-      exposureBias: 0, // EV; positive = darker
+      exposureBias: -1.5, // EV; negative = darker, matched to reference frames
       exposureKey: 1.06,
-      autoExposure: true,
+      autoExposure: false,
       // The pyramid is ADDED now, not mixed, and it is soft-knee thresholded at
       // `bloomThreshold` in exposure-scaled linear light — so this is the gain on
       // light that is genuinely above display white (sun disc, glints, muzzle
@@ -481,6 +481,24 @@ export class RenderSystem {
       `[render] WebGL2 · ${cfg.quality} · ${this.csm.cascades}x${this.csm.mapSize} CSM · ` +
         `taa:${!!this.taa} gtao:${!!this.gtao} ssr:${!!this.ssr} mb:${!!this.motionBlur}`
     );
+  }
+
+  /**
+   * Immediately clear and paint the initial frame to canvas without waiting
+   * for remaining background subsystems or prewarm shaders to complete.
+   */
+  paintInitialFrame() {
+    if (!this.renderer || !this.ctx) return;
+    try {
+      this.renderer.setRenderTarget(null);
+      this.renderer.setClearColor(0x0a0d12, 1);
+      this.renderer.clear(true, true, true);
+      if (this.ctx.camera && this.ctx.scene) {
+        this.renderer.render(this.ctx.scene, this.ctx.camera);
+      }
+    } catch (err) {
+      console.warn('[render] paintInitialFrame fallback:', err);
+    }
   }
 
   // ==========================================================================

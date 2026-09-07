@@ -1,0 +1,39 @@
+[info] [render] WebGL2 · ultra · 4x2048 CSM · taa:true gtao:true ssr:true mb:true
+[info] [engine] render init 159ms
+[info] [materials] shared maps 58ms
+[info] [engine] materials init 60ms
+[info] [sky] t=16.50 sunAlt=32.0 sunI=7.021 sunCol=1.00,0.84,0.64 moonI=0.0000 beamLum=3.896 amb=0.245,0.380,0.679 indirect=1.00 evBias=0.00 knee=0.429
+[info] [sky] atmosphere ready · lat 45 · vol 56 steps @1/2 · 1 unit = 25000 lx
+[info] [engine] sky init 329ms
+[warning] [.WebGL-0x1f74001a6600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[info] [physics] 2 tris / 1 nodes · 0.2ms · fallback ground
+[info] [materials] bake gravel 1024px 51ms
+[info] [materials] bake asphalt 1024px 52ms
+[info] [materials] bake concrete 1024px 127ms
+[info] [materials] bake dirt 1024px 204ms
+[info] [materials] bake metal_painted 1024px 73ms
+[info] [materials] bake plaster 1024px 88ms
+[info] [materials] bake wood 1024px 246ms
+[info] [materials] bake brick 1024px 73ms
+[info] [materials] bake fabric 512px 134ms
+[info] [materials] bake corrugated 1024px 66ms
+[info] [materials] bake rubber 512px 42ms
+[info] [materials] bake metal_brushed 512px 53ms
+[info] [materials] bake foliage 512px 58ms
+[info] [physics] 38580 tris / 19753 nodes · 68.1ms · 8 registered
+[info] [world] built in 2468ms — 606k static tris, 1146k instanced tris in 8008 instances, 220 draw calls, 38.6k collision tris
+[info] [engine] world init 2537ms
+[info] [player] spawn 13.7, 0.04, 19.8 · walk 4.57 sprint 7.01 tac 8.38 m/s · jump 4.97 m/s (apex 0.60 m)
+[info] [weapons] 3 weapons · 136.8k tris viewmodel · built in 953ms
+[info] [engine] weapons init 1141ms
+[info] [fx] atlases 1024px in 1105ms · particles lit 12333 add 10091 motes 600 haze 320 · decals 512
+[info] [engine] fx init 1124ms
+[info] [ai] materials 2250ms (2242ms texture bake)
+[info] [ai] camo arid: map mean 0.095 (was 0.215) range 0.040-0.152 sd 0.046
+[info] [ai] camo woodland: map mean 0.093 (was 0.209) range 0.040-0.152 sd 0.046
+[info] [ai] camo urban: map mean 0.086 (was 0.202) range 0.040-0.152 sd 0.045
+[info] [ai] nav 221x221 cells · 38742 walkable · 1349 cover points · 353ms
+[info] [ai] prewarmMaterials {"ok":false,"materials":0,"programs":0,"ms":2,"error":"[ai] unknown material set \"glass\""}
+[info] [engine] ai init 2606ms
+[info] [mission] system ready
+[info] [render] indirect gate: 2 interior volumes

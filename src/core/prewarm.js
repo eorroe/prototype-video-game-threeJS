@@ -158,12 +158,18 @@ export async function prewarm(engine, { onProgress = () => {}, transients = fals
         renderer.compileAsync(engine.scene, engine.camera),
         new Promise((_, reject) => setTimeout(() => reject(new Error('compileAsync timeout')), 5000))
       ]);
+      await Promise.race([
+        renderer.compileAsync(engine.viewScene, engine.viewCamera),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('compileAsync timeout')), 5000))
+      ]);
     } catch {
       try {
         renderer.compile(engine.scene, engine.camera);
+        renderer.compile(engine.viewScene, engine.viewCamera);
       } catch { /* nothing more we can do; boot must still proceed */ }
+    } finally {
+      renderer.setRenderTarget(prevRt, prevFace, prevMip);
     }
-    renderer.setRenderTarget(prevRt, prevFace, prevMip);
   };
 
   const yieldFrame = () => new Promise((r) => requestAnimationFrame(r));

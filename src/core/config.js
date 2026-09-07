@@ -88,7 +88,7 @@ export const DEFAULTS = {
   sensitivity: 0.0022,
   adsSensScale: 0.65,
   invertY: false,
-  exposure: 5.0,
+  exposure: 0.1,
   deterministic: false,
   thirdPerson: false,
 };
